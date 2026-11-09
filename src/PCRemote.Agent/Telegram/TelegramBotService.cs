@@ -7,6 +7,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramCallbackQuery = Telegram.Bot.Types.CallbackQuery;
 using Telegram.Bot.Exceptions;
+using System.Collections.Concurrent;
 
 namespace PCRemote.Agent.Telegram;
 
@@ -18,6 +19,8 @@ public class TelegramBotService : BackgroundService
     private readonly ISystemInfoProvider _systemInfoProvider;
     private readonly IScreenshotService _screenshotService;
     private readonly IPowerManager _powerManager;
+    private readonly ConcurrentDictionary<string, PendingPowerAction>
+        _pendingActions = new();
 
     public TelegramBotService(
         ILogger<TelegramBotService> logger,
@@ -281,6 +284,33 @@ public class TelegramBotService : BackgroundService
         string description,
         CancellationToken cancellationToken)
     {
+        var confirmationId = Guid.NewGuid().ToString("N");
+        
+        // Удаляем предыдущие неподтверждённые действия в этом чате.
+        foreach (var entry in _pendingActions.ToArray())
+        {
+            if (entry.Value.ChatId != chatId)
+                continue;
+
+            if (!_pendingActions.TryRemove(entry.Key, out var previousAction))
+                continue;
+
+            try
+            {
+                await _botClient.DeleteMessage(
+                    chatId: chatId,
+                    messageId: previousAction.MessageId,
+                    cancellationToken: cancellationToken);
+            }
+            catch (ApiRequestException exception)
+            {
+                _logger.LogWarning(
+                    exception,
+                    "Failed to delete previous confirmation message: {MessageId}",
+                    previousAction.MessageId);
+            }
+        }
+
         var keyboard = new InlineKeyboardMarkup(
             new[]
             {
@@ -288,115 +318,215 @@ public class TelegramBotService : BackgroundService
                 {
                     InlineKeyboardButton.WithCallbackData(
                         "✅ Подтвердить",
-                        $"power_confirm:{action}"),
-
+                        $"power_confirm:{confirmationId}"),
                     InlineKeyboardButton.WithCallbackData(
                         "❌ Отмена",
-                        "power_cancel")
+                        $"power_cancel:{confirmationId}")
                 }
             });
 
-        await _botClient.SendMessage(
+        var sentMessage = await _botClient.SendMessage(
             chatId: chatId,
-            text: $"⚠️ Ты действительно хочешь {description}?",
+            text: $"⚠️ Ты действительно хочешь {description}?\n\nПодтверждение действительно 2 минуты.",
             replyMarkup: keyboard,
             cancellationToken: cancellationToken);
+
+        _pendingActions[confirmationId] = new PendingPowerAction(
+            action,
+            chatId,
+            sentMessage.MessageId,
+            DateTimeOffset.UtcNow.AddMinutes(2));
     }
     
     private async Task HandleCallbackQueryAsync(
-        TelegramCallbackQuery callbackQuery,
-        CancellationToken cancellationToken)
+    TelegramCallbackQuery callbackQuery,
+    CancellationToken cancellationToken)
+{
+    // Проверяем, что кнопку нажал разрешённый пользователь.
+    if (callbackQuery.From.Id != _settings.AllowedUserId)
     {
-        if (callbackQuery.From.Id != _settings.AllowedUserId)
-        {
-            await _botClient.AnswerCallbackQuery(
-                callbackQueryId: callbackQuery.Id,
-                text: "У тебя нет доступа.",
-                showAlert: true,
-                cancellationToken: cancellationToken);
+        await _botClient.AnswerCallbackQuery(
+            callbackQueryId: callbackQuery.Id,
+            text: "У тебя нет доступа.",
+            showAlert: true,
+            cancellationToken: cancellationToken);
 
-            return;
-        }
+        return;
+    }
 
-        if (callbackQuery.Message is null)
-        {
-            return;
-        }
+    if (callbackQuery.Message is null ||
+        string.IsNullOrWhiteSpace(callbackQuery.Data))
+    {
+        return;
+    }
 
-        var chatId = callbackQuery.Message.Chat.Id;
-        var callbackData = callbackQuery.Data;
+    const string confirmPrefix = "power_confirm:";
+    const string cancelPrefix = "power_cancel:";
 
-        if (callbackData == "power_cancel")
-        {
-            await _botClient.AnswerCallbackQuery(
-                callbackQueryId: callbackQuery.Id,
-                text: "Действие отменено.",
-                cancellationToken: cancellationToken);
+    var callbackData = callbackQuery.Data;
+    var isConfirmation = callbackData.StartsWith(confirmPrefix);
+    var isCancellation = callbackData.StartsWith(cancelPrefix);
 
-            await _botClient.SendMessage(
-                chatId: chatId,
-                text: "❌ Действие отменено.",
-                cancellationToken: cancellationToken);
+    if (!isConfirmation && !isCancellation)
+    {
+        await _botClient.AnswerCallbackQuery(
+            callbackQueryId: callbackQuery.Id,
+            text: "Неизвестное действие.",
+            showAlert: true,
+            cancellationToken: cancellationToken);
 
-            return;
-        }
+        return;
+    }
 
-        const string prefix = "power_confirm:";
+    var prefix = isConfirmation ? confirmPrefix : cancelPrefix;
+    var confirmationId = callbackData[prefix.Length..];
 
-        if (callbackData is null ||
-            !callbackData.StartsWith(prefix))
-        {
-            await _botClient.AnswerCallbackQuery(
-                callbackQueryId: callbackQuery.Id,
-                text: "Неизвестное действие.",
-                cancellationToken: cancellationToken);
+    if (!_pendingActions.TryGetValue(
+            confirmationId, out var pendingAction))
+    {
+        await _botClient.AnswerCallbackQuery(
+            callbackQueryId: callbackQuery.Id,
+            text: "Это подтверждение уже недействительно.",
+            showAlert: true,
+            cancellationToken: cancellationToken);
 
-            return;
-        }
+        return;
+    }
 
-        var action = callbackData[prefix.Length..];
+    var chatId = callbackQuery.Message.Chat.Id;
+
+    if (pendingAction.ChatId != chatId ||
+        pendingAction.MessageId != callbackQuery.Message.MessageId)
+    {
+        await _botClient.AnswerCallbackQuery(
+            callbackQueryId: callbackQuery.Id,
+            text: "Подтверждение не найдено.",
+            showAlert: true,
+            cancellationToken: cancellationToken);
+
+        return;
+    }
+
+    if (pendingAction.ExpiresAt <= DateTimeOffset.UtcNow)
+    {
+        _pendingActions.TryRemove(confirmationId, out _);
 
         await _botClient.AnswerCallbackQuery(
             callbackQueryId: callbackQuery.Id,
-            text: "Подтверждение получено.",
+            text: "Время подтверждения истекло.",
+            showAlert: true,
             cancellationToken: cancellationToken);
 
-        await ExecutePowerActionAsync(
-            chatId,
-            action,
-            cancellationToken);
+        await _botClient.EditMessageText(
+            chatId: chatId,
+            messageId: pendingAction.MessageId,
+            text: "⌛ Время подтверждения истекло.",
+            cancellationToken: cancellationToken);
+
+        return;
+    }
+
+    // Удаляем запись, чтобы кнопку нельзя было использовать повторно.
+    if (!_pendingActions.TryRemove(
+            confirmationId, out var confirmedAction))
+    {
+        await _botClient.AnswerCallbackQuery(
+            callbackQueryId: callbackQuery.Id,
+            text: "Это действие уже обработано.",
+            showAlert: true,
+            cancellationToken: cancellationToken);
+
+        return;
+    }
+
+    await _botClient.AnswerCallbackQuery(
+        callbackQueryId: callbackQuery.Id,
+        cancellationToken: cancellationToken);
+
+    if (isCancellation)
+    {
+        await _botClient.DeleteMessage(
+            chatId: chatId,
+            messageId: confirmedAction.MessageId,
+            cancellationToken: cancellationToken);
+
+        return;
+    }
+
+    await _botClient.EditMessageText(
+        chatId: chatId,
+        messageId: confirmedAction.MessageId,
+        text: "⏳ Команда принята, выполняю...",
+        cancellationToken: cancellationToken);
+
+    await ExecutePowerActionAsync(
+        chatId,
+        confirmedAction.MessageId,
+        confirmedAction.Action,
+        cancellationToken);
     }
     
     private async Task ExecutePowerActionAsync(
         long chatId,
+        int messageId,
         string action,
         CancellationToken cancellationToken)
     {
-        await _botClient.SendMessage(
-            chatId: chatId,
-            text: "⏳ Выполняю команду...",
-            cancellationToken: cancellationToken);
-
-        switch (action)
+        try
         {
-            case "shutdown":
-                await _powerManager.ShutdownAsync(cancellationToken);
-                break;
+            string resultText;
 
-            case "restart":
-                await _powerManager.RestartAsync(cancellationToken);
-                break;
+            switch (action)
+            {
+                case "shutdown":
+                    await _powerManager.ShutdownAsync(cancellationToken);
+                    resultText = "🖥 Компьютер выключен.";
+                    break;
 
-            case "sleep":
-                await _powerManager.SleepAsync(cancellationToken);
-                break;
+                case "restart":
+                    await _powerManager.RestartAsync(cancellationToken);
+                    resultText = "🔄 Компьютер перезагружен.";
+                    break;
 
-            default:
-                await _botClient.SendMessage(
-                    chatId: chatId,
-                    text: "Неизвестное действие.",
-                    cancellationToken: cancellationToken);
-                break;
+                case "sleep":
+                    await _powerManager.SleepAsync(cancellationToken);
+                    resultText = "💤 Компьютер переведён в спящий режим.";
+                    break;
+
+                default:
+                    resultText = "❌ Неизвестная команда.";
+                    break;
+            }
+
+            await _botClient.EditMessageText(
+                chatId: chatId,
+                messageId: messageId,
+                text: resultText,
+                cancellationToken: cancellationToken);
+        }
+        catch (OperationCanceledException)
+            when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(
+                exception,
+                "Failed to execute power action: {Action}",
+                action);
+
+            await _botClient.EditMessageText(
+                chatId: chatId,
+                messageId: messageId,
+                text: "❌ Не удалось выполнить действие. Проверь состояние компьютера.",
+                cancellationToken: cancellationToken);
         }
     }
+    
+    private record PendingPowerAction(
+        string Action,
+        long ChatId,
+        int MessageId,
+        DateTimeOffset ExpiresAt);
 }
