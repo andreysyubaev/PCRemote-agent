@@ -102,23 +102,23 @@ public class TelegramBotService : BackgroundService
                         case "/start":
                             await _botClient.SendMessage(
                                 chatId: message.Chat.Id,
-                                text: "PCRemote Agent успешно подключён! Бот готов к работе.",
+                                text: "PCRemote Agent успешно подключён! Выбери действие:",
+                                replyMarkup: CreateMainMenu(),
                                 cancellationToken: stoppingToken);
                             break;
 
                         case "/status":
-                            await SendSystemInfoAsync(
-                                message.Chat.Id,
-                                stoppingToken);
+                        case "📊 Статус ПК":
+                            await SendSystemInfoAsync(message.Chat.Id, stoppingToken);
                             break;
 
                         case "/screenshot":
-                            await SendScreenshotAsync(
-                                message.Chat.Id,
-                                stoppingToken);
+                        case "📸 Скриншот":
+                            await SendScreenshotAsync(message.Chat.Id, stoppingToken);
                             break;
 
                         case "/shutdown":
+                        case "🔴 Выключение":
                             await SendPowerConfirmationAsync(
                                 message.Chat.Id,
                                 "shutdown",
@@ -127,6 +127,7 @@ public class TelegramBotService : BackgroundService
                             break;
 
                         case "/restart":
+                        case "🔄 Перезагрузка":
                             await SendPowerConfirmationAsync(
                                 message.Chat.Id,
                                 "restart",
@@ -135,17 +136,56 @@ public class TelegramBotService : BackgroundService
                             break;
 
                         case "/sleep":
+                        case "💤 Сон":
                             await SendPowerConfirmationAsync(
                                 message.Chat.Id,
                                 "sleep",
                                 "перевести компьютер в спящий режим",
                                 stoppingToken);
                             break;
+                        
+                        case "ℹ️ Помощь":
+                        case "/help":
+                        {
+                            var helpKeyboard = new InlineKeyboardMarkup(
+                                new[]
+                                {
+                                    new[]
+                                    {
+                                        InlineKeyboardButton.WithUrl(
+                                            "⭐ GitHub — исходный код",
+                                            "https://github.com/andreysyubaev/PCRemote-agent")
+                                    }
+                                });
+
+                            await _botClient.SendMessage(
+                                chatId: message.Chat.Id,
+                                text:
+                                "🖥 PCRemote\n\n" +
+                                "Управляй своим компьютером прямо из Telegram!\n\n" +
+                                "📌 Возможности:\n" +
+                                "• 📊 Получение информации о системе\n" +
+                                "• 📸 Создание скриншотов рабочего стола\n" +
+                                "• 💤 Перевод компьютера в спящий режим\n" +
+                                "• 🔄 Перезагрузка компьютера\n" +
+                                "• 🔴 Удалённое выключение\n\n" +
+                                "💻 Поддерживаемые системы: Windows и macOS.\n\n" +
+                                "🔐 Безопасность:\n" +
+                                "Доступ разрешён только авторизованному пользователю. " +
+                                "Для опасных действий предусмотрено подтверждение.\n\n" +
+                                "🚀 PCRemote — Open Source проект.\n" +
+                                "Исходный код и развитие проекта доступны на GitHub:",
+                                replyMarkup: helpKeyboard,
+                                cancellationToken: stoppingToken);
+
+                            break;
+                        }
 
                         default:
                             await _botClient.SendMessage(
                                 chatId: message.Chat.Id,
-                                text: "Неизвестная команда. Доступные команды: /start, /status, /screenshot, /shutdown, /restart, /sleep",
+                                text: "Неизвестная команда. Используй кнопки меню ниже.",
+                                replyMarkup: CreateMainMenu(),
                                 cancellationToken: stoppingToken);
                             break;
                     }
@@ -529,4 +569,32 @@ public class TelegramBotService : BackgroundService
         long ChatId,
         int MessageId,
         DateTimeOffset ExpiresAt);
+    
+    private static ReplyKeyboardMarkup CreateMainMenu()
+    {
+        return new ReplyKeyboardMarkup(
+            new[]
+            {
+                new KeyboardButton[]
+                {
+                    new("📊 Статус ПК"),
+                    new("📸 Скриншот")
+                },
+                new KeyboardButton[]
+                {
+                    new("💤 Сон"),
+                    new("🔄 Перезагрузка")
+                },
+                new KeyboardButton[]
+                {
+                    new("🔴 Выключение"),
+                    new("ℹ️ Помощь")
+                }
+            })
+        {
+            ResizeKeyboard = true,
+            IsPersistent = true,
+            InputFieldPlaceholder = "Выбери действие..."
+        };
+    }
 }
