@@ -13,13 +13,10 @@ public class WindowsSystemInfoProvider : ISystemInfoProvider
     public async Task<SystemInfo> GetSystemInfoAsync(
         CancellationToken cancellationToken = default)
     {
-        // Версия Windows
         string osVersion = GetWindowsVersion();
 
-        // Модель процессора
         string processor = GetProcessorName();
 
-        // Объём оперативной памяти
         var memoryStatus = new MemoryStatusEx
         {
             Length = (uint)Marshal.SizeOf<MemoryStatusEx>()
@@ -33,11 +30,9 @@ public class WindowsSystemInfoProvider : ISystemInfoProvider
 
         long totalMemory = (long)memoryStatus.TotalPhysical;
 
-        // Информация о видеокарте
         string graphicCard = await GetGraphicCardNameAsync(
             cancellationToken);
 
-        // Свободное место на системном диске
         string systemDrivePath = Path.GetPathRoot(
             Environment.SystemDirectory)!;
 
@@ -105,10 +100,8 @@ public class WindowsSystemInfoProvider : ISystemInfoProvider
             "Get-CimInstance -ClassName Win32_VideoController | " +
             "Select-Object -ExpandProperty Name");
 
-        using var process = new Process
-        {
-            StartInfo = startInfo
-        };
+        using var process = new Process();
+        process.StartInfo = startInfo;
 
         process.Start();
 
