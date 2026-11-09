@@ -270,9 +270,96 @@ public class TelegramBotService : BackgroundService
         TelegramCallbackQuery callbackQuery,
         CancellationToken cancellationToken)
     {
+        if (callbackQuery.From.Id != _settings.AllowedUserId)
+        {
+            await _botClient.AnswerCallbackQuery(
+                callbackQueryId: callbackQuery.Id,
+                text: "У тебя нет доступа.",
+                showAlert: true,
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+
+        if (callbackQuery.Message is null)
+        {
+            return;
+        }
+
+        var chatId = callbackQuery.Message.Chat.Id;
+        var callbackData = callbackQuery.Data;
+
+        if (callbackData == "power_cancel")
+        {
+            await _botClient.AnswerCallbackQuery(
+                callbackQueryId: callbackQuery.Id,
+                text: "Действие отменено.",
+                cancellationToken: cancellationToken);
+
+            await _botClient.SendMessage(
+                chatId: chatId,
+                text: "❌ Действие отменено.",
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+
+        const string prefix = "power_confirm:";
+
+        if (callbackData is null ||
+            !callbackData.StartsWith(prefix))
+        {
+            await _botClient.AnswerCallbackQuery(
+                callbackQueryId: callbackQuery.Id,
+                text: "Неизвестное действие.",
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+
+        var action = callbackData[prefix.Length..];
+
         await _botClient.AnswerCallbackQuery(
             callbackQueryId: callbackQuery.Id,
-            text: "Нажатие получено.",
+            text: "Подтверждение получено.",
             cancellationToken: cancellationToken);
+
+        await ExecutePowerActionAsync(
+            chatId,
+            action,
+            cancellationToken);
+    }
+    
+    private async Task ExecutePowerActionAsync(
+        long chatId,
+        string action,
+        CancellationToken cancellationToken)
+    {
+        await _botClient.SendMessage(
+            chatId: chatId,
+            text: "⏳ Выполняю команду...",
+            cancellationToken: cancellationToken);
+
+        switch (action)
+        {
+            case "shutdown":
+                await _powerManager.ShutdownAsync(cancellationToken);
+                break;
+
+            case "restart":
+                await _powerManager.RestartAsync(cancellationToken);
+                break;
+
+            case "sleep":
+                await _powerManager.SleepAsync(cancellationToken);
+                break;
+
+            default:
+                await _botClient.SendMessage(
+                    chatId: chatId,
+                    text: "Неизвестное действие.",
+                    cancellationToken: cancellationToken);
+                break;
+        }
     }
 }
