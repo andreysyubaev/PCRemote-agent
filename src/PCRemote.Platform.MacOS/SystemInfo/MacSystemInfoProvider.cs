@@ -2,12 +2,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using PCRemote.Core.Interfaces;
+using PCRemote.Core.Models;
 
-namespace PCRemote.Platform.MacOS.SystemInfo;
+namespace PCRemote.Platform.MacOS.SystemInformation;
 
 public class MacSystemInfoProvider : ISystemInfoProvider
 {
-    public async Task<Core.Models.SystemInfo> GetSystemInfoAsync(
+    public async Task<SystemInfo> GetSystemInfoAsync(
         CancellationToken cancellationToken = default)
     {
         // Версия macOS
@@ -47,7 +48,7 @@ public class MacSystemInfoProvider : ISystemInfoProvider
         var systemDisk = new DriveInfo("/");
         long freeDiskSpace = systemDisk.AvailableFreeSpace;
 
-        return new Core.Models.SystemInfo
+        return new SystemInfo
         {
             OperatingSystem = "macOS",
             OSVersion = osVersion,
