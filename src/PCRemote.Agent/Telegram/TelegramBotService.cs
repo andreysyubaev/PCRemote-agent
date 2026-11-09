@@ -1,6 +1,3 @@
-
-using Microsoft.Extensions.Options;
-using PCRemote.Agent.Configuration;
 using PCRemote.Core.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -8,34 +5,38 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TelegramCallbackQuery = Telegram.Bot.Types.CallbackQuery;
 using Telegram.Bot.Exceptions;
 using System.Collections.Concurrent;
+using PCRemote.Agent.Configuration;
+using PCRemote.Core.Interfaces.Storage;
+using Microsoft.Extensions.Options;
 
 namespace PCRemote.Agent.Telegram;
 
 public class TelegramBotService : BackgroundService
 {
     private readonly ILogger<TelegramBotService> _logger;
-    private readonly TelegramBotClient _botClient;
-    private readonly TelegramSettings _settings;
+    private readonly ISecretStore _secretStore;
+    private TelegramBotClient _botClient = null!;
     private readonly ISystemInfoProvider _systemInfoProvider;
     private readonly IScreenshotService _screenshotService;
     private readonly IPowerManager _powerManager;
     private readonly ConcurrentDictionary<string, PendingPowerAction>
         _pendingActions = new();
+    private readonly TelegramSettings _settings;
 
     public TelegramBotService(
         ILogger<TelegramBotService> logger,
+        ISecretStore secretStore,
         IOptions<TelegramSettings> options,
         ISystemInfoProvider systemInfoProvider,
         IScreenshotService screenshotService,
         IPowerManager powerManager)
     {
         _logger = logger;
+        _secretStore = secretStore;
         _settings = options.Value;
         _systemInfoProvider = systemInfoProvider;
         _screenshotService = screenshotService;
         _powerManager = powerManager;
-
-        _botClient = new TelegramBotClient(_settings.BotToken);
     }
 
     protected override async Task ExecuteAsync(
@@ -43,6 +44,20 @@ public class TelegramBotService : BackgroundService
     {
         int offset = 0;
         bool isConnected = false;
+        
+        var botToken = await _secretStore.GetSecretAsync(
+            SecretKeys.TelegramBotToken,
+            stoppingToken);
+
+        if (string.IsNullOrWhiteSpace(botToken))
+        {
+            _logger.LogError(
+                "Telegram bot token was not found in secure storage.");
+
+            return;
+        }
+
+        _botClient = new TelegramBotClient(botToken);
 
         while (!stoppingToken.IsCancellationRequested)
         {
