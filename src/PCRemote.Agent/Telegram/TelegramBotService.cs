@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using PCRemote.Agent.Configuration;
 using PCRemote.Core.Interfaces.Storage;
 using Microsoft.Extensions.Options;
+using System.Security.Cryptography;
 
 namespace PCRemote.Agent.Telegram;
 
@@ -22,6 +23,11 @@ public class TelegramBotService : BackgroundService
     private readonly ConcurrentDictionary<string, PendingPowerAction>
         _pendingActions = new();
     private readonly TelegramSettings _settings;
+    private long? _allowedUserId;
+    private string? _pairingCode;
+    private DateTimeOffset _pairingCodeExpiresAt;
+    private static readonly TimeSpan PairingCodeLifetime =
+        TimeSpan.FromMinutes(5);
 
     public TelegramBotService(
         ILogger<TelegramBotService> logger,
@@ -58,6 +64,32 @@ public class TelegramBotService : BackgroundService
         }
 
         _botClient = new TelegramBotClient(botToken);
+
+        var storedUserId = await _secretStore.GetSecretAsync(
+            SecretKeys.TelegramAllowedUserId,
+            stoppingToken);
+
+        if (long.TryParse(storedUserId, out var savedUserId) &&
+            savedUserId > 0)
+        {
+            _allowedUserId = savedUserId;
+        }
+        else
+        {
+            _pairingCode = RandomNumberGenerator
+                .GetInt32(100000, 1000000)
+                .ToString();
+
+            _pairingCodeExpiresAt = DateTimeOffset.UtcNow
+                .Add(PairingCodeLifetime);
+
+            Console.WriteLine();
+            Console.WriteLine("=== PCRemote Pairing ===");
+            Console.WriteLine($"Your pairing code: {_pairingCode}");
+            Console.WriteLine("Send /pair CODE to your Telegram bot.");
+            Console.WriteLine("The code expires in 5 minutes.");
+            Console.WriteLine();
+        }
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -100,7 +132,29 @@ public class TelegramBotService : BackgroundService
                         continue;
                     }
 
-                    if (message.From?.Id != _settings.AllowedUserId)
+                    var command = message.Text.Trim();
+
+                    if (_allowedUserId is null)
+                    {
+                        if (command.StartsWith("/pair ", StringComparison.OrdinalIgnoreCase))
+                        {
+                            await HandlePairCommandAsync(message, command, stoppingToken);
+                        }
+                        else
+                        {
+                            await _botClient.SendMessage(
+                                chatId: message.Chat.Id,
+                                text: "🔐 PCRemote ещё не привязан.\n\nОтправь /pair КОД для подключения.",
+                                replyMarkup: new ReplyKeyboardRemove(),
+                                cancellationToken: stoppingToken);
+                            
+                        }
+
+                        offset = update.Id + 1;
+                        continue;
+                    }
+
+                    if (message.From?.Id != _allowedUserId)
                     {
                         _logger.LogWarning(
                             "Unauthorized Telegram user attempted access: {UserId}",
@@ -109,8 +163,6 @@ public class TelegramBotService : BackgroundService
                         offset = update.Id + 1;
                         continue;
                     }
-
-                    var command = message.Text.Trim();
 
                     switch (command)
                     {
@@ -243,7 +295,7 @@ public class TelegramBotService : BackgroundService
             }
         }
     }
-
+    
     private async Task SendSystemInfoAsync(
         long chatId,
         CancellationToken cancellationToken)
@@ -341,7 +393,6 @@ public class TelegramBotService : BackgroundService
     {
         var confirmationId = Guid.NewGuid().ToString("N");
         
-        // Удаляем предыдущие неподтверждённые действия в этом чате.
         foreach (var entry in _pendingActions.ToArray())
         {
             if (entry.Value.ChatId != chatId)
@@ -397,8 +448,8 @@ public class TelegramBotService : BackgroundService
     TelegramCallbackQuery callbackQuery,
     CancellationToken cancellationToken)
 {
-    // Проверяем, что кнопку нажал разрешённый пользователь.
-    if (callbackQuery.From.Id != _settings.AllowedUserId)
+    if (_allowedUserId is null ||
+        callbackQuery.From.Id != _allowedUserId.Value)
     {
         await _botClient.AnswerCallbackQuery(
             callbackQueryId: callbackQuery.Id,
@@ -481,7 +532,6 @@ public class TelegramBotService : BackgroundService
         return;
     }
 
-    // Удаляем запись, чтобы кнопку нельзя было использовать повторно.
     if (!_pendingActions.TryRemove(
             confirmationId, out var confirmedAction))
     {
@@ -577,6 +627,61 @@ public class TelegramBotService : BackgroundService
                 text: "❌ Не удалось выполнить действие. Проверь состояние компьютера.",
                 cancellationToken: cancellationToken);
         }
+    }
+    
+    private async Task HandlePairCommandAsync(
+        Message message,
+        string command,
+        CancellationToken cancellationToken)
+    {
+        if (_pairingCode is null ||
+            DateTimeOffset.UtcNow > _pairingCodeExpiresAt)
+        {
+            await _botClient.SendMessage(
+                chatId: message.Chat.Id,
+                text: "🔐 PCRemote ещё не привязан.\n\nОтправь /pair КОД для подключения.",
+                replyMarkup: new ReplyKeyboardRemove());
+
+            return;
+        }
+
+        var parts = command.Split(
+            ' ',
+            StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length != 2 ||
+            !string.Equals(parts[1], _pairingCode, StringComparison.Ordinal))
+        {
+            await _botClient.SendMessage(
+                chatId: message.Chat.Id,
+                text: "❌ Неверный код привязки.",
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+
+        var userId = message.From?.Id;
+
+        if (userId is null)
+            return;
+
+        await _secretStore.SetSecretAsync(
+            SecretKeys.TelegramAllowedUserId,
+            userId.Value.ToString(),
+            cancellationToken);
+
+        _allowedUserId = userId.Value;
+        _pairingCode = null;
+
+        await _botClient.SendMessage(
+            chatId: message.Chat.Id,
+            text: "✅ PCRemote успешно привязан! Теперь ты можешь управлять компьютером.",
+            replyMarkup: CreateMainMenu(),
+            cancellationToken: cancellationToken);
+
+        _logger.LogInformation(
+            "PCRemote successfully paired with Telegram user {UserId}.",
+            userId.Value);
     }
     
     private record PendingPowerAction(

@@ -1,4 +1,6 @@
 using PCRemote.Core.Interfaces.Storage;
+using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 
 namespace PCRemote.Agent.Configuration;
 
@@ -29,21 +31,39 @@ public class TelegramSetupService
 
         Console.WriteLine("=== PCRemote Setup ===");
         Console.WriteLine("Create your Telegram bot using @BotFather.");
-        Console.Write("Enter your Telegram bot token: ");
 
-        var token = Console.ReadLine()?.Trim();
-
-        if (string.IsNullOrWhiteSpace(token))
+        while (true)
         {
-            throw new InvalidOperationException(
-                "Telegram bot token cannot be empty.");
+            Console.Write("Enter your Telegram bot token: ");
+
+            var token = Console.ReadLine()?.Trim();
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Console.WriteLine("Token cannot be empty. Try again.");
+                continue;
+            }
+
+            var botClient = new TelegramBotClient(token);
+
+            try
+            {
+                var bot = await botClient.GetMe(cancellationToken);
+
+                await _secretStore.SetSecretAsync(
+                    SecretKeys.TelegramBotToken,
+                    token,
+                    cancellationToken);
+
+                Console.WriteLine($"Bot @{bot.Username} connected successfully.");
+                Console.WriteLine("Telegram bot token saved securely.");
+
+                return;
+            }
+            catch (ApiRequestException exception) when (exception.ErrorCode == 401)
+            {
+                Console.WriteLine("Invalid Telegram bot token. Please try again.");
+            }
         }
-
-        await _secretStore.SetSecretAsync(
-            SecretKeys.TelegramBotToken,
-            token,
-            cancellationToken);
-
-        Console.WriteLine("Telegram bot token saved successfully.");
     }
 }
