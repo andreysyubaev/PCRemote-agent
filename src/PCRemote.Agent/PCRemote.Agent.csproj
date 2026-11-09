@@ -13,5 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PCRemote.Core\PCRemote.Core.csproj" />
+    <ProjectReference Include="..\PCRemote.Platform.MacOS\PCRemote.Platform.MacOS.csproj" />
+    <ProjectReference Include="..\PCRemote.Platform.Windows\PCRemote.Platform.Windows.csproj" />
   </ItemGroup>
 </Project>
