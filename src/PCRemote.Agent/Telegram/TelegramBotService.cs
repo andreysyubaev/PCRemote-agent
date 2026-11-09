@@ -64,7 +64,7 @@ public class TelegramBotService : BackgroundService
         }
 
         _botClient = new TelegramBotClient(botToken);
-
+        
         var storedUserId = await _secretStore.GetSecretAsync(
             SecretKeys.TelegramAllowedUserId,
             stoppingToken);
@@ -97,12 +97,15 @@ public class TelegramBotService : BackgroundService
             {
                 if (!isConnected)
                 {
-                    var botInfo = await _botClient.GetMe(
-                        cancellationToken: stoppingToken);
+                    var botInfo = await _botClient.GetMe(cancellationToken: stoppingToken);
 
                     _logger.LogInformation(
                         "Telegram bot connected: @{Username}",
                         botInfo.Username);
+
+                    await RegisterBotCommandsAsync(stoppingToken);
+
+                    _logger.LogInformation("Telegram bot commands registered.");
 
                     isConnected = true;
                 }
@@ -684,6 +687,55 @@ public class TelegramBotService : BackgroundService
             userId.Value);
     }
     
+    private async Task RegisterBotCommandsAsync(
+        CancellationToken cancellationToken)
+    {
+        await _botClient.SetMyCommands(
+            [
+                new BotCommand
+                {
+                    Command = "start",
+                    Description = "Запустить бота и открыть меню"
+                },
+                new BotCommand
+                {
+                    Command = "help",
+                    Description = "Список команд и помощь"
+                },
+                new BotCommand
+                {
+                    Command = "pair",
+                    Description = "Привязать Telegram к компьютеру"
+                },
+                new BotCommand
+                {
+                    Command = "status",
+                    Description = "Информация о компьютере"
+                },
+                new BotCommand
+                {
+                    Command = "screenshot",
+                    Description = "Сделать скриншот экрана"
+                },
+                new BotCommand
+                {
+                    Command = "shutdown",
+                    Description = "Выключить компьютер"
+                },
+                new BotCommand
+                {
+                    Command = "restart",
+                    Description = "Перезагрузить компьютер"
+                },
+                new BotCommand
+                {
+                    Command = "sleep",
+                    Description = "Перевести компьютер в сон"
+                }
+            ],
+            cancellationToken: cancellationToken);
+    }
+    
     private record PendingPowerAction(
         string Action,
         long ChatId,
@@ -717,4 +769,6 @@ public class TelegramBotService : BackgroundService
             InputFieldPlaceholder = "Выбери действие..."
         };
     }
+    
+    
 }
