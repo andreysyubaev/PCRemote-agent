@@ -33,10 +33,8 @@ public class WindowsPowerManager : IPowerManager
             false);
 
         if (!success)
-        {
             throw new InvalidOperationException(
                 "Failed to put Windows into sleep mode.");
-        }
 
         return Task.CompletedTask;
     }
@@ -59,10 +57,8 @@ public class WindowsPowerManager : IPowerManager
         startInfo.ArgumentList.Add(secondArgument);
         startInfo.ArgumentList.Add(thirdArgument);
 
-        using var process = new Process
-        {
-            StartInfo = startInfo
-        };
+        using var process = new Process();
+        process.StartInfo = startInfo;
 
         process.Start();
 
@@ -72,10 +68,8 @@ public class WindowsPowerManager : IPowerManager
         await process.WaitForExitAsync(cancellationToken);
 
         if (process.ExitCode != 0)
-        {
             throw new InvalidOperationException(
                 $"Windows power command failed: {error}");
-        }
     }
 
     [DllImport("powrprof.dll", SetLastError = true)]
