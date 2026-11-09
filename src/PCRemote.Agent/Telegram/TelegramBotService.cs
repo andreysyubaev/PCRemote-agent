@@ -6,6 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramCallbackQuery = Telegram.Bot.Types.CallbackQuery;
+using Telegram.Bot.Exceptions;
 
 namespace PCRemote.Agent.Telegram;
 
@@ -37,19 +38,25 @@ public class TelegramBotService : BackgroundService
     protected override async Task ExecuteAsync(
         CancellationToken stoppingToken)
     {
-        try
+        int offset = 0;
+        bool isConnected = false;
+
+        while (!stoppingToken.IsCancellationRequested)
         {
-            var botInfo = await _botClient.GetMe(
-                cancellationToken: stoppingToken);
-
-            _logger.LogInformation(
-                "Telegram bot connected: @{Username}",
-                botInfo.Username);
-
-            int offset = 0;
-
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
+                if (!isConnected)
+                {
+                    var botInfo = await _botClient.GetMe(
+                        cancellationToken: stoppingToken);
+
+                    _logger.LogInformation(
+                        "Telegram bot connected: @{Username}",
+                        botInfo.Username);
+
+                    isConnected = true;
+                }
+
                 var updates = await _botClient.GetUpdates(
                     offset: offset,
                     timeout: 30,
@@ -57,21 +64,21 @@ public class TelegramBotService : BackgroundService
 
                 foreach (var update in updates)
                 {
-                    offset = update.Id + 1;
-
-                    var message = update.Message;
-                    
                     if (update.CallbackQuery is not null)
                     {
                         await HandleCallbackQueryAsync(
                             update.CallbackQuery,
                             stoppingToken);
 
+                        offset = update.Id + 1;
                         continue;
                     }
 
+                    var message = update.Message;
+
                     if (message?.Text is null)
                     {
+                        offset = update.Id + 1;
                         continue;
                     }
 
@@ -81,6 +88,7 @@ public class TelegramBotService : BackgroundService
                             "Unauthorized Telegram user attempted access: {UserId}",
                             message.From?.Id);
 
+                        offset = update.Id + 1;
                         continue;
                     }
 
@@ -100,13 +108,13 @@ public class TelegramBotService : BackgroundService
                                 message.Chat.Id,
                                 stoppingToken);
                             break;
-                        
+
                         case "/screenshot":
                             await SendScreenshotAsync(
                                 message.Chat.Id,
                                 stoppingToken);
                             break;
-                        
+
                         case "/shutdown":
                             await SendPowerConfirmationAsync(
                                 message.Chat.Id,
@@ -138,14 +146,43 @@ public class TelegramBotService : BackgroundService
                                 cancellationToken: stoppingToken);
                             break;
                     }
+
+                    offset = update.Id + 1;
                 }
             }
-        }
-        catch (OperationCanceledException)
-            when (stoppingToken.IsCancellationRequested)
-        {
-            _logger.LogInformation(
-                "Telegram bot service is stopping.");
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
+            {
+                _logger.LogInformation(
+                    "Telegram bot service is stopping.");
+
+                break;
+            }
+            catch (RequestException exception)
+                when (exception.InnerException is HttpRequestException)
+            {
+                isConnected = false;
+
+                _logger.LogWarning(
+                    exception,
+                    "Telegram connection lost. Retrying in 5 seconds...");
+            }
+            catch (ApiRequestException exception)
+                when (exception.ErrorCode == 429 || exception.ErrorCode >= 500)
+            {
+                isConnected = false;
+
+                _logger.LogWarning(
+                    exception,
+                    "Telegram API temporarily unavailable. Retrying in 5 seconds...");
+            }
+
+            if (!stoppingToken.IsCancellationRequested && !isConnected)
+            {
+                await Task.Delay(
+                    TimeSpan.FromSeconds(5),
+                    stoppingToken);
+            }
         }
     }
 
