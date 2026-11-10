@@ -9,6 +9,7 @@ using PCRemote.Agent.Configuration;
 using PCRemote.Core.Interfaces.Storage;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
+using PCRemote.Core.Models;
 
 namespace PCRemote.Agent.Telegram;
 
@@ -28,6 +29,7 @@ public class TelegramBotService : BackgroundService
     private DateTimeOffset _pairingCodeExpiresAt;
     private static readonly TimeSpan PairingCodeLifetime =
         TimeSpan.FromMinutes(5);
+    private readonly AgentStatus _agentStatus;
 
     public TelegramBotService(
         ILogger<TelegramBotService> logger,
@@ -35,7 +37,8 @@ public class TelegramBotService : BackgroundService
         IOptions<TelegramSettings> options,
         ISystemInfoProvider systemInfoProvider,
         IScreenshotService screenshotService,
-        IPowerManager powerManager)
+        IPowerManager powerManager,
+        AgentStatus agentStatus)
     {
         _logger = logger;
         _secretStore = secretStore;
@@ -43,6 +46,7 @@ public class TelegramBotService : BackgroundService
         _systemInfoProvider = systemInfoProvider;
         _screenshotService = screenshotService;
         _powerManager = powerManager;
+        _agentStatus = agentStatus;
     }
 
     protected override async Task ExecuteAsync(
@@ -82,6 +86,10 @@ public class TelegramBotService : BackgroundService
 
             _pairingCodeExpiresAt = DateTimeOffset.UtcNow
                 .Add(PairingCodeLifetime);
+            
+            _agentStatus.PairingCode = _pairingCode;
+            _agentStatus.PairingCodeExpiresAt = _pairingCodeExpiresAt;
+            _agentStatus.IsRunning = true;
 
             Console.WriteLine();
             Console.WriteLine("=== PCRemote Pairing ===");
@@ -102,6 +110,9 @@ public class TelegramBotService : BackgroundService
                     _logger.LogInformation(
                         "Telegram bot connected: @{Username}",
                         botInfo.Username);
+                    
+                    _agentStatus.BotUsername = botInfo.Username;
+                    _agentStatus.IsTelegramConnected = true;
 
                     await RegisterBotCommandsAsync(stoppingToken);
 
@@ -275,6 +286,7 @@ public class TelegramBotService : BackgroundService
                 when (exception.InnerException is HttpRequestException)
             {
                 isConnected = false;
+                _agentStatus.IsTelegramConnected = false;
 
                 _logger.LogWarning(
                     exception,
@@ -284,6 +296,7 @@ public class TelegramBotService : BackgroundService
                 when (exception.ErrorCode == 429 || exception.ErrorCode >= 500)
             {
                 isConnected = false;
+                _agentStatus.IsTelegramConnected = false;
 
                 _logger.LogWarning(
                     exception,
@@ -675,6 +688,8 @@ public class TelegramBotService : BackgroundService
 
         _allowedUserId = userId.Value;
         _pairingCode = null;
+        _agentStatus.PairingCode = null;
+        _agentStatus.PairingCodeExpiresAt = null;
 
         await _botClient.SendMessage(
             chatId: message.Chat.Id,

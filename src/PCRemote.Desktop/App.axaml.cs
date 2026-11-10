@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using PCRemote.Agent;
 using PCRemote.Agent.Configuration;
 using PCRemote.Agent.Runtime;
+using PCRemote.Core.Models;
 using PCRemote.Desktop.ViewModels;
 using PCRemote.Desktop.Views;
 
@@ -32,7 +33,9 @@ public partial class App : Application
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainViewModel(
-                    _host.Services.GetRequiredService<TelegramSetupService>()),
+                    _host.Services.GetRequiredService<TelegramSetupService>(),
+                    _agentRuntime,
+                    _host.Services.GetRequiredService<AgentStatus>()),
             };
 
             desktop.Exit += OnDesktopExit;

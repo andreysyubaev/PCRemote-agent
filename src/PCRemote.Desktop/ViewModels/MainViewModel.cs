@@ -3,17 +3,27 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PCRemote.Agent.Configuration;
+using PCRemote.Agent.Runtime;
+using PCRemote.Core.Models;
 
 namespace PCRemote.Desktop.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
     private readonly TelegramSetupService _telegramSetupService;
+    private readonly AgentRuntime _agentRuntime;
 
-    public MainViewModel(TelegramSetupService telegramSetupService)
+    public MainViewModel(
+        TelegramSetupService telegramSetupService,
+        AgentRuntime agentRuntime,
+        AgentStatus agentStatus)
     {
         _telegramSetupService = telegramSetupService;
+        _agentRuntime = agentRuntime;
+        AgentStatus = agentStatus;
     }
+    
+    public AgentStatus AgentStatus { get; }
 
     [ObservableProperty]
     public partial string BotToken { get; set; } = string.Empty;
@@ -26,7 +36,7 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
-
+    
     [RelayCommand]
     private async Task ConnectTelegramAsync()
     {
@@ -42,6 +52,7 @@ public partial class MainViewModel : ViewModelBase
             StatusMessage = "Connecting to Telegram...";
 
             BotUsername = await _telegramSetupService.SetupAsync(BotToken);
+            await _agentRuntime.StartAsync();
 
             BotToken = string.Empty;
             StatusMessage = $"Connected to @{BotUsername}. Token saved.";

@@ -2,6 +2,7 @@ using PCRemote.Agent.DependencyInjection;
 using PCRemote.Agent.Configuration;
 using PCRemote.Agent.Telegram;
 using PCRemote.Agent.Runtime;
+using PCRemote.Core.Models;
 
 namespace PCRemote.Agent;
 
@@ -22,6 +23,7 @@ public static class AgentHost
         builder.Services.AddSingleton<TelegramBotService>();
         
         builder.Services.AddSingleton<AgentRuntime>();
+        builder.Services.AddSingleton<AgentStatus>();
 
         return builder.Build();
     }
