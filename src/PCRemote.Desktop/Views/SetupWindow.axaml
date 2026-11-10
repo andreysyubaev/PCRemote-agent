@@ -1,0 +1,58 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PCRemote.Desktop.ViewModels"
+        x:Class="PCRemote.Desktop.Views.SetupWindow"
+        x:DataType="vm:SetupViewModel"
+        Title="PCRemote Setup"
+        Width="520"
+        Height="420"
+        MinWidth="460"
+        MinHeight="380"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource AppBackground}">
+
+    <Grid Background="{DynamicResource AppBackground}">
+        <Border Background="{DynamicResource SurfaceBackground}"
+                Padding="28"
+                CornerRadius="12"
+                Width="416"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+
+            <StackPanel Spacing="14">
+
+                <TextBlock Text="PCRemote"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Text="Connect your Telegram bot"
+                           FontSize="16"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,12"/>
+
+                <TextBox Text="{Binding BotToken}"
+                         PlaceholderText="Enter Telegram bot token"
+                         PasswordChar="●"/>
+
+                <Button Content="Connect"
+                        Command="{Binding ConnectTelegramCommand}"
+                        IsEnabled="{Binding !IsBusy}"
+                        HorizontalAlignment="Stretch"/>
+
+                <TextBlock Text="{Binding StatusMessage}"
+                           TextWrapping="Wrap"
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0"/>
+
+            </StackPanel>
+        </Border>
+
+        <Button Content="Toggle theme"
+                Click="ToggleTheme_Click"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="16"/>
+    </Grid>
+</Window>

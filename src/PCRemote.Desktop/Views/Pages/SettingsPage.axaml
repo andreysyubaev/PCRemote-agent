@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
+             x:Class="PCRemote.Desktop.Views.Pages.SettingsPage"
+             x:DataType="vm:SettingsPageViewModel">
+
+    <StackPanel Spacing="20">
+
+        <TextBlock Text="Settings"
+                   FontSize="28"
+                   FontWeight="Bold"/>
+
+        <Border Background="{DynamicResource SurfaceBackground}"
+                BorderBrush="{DynamicResource Border}"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="20">
+
+            <StackPanel Spacing="16">
+
+                <TextBlock Text="Appearance"
+                           FontSize="18"
+                           FontWeight="SemiBold"/>
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Dark theme"
+                                   FontWeight="Medium"/>
+
+                        <TextBlock Text="Use a dark color scheme throughout the application."
+                                   Foreground="{DynamicResource SecondaryText}"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <ToggleSwitch Grid.Column="1"
+                                  IsChecked="{Binding IsDarkTheme}"
+                                  VerticalAlignment="Center"/>
+
+                </Grid>
+
+            </StackPanel>
+        </Border>
+
+    </StackPanel>
+
+</UserControl>

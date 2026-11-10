@@ -13,6 +13,7 @@ using PCRemote.Desktop.Views;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Linq;
+using PCRemote.Desktop.ViewModels.Pages;
 
 namespace PCRemote.Desktop;
 
@@ -37,10 +38,15 @@ public partial class App : Application
 
             _agentRuntime = _host.Services.GetRequiredService<AgentRuntime>();
 
-            _mainViewModel = new MainViewModel(
-                _host.Services.GetRequiredService<TelegramSetupService>(),
+            var homePage = new HomePageViewModel(
                 _agentRuntime,
                 _host.Services.GetRequiredService<AgentStatus>());
+
+            var settingsPage = new SettingsPageViewModel();
+
+            _mainViewModel = new MainViewModel(
+                homePage,
+                settingsPage);
             
             var trayIcon = TrayIcon.GetIcons(this)?.FirstOrDefault();
             var trayMenu = trayIcon?.Menu;
@@ -53,7 +59,7 @@ public partial class App : Application
                 .OfType<NativeMenuItem>()
                 .FirstOrDefault(item => item.Header == "Stop Agent");
             
-            _mainViewModel.AgentStatus.PropertyChanged += (_, args) =>
+            _mainViewModel.HomePage.AgentStatus.PropertyChanged += (_, args) =>
             {
                 if (args.PropertyName == nameof(AgentStatus.IsRunning))
                 {
@@ -79,7 +85,7 @@ public partial class App : Application
                 };
             }
 
-            desktop.MainWindow.Opened += async (_, _) => { await _mainViewModel.InitializeAsync(); };
+            //desktop.MainWindow.Opened += async (_, _) => { await _mainViewModel.InitializeAsync(); };
 
             desktop.Exit += OnDesktopExit;
         }
@@ -103,7 +109,7 @@ public partial class App : Application
         if (_mainViewModel is null)
             return;
 
-        await _mainViewModel.StartAgentCommand.ExecuteAsync(null);
+        await _mainViewModel.HomePage.StartAgentCommand.ExecuteAsync(null);
     }
 
     private async void StopAgent_Click(object? sender, EventArgs e)
@@ -111,7 +117,7 @@ public partial class App : Application
         if (_mainViewModel is null)
             return;
 
-        await _mainViewModel.StopAgentCommand.ExecuteAsync(null);
+        await _mainViewModel.HomePage.StopAgentCommand.ExecuteAsync(null);
     }
 
     private async void OnDesktopExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
@@ -133,7 +139,7 @@ public partial class App : Application
         if (_mainViewModel is null)
             return;
 
-        var isRunning = _mainViewModel.AgentStatus.IsRunning;
+        var isRunning = _mainViewModel.HomePage.AgentStatus.IsRunning;
 
         if (_startAgentMenuItem is not null)
             _startAgentMenuItem.IsEnabled = !isRunning;

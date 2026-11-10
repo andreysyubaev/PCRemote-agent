@@ -1,233 +1,59 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PCRemote.Desktop.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        d:DesignWidth="520"
-        d:DesignHeight="620"
+        xmlns:pages="using:PCRemote.Desktop.Views.Pages"
+        xmlns:pagesVm="using:PCRemote.Desktop.ViewModels.Pages"
         x:Class="PCRemote.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="PCRemote"
-        Width="520"
-        Height="620"
-        MinWidth="460"
-        MinHeight="540"
-        CanResize="False"
+        Width="1000"
+        Height="650"
+        MinWidth="800"
+        MinHeight="500"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource AppBackground}">
-    
-    <Grid Background="{DynamicResource AppBackground}">
-        <Border IsVisible="{Binding IsSetupRequired}"
-                Background="{DynamicResource SurfaceBackground}"
-                Padding="28"
-                CornerRadius="12"
-                Width="416"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
 
-            <StackPanel Spacing="14">
+    <Window.DataTemplates>
+        <DataTemplate DataType="pagesVm:HomePageViewModel">
+            <pages:HomePage/>
+        </DataTemplate>
+
+        <DataTemplate DataType="pagesVm:SettingsPageViewModel">
+            <pages:SettingsPage/>
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <Grid ColumnDefinitions="220,*">
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource SurfaceBackground}"
+                BorderBrush="{DynamicResource Border}"
+                BorderThickness="0,0,1,0"
+                Padding="16">
+
+            <StackPanel Spacing="12">
 
                 <TextBlock Text="PCRemote"
-                           FontSize="30"
+                           FontSize="24"
                            FontWeight="Bold"
-                           HorizontalAlignment="Center"/>
+                           Margin="4,8,4,24"/>
 
-                <TextBlock Text="Connect your Telegram bot"
-                           FontSize="16"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,12"/>
-
-                <TextBox Text="{Binding BotToken}"
-                         PlaceholderText="Enter Telegram bot token"
-                         PasswordChar="●"/>
-
-                <Button Content="Connect"
-                        Command="{Binding ConnectTelegramCommand}"
-                        IsEnabled="{Binding !IsBusy}"
+                <Button Content="Home"
+                        Command="{Binding NavigateHomeCommand}"
                         HorizontalAlignment="Stretch"/>
 
-                <TextBlock Text="{Binding StatusMessage}"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,0"/>
+                <Button Content="Settings"
+                        Command="{Binding NavigateSettingsCommand}"
+                        HorizontalAlignment="Stretch"/>
 
             </StackPanel>
         </Border>
-        
-        <Border IsVisible="{Binding !IsSetupRequired}"
-                Background="{DynamicResource SurfaceBackground}"
-                Padding="28"
-                CornerRadius="12"
-                Width="440"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
 
-            <StackPanel Spacing="16">
+        <!-- Page content -->
+        <ContentControl Grid.Column="1"
+                        Content="{Binding CurrentPage}"
+                        Margin="24"/>
 
-                <TextBlock Text="PCRemote"
-                           FontSize="30"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"/>
-
-                <TextBlock Text="Computer agent"
-                           FontSize="16"
-                           HorizontalAlignment="Center"/>
-
-                <Separator/>
-
-                <TextBlock Text="{Binding AgentStatus.BotUsername,
-                                  StringFormat='Telegram bot: @{0}'}"/>
-               
-                <!-- Agent status -->
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Border Width="9"
-                            Height="9"
-                            CornerRadius="5"
-                            Background="{DynamicResource Success}"
-                            IsVisible="{Binding AgentStatus.IsRunning}"
-                            VerticalAlignment="Center"/>
-
-                    <Border Width="9"
-                            Height="9"
-                            CornerRadius="5"
-                            Background="{DynamicResource SecondaryText}"
-                            IsVisible="{Binding !AgentStatus.IsRunning}"
-                            VerticalAlignment="Center"/>
-
-                    <TextBlock Text="Agent running"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding AgentStatus.IsRunning}"/>
-
-                    <TextBlock Text="Agent stopped"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding !AgentStatus.IsRunning}"/>
-                </StackPanel>
-
-                <!-- Telegram connection status -->
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Border Width="9"
-                            Height="9"
-                            CornerRadius="5"
-                            Background="{DynamicResource Success}"
-                            IsVisible="{Binding AgentStatus.IsTelegramConnected}"
-                            VerticalAlignment="Center"/>
-
-                    <Border Width="9"
-                            Height="9"
-                            CornerRadius="5"
-                            Background="{DynamicResource SecondaryText}"
-                            IsVisible="{Binding !AgentStatus.IsTelegramConnected}"
-                            VerticalAlignment="Center"/>
-
-                    <TextBlock Text="Telegram connected"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding AgentStatus.IsTelegramConnected}"/>
-
-                    <TextBlock Text="Telegram disconnected"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding !AgentStatus.IsTelegramConnected}"/>
-                </StackPanel>
-                
-                <!-- Telegram pairing status -->
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Border Width="9"
-                            Height="9"
-                            CornerRadius="5"
-                            Background="{DynamicResource Success}"
-                            IsVisible="{Binding AgentStatus.IsPaired}"
-                            VerticalAlignment="Center"/>
-
-                    <Border Width="9"
-                            Height="9"
-                            CornerRadius="5"
-                            Background="{DynamicResource SecondaryText}"
-                            IsVisible="{Binding !AgentStatus.IsPaired}"
-                            VerticalAlignment="Center"/>
-
-                    <TextBlock Text="Telegram paired"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding AgentStatus.IsPaired}"/>
-
-                    <TextBlock Text="Telegram not paired"
-                               VerticalAlignment="Center"
-                               IsVisible="{Binding !AgentStatus.IsPaired}"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal"
-                            Spacing="10"
-                            HorizontalAlignment="Center">
-                    <Button Content="Start Agent"
-                            Command="{Binding StartAgentCommand}"
-                            IsEnabled="{Binding CanStartAgent}"/>
-
-                    <Button Content="Stop Agent"
-                            Command="{Binding StopAgentCommand}"
-                            IsEnabled="{Binding CanStopAgent}"/>
-                </StackPanel>
-
-                <Separator/>
-
-                <Border Background="{DynamicResource AppBackground}"
-                        CornerRadius="10"
-                        Padding="18"
-                        IsVisible="{Binding !AgentStatus.IsPaired}">
-
-                    <StackPanel Spacing="10"
-                                HorizontalAlignment="Center">
-
-                        <TextBlock Text="TELEGRAM PAIRING"
-                                   FontSize="11"
-                                   FontWeight="Bold"
-                                   Foreground="{DynamicResource SecondaryText}"
-                                   HorizontalAlignment="Center"/>
-
-                        <TextBlock Text="{Binding AgentStatus.PairingCode}"
-                                   FontSize="32"
-                                   FontWeight="Bold"
-                                   LetterSpacing="5"
-                                   HorizontalAlignment="Center"/>
-                        
-                        <StackPanel Spacing="4"
-                                    HorizontalAlignment="Center"
-                                    Margin="0,8,0,0">
-
-                            <TextBlock Text="{Binding RemainingPairingTime}"
-                                       FontSize="18"
-                                       FontWeight="SemiBold"
-                                       HorizontalAlignment="Center"/>
-
-                            <TextBlock Text="Code refreshes in 5 minutes"
-                                       FontSize="11"
-                                       Foreground="{DynamicResource SecondaryText}"
-                                       HorizontalAlignment="Center"/>
-                        </StackPanel>
-                        
-                        <Button Content="Copy code"
-                                Click="CopyPairingCode_Click"
-                                HorizontalAlignment="Center"/>
-
-                        <TextBlock Text="Enter this code in your Telegram bot"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource SecondaryText}"
-                                   HorizontalAlignment="Center"/>
-
-                    </StackPanel>
-                </Border>
-
-                <TextBlock Text="{Binding StatusMessage}"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,0"/>
-
-            </StackPanel>
-        </Border>
-        
-        <Button Content="Toggle theme"
-                Click="ToggleTheme_Click"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="16"/>
     </Grid>
-
 </Window>
