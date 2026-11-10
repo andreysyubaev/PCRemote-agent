@@ -4,44 +4,108 @@
              x:Class="PCRemote.Desktop.Views.Pages.SettingsPage"
              x:DataType="vm:SettingsPageViewModel">
 
-    <StackPanel Spacing="20">
+    <ScrollViewer>
+        <StackPanel Spacing="20">
 
-        <TextBlock Text="Settings"
-                   FontSize="28"
-                   FontWeight="Bold"/>
+            <TextBlock Text="Settings"
+                       FontSize="28"
+                       FontWeight="Bold"/>
 
-        <Border Background="{DynamicResource SurfaceBackground}"
-                BorderBrush="{DynamicResource Border}"
-                BorderThickness="1"
-                CornerRadius="12"
-                Padding="20">
+            <!-- Appearance -->
+            <Border Background="{DynamicResource SurfaceBackground}"
+                    BorderBrush="{DynamicResource Border}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="20">
 
-            <StackPanel Spacing="16">
+                <StackPanel Spacing="16">
 
-                <TextBlock Text="Appearance"
-                           FontSize="18"
-                           FontWeight="SemiBold"/>
+                    <TextBlock Text="Appearance"
+                               FontSize="18"
+                               FontWeight="SemiBold"/>
 
-                <Grid ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto">
 
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Dark theme"
-                                   FontWeight="Medium"/>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Dark theme"
+                                       FontWeight="Medium"/>
 
-                        <TextBlock Text="Use a dark color scheme throughout the application."
-                                   Foreground="{DynamicResource SecondaryText}"
-                                   TextWrapping="Wrap"/>
-                    </StackPanel>
+                            <TextBlock Text="Use a dark color scheme throughout the application."
+                                       Foreground="{DynamicResource SecondaryText}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
 
-                    <ToggleSwitch Grid.Column="1"
-                                  IsChecked="{Binding IsDarkTheme}"
-                                  VerticalAlignment="Center"/>
+                        <ToggleSwitch Grid.Column="1"
+                                      IsChecked="{Binding IsDarkTheme}"
+                                      VerticalAlignment="Center"/>
 
-                </Grid>
+                    </Grid>
 
-            </StackPanel>
-        </Border>
+                </StackPanel>
+            </Border>
 
-    </StackPanel>
+            <!-- Telegram -->
+            <Border Background="{DynamicResource SurfaceBackground}"
+                    BorderBrush="{DynamicResource Border}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="20">
+
+                <StackPanel Spacing="16">
+
+                    <TextBlock Text="Telegram"
+                               FontSize="18"
+                               FontWeight="SemiBold"/>
+
+                    <TextBlock Text="Disconnect the current Telegram bot and remove its saved configuration."
+                               Foreground="{DynamicResource SecondaryText}"
+                               TextWrapping="Wrap"/>
+
+                    <Button Content="Disconnect Telegram Bot"
+                            Command="{Binding ShowDisconnectConfirmationCommand}"
+                            HorizontalAlignment="Left"
+                            IsEnabled="{Binding !IsBusy}"/>
+
+                    <!-- Confirmation -->
+                    <Border Background="{DynamicResource AppBackground}"
+                            CornerRadius="8"
+                            Padding="16"
+                            IsVisible="{Binding IsDisconnectConfirmationVisible}">
+
+                        <StackPanel Spacing="12">
+
+                            <TextBlock Text="Are you sure?"
+                                       FontWeight="SemiBold"
+                                       FontSize="16"/>
+
+                            <TextBlock Text="The agent will stop, and the saved bot token and account pairing will be deleted. You will need to connect a bot again."
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource SecondaryText}"/>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="10">
+
+                                <Button Content="Cancel"
+                                        Command="{Binding CancelDisconnectCommand}"
+                                        IsEnabled="{Binding !IsBusy}"/>
+
+                                <Button Content="Disconnect"
+                                        Command="{Binding ConfirmDisconnectCommand}"
+                                        IsEnabled="{Binding !IsBusy}"/>
+
+                            </StackPanel>
+
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="{Binding StatusMessage}"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource SecondaryText}"/>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 
 </UserControl>

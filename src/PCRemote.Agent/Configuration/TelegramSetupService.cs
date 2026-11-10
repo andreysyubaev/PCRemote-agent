@@ -65,4 +65,19 @@ public class TelegramSetupService
                 exception);
         }
     }
+    
+    public async Task RemoveConfigurationAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _secretStore.DeleteSecretAsync(
+            SecretKeys.TelegramBotToken,
+            cancellationToken);
+
+        await _secretStore.DeleteSecretAsync(
+            SecretKeys.TelegramAllowedUserId,
+            cancellationToken);
+
+        _logger.LogInformation(
+            "Telegram bot configuration removed.");
+    }
 }

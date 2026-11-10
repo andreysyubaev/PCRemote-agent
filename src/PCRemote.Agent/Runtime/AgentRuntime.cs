@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using PCRemote.Agent.Telegram;
 using PCRemote.Core.Models;
-
 namespace PCRemote.Agent.Runtime;
 
 public class AgentRuntime
