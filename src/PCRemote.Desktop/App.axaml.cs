@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -9,6 +10,7 @@ using PCRemote.Agent.Runtime;
 using PCRemote.Core.Models;
 using PCRemote.Desktop.ViewModels;
 using PCRemote.Desktop.Views;
+using Avalonia.Controls;
 
 namespace PCRemote.Desktop;
 
@@ -39,7 +41,18 @@ public partial class App : Application
             {
                 DataContext = mainViewModel,
             };
-
+            
+            if (TryGetFeature(typeof(IActivatableLifetime)) is IActivatableLifetime activatableLifetime)
+            {
+                activatableLifetime.Activated += (_, args) =>
+                {
+                    if (args.Kind == ActivationKind.Reopen)
+                    {
+                        OpenPCRemote_Click(this, EventArgs.Empty);
+                    }
+                };
+            }
+            
             desktop.MainWindow.Opened += async (_, _) =>
             {
                 await mainViewModel.InitializeAsync();
@@ -49,6 +62,17 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    private void OpenPCRemote_Click(object? sender, EventArgs e)
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+            desktop.MainWindow is { } mainWindow)
+        {
+            mainWindow.Show();
+            mainWindow.WindowState = WindowState.Normal;
+            mainWindow.Activate();
+        }
     }
 
     private async void OnDesktopExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
@@ -64,4 +88,6 @@ public partial class App : Application
             _host.Dispose();
         }
     }
+    
+    
 }

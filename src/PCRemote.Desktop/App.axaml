@@ -3,7 +3,7 @@
              x:Class="PCRemote.Desktop.App"
              xmlns:local="using:PCRemote.Desktop"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator />
@@ -11,6 +11,38 @@
 
     <Application.Styles>
         <FluentTheme />
-        <StyleInclude Source="avares://PCRemote.Desktop/Styles/Styles.axaml"/>
+        <StyleInclude Source="avares://PCRemote.Desktop/Styles/Styles.axaml" />
     </Application.Styles>
+
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/avalonia-logo.ico"
+                      ToolTipText="PCRemote">
+
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Header="PCRemote"
+                                        IsEnabled="False" />
+
+                        <NativeMenuItemSeparator />
+
+                        <NativeMenuItem Header="Open PCRemote"
+                                        Click="OpenPCRemote_Click"/>
+
+                        <NativeMenuItem Header="Start Agent"
+                                        IsEnabled="False" />
+
+                        <NativeMenuItem Header="Stop Agent"
+                                        IsEnabled="False" />
+
+                        <NativeMenuItemSeparator />
+
+                        <NativeMenuItem Header="Exit"
+                                        IsEnabled="False" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
 </Application>
