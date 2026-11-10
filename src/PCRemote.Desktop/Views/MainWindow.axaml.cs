@@ -1,7 +1,9 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using PCRemote.Desktop.ViewModels;
+using Avalonia.Styling;
 
 namespace PCRemote.Desktop.Views;
 
@@ -43,5 +45,18 @@ public partial class MainWindow : Window
             return;
 
         await clipboard.SetTextAsync(code);
+    }
+    
+    private void ToggleTheme_Click(object? sender, RoutedEventArgs e)
+    {
+        var app = Application.Current;
+
+        if (app is null)
+            return;
+
+        app.RequestedThemeVariant =
+            app.RequestedThemeVariant == ThemeVariant.Dark
+                ? ThemeVariant.Light
+                : ThemeVariant.Dark;
     }
 }

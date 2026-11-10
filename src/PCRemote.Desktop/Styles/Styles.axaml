@@ -6,21 +6,9 @@
         </Border>
     </Design.PreviewWith>
 
-    <!-- Colors -->
-    <Styles.Resources>
-        <SolidColorBrush x:Key="AppBackground" Color="#F5F6F8"/>
-        <SolidColorBrush x:Key="SurfaceBackground" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="PrimaryText" Color="#20242B"/>
-        <SolidColorBrush x:Key="SecondaryText" Color="#737B87"/>
-        <SolidColorBrush x:Key="Accent" Color="#5865F2"/>
-        <SolidColorBrush x:Key="Success" Color="#249B68"/>
-        <SolidColorBrush x:Key="Danger" Color="#D94B4B"/>
-        <SolidColorBrush x:Key="Border" Color="#E6E8ED"/>
-    </Styles.Resources>
-
     <!-- Text -->
     <Style Selector="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
         <Setter Property="FontFamily" Value="Arial"/>
     </Style>
 
@@ -30,7 +18,7 @@
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Background" Value="{StaticResource Accent}"/>
+        <Setter Property="Background" Value="{DynamicResource Accent}"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -51,7 +39,7 @@
     <!-- Disabled -->
     <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Opacity" Value="0.5"/>
-        <Setter Property="Background" Value="{StaticResource Accent}"/>
+        <Setter Property="Background" Value="{DynamicResource Accent}"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
 
@@ -59,8 +47,8 @@
     <Style Selector="TextBox">
         <Setter Property="Padding" Value="12"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Background" Value="{StaticResource SurfaceBackground}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
     </Style>
     
 </Styles>
