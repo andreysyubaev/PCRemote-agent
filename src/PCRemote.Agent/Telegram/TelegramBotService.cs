@@ -769,6 +769,4 @@ public class TelegramBotService : BackgroundService
             InputFieldPlaceholder = "Выбери действие..."
         };
     }
-    
-    
 }

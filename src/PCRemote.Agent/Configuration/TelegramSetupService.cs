@@ -17,53 +17,52 @@ public class TelegramSetupService
         _logger = logger;
     }
 
-    public async Task SetupAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> IsTokenConfiguredAsync(
+        CancellationToken cancellationToken = default)
     {
-        var existingToken = await _secretStore.GetSecretAsync(
+        var token = await _secretStore.GetSecretAsync(
             SecretKeys.TelegramBotToken,
             cancellationToken);
 
-        if (!string.IsNullOrWhiteSpace(existingToken))
+        return !string.IsNullOrWhiteSpace(token);
+    }
+
+    public async Task<string> SetupAsync(
+        string token,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(token))
         {
-            _logger.LogInformation("Telegram bot token was found.");
-            return;
+            throw new ArgumentException(
+                "Telegram bot token cannot be empty.",
+                nameof(token));
         }
 
-        Console.WriteLine("=== PCRemote Setup ===");
-        Console.WriteLine("Create your Telegram bot using @BotFather.");
+        token = token.Trim();
 
-        while (true)
+        var botClient = new TelegramBotClient(token);
+
+        try
         {
-            Console.Write("Enter your Telegram bot token: ");
+            var bot = await botClient.GetMe(cancellationToken);
 
-            var token = Console.ReadLine()?.Trim();
+            await _secretStore.SetSecretAsync(
+                SecretKeys.TelegramBotToken,
+                token,
+                cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                Console.WriteLine("Token cannot be empty. Try again.");
-                continue;
-            }
+            _logger.LogInformation(
+                "Telegram bot @{Username} connected and token saved.",
+                bot.Username);
 
-            var botClient = new TelegramBotClient(token);
-
-            try
-            {
-                var bot = await botClient.GetMe(cancellationToken);
-
-                await _secretStore.SetSecretAsync(
-                    SecretKeys.TelegramBotToken,
-                    token,
-                    cancellationToken);
-
-                Console.WriteLine($"Bot @{bot.Username} connected successfully.");
-                Console.WriteLine("Telegram bot token saved securely.");
-
-                return;
-            }
-            catch (ApiRequestException exception) when (exception.ErrorCode == 401)
-            {
-                Console.WriteLine("Invalid Telegram bot token. Please try again.");
-            }
+            return bot.Username ?? string.Empty;
+        }
+        catch (ApiRequestException exception)
+            when (exception.ErrorCode == 401)
+        {
+            throw new InvalidOperationException(
+                "Invalid Telegram bot token.",
+                exception);
         }
     }
 }
