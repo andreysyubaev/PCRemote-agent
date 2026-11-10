@@ -160,11 +160,11 @@
                             HorizontalAlignment="Center">
                     <Button Content="Start Agent"
                             Command="{Binding StartAgentCommand}"
-                            IsEnabled="{Binding !IsBusy}"/>
+                            IsEnabled="{Binding CanStartAgent}"/>
 
                     <Button Content="Stop Agent"
                             Command="{Binding StopAgentCommand}"
-                            IsEnabled="{Binding !IsBusy}"/>
+                            IsEnabled="{Binding CanStopAgent}"/>
                 </StackPanel>
 
                 <Separator/>

@@ -27,11 +27,31 @@ public partial class MainViewModel : ViewModelBase
         _telegramSetupService = telegramSetupService;
         _agentRuntime = agentRuntime;
         AgentStatus = agentStatus;
-        AgentStatus.PropertyChanged += AgentStatus_PropertyChanged;
+        AgentStatus.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(AgentStatus.IsRunning))
+            {
+                OnPropertyChanged(nameof(CanStartAgent));
+                OnPropertyChanged(nameof(CanStopAgent));
+            }
+        };
+
+        PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(IsBusy))
+            {
+                OnPropertyChanged(nameof(CanStartAgent));
+                OnPropertyChanged(nameof(CanStopAgent));
+            }
+        };
         _pairingTimer.Tick += PairingTimer_Tick;
 
         UpdatePairingTimer();
     }
+    
+    public bool CanStartAgent => !AgentStatus.IsRunning && !IsBusy;
+
+    public bool CanStopAgent => AgentStatus.IsRunning && !IsBusy;
     
     public AgentStatus AgentStatus { get; }
 

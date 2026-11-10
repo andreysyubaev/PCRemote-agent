@@ -48,8 +48,11 @@
         <Setter Property="Foreground" Value="White"/>
     </Style>
 
-    <Style Selector="Button:disabled">
+    <!-- Disabled -->
+    <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Opacity" Value="0.5"/>
+        <Setter Property="Background" Value="{StaticResource Accent}"/>
+        <Setter Property="Foreground" Value="White"/>
     </Style>
 
     <!-- Inputs -->

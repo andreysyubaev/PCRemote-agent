@@ -30,10 +30,10 @@
                                         Click="OpenPCRemote_Click"/>
 
                         <NativeMenuItem Header="Start Agent"
-                                        IsEnabled="False" />
+                                        Click="StartAgent_Click"/>
 
                         <NativeMenuItem Header="Stop Agent"
-                                        IsEnabled="False" />
+                                        Click="StopAgent_Click"/>
 
                         <NativeMenuItemSeparator />
 
