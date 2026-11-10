@@ -80,16 +80,7 @@ public class TelegramBotService : BackgroundService
         }
         else
         {
-            _pairingCode = RandomNumberGenerator
-                .GetInt32(100000, 1000000)
-                .ToString();
-
-            _pairingCodeExpiresAt = DateTimeOffset.UtcNow
-                .Add(PairingCodeLifetime);
-            
-            _agentStatus.PairingCode = _pairingCode;
-            _agentStatus.PairingCodeExpiresAt = _pairingCodeExpiresAt;
-            _agentStatus.IsRunning = true;
+            GeneratePairingCode();
 
             Console.WriteLine();
             Console.WriteLine("=== PCRemote Pairing ===");
@@ -172,6 +163,30 @@ public class TelegramBotService : BackgroundService
                     {
                         _logger.LogWarning(
                             "Unauthorized Telegram user attempted access: {UserId}",
+                            message.From?.Id);
+
+                        offset = update.Id + 1;
+                        continue;
+                    }
+                    
+                    if (command.Equals("/unpair", StringComparison.OrdinalIgnoreCase))
+                    {
+                        await _secretStore.DeleteSecretAsync(
+                            SecretKeys.TelegramAllowedUserId,
+                            stoppingToken);
+
+                        _allowedUserId = null;
+
+                        GeneratePairingCode();
+
+                        await _botClient.SendMessage(
+                            chatId: message.Chat.Id,
+                            text: "🔓 Telegram успешно отвязан от компьютера.\n\nДля повторной привязки используй новый код из приложения PCRemote.",
+                            replyMarkup: new ReplyKeyboardRemove(),
+                            cancellationToken: stoppingToken);
+
+                        _logger.LogInformation(
+                            "Telegram user {UserId} unpaired successfully.",
                             message.From?.Id);
 
                         offset = update.Id + 1;
@@ -724,6 +739,11 @@ public class TelegramBotService : BackgroundService
                 },
                 new BotCommand
                 {
+                    Command = "unpair",
+                    Description = "Отвязать Telegram от компьютера"
+                },
+                new BotCommand
+                {
                     Command = "status",
                     Description = "Информация о компьютере"
                 },
@@ -783,5 +803,18 @@ public class TelegramBotService : BackgroundService
             IsPersistent = true,
             InputFieldPlaceholder = "Выбери действие..."
         };
+    }
+    
+    private void GeneratePairingCode()
+    {
+        _pairingCode = RandomNumberGenerator
+            .GetInt32(100000, 1000000)
+            .ToString();
+
+        _pairingCodeExpiresAt = DateTimeOffset.UtcNow
+            .Add(PairingCodeLifetime);
+
+        _agentStatus.PairingCode = _pairingCode;
+        _agentStatus.PairingCodeExpiresAt = _pairingCodeExpiresAt;
     }
 }
