@@ -10,62 +10,95 @@
         x:DataType="vm:MainViewModel"
         Title="PCRemote">
 
-    <Grid Margin="30"
-          RowDefinitions="Auto,Auto,Auto,Auto,*"
-          HorizontalAlignment="Center"
-          VerticalAlignment="Center"
-          Width="400">
+    
+    <Grid>
+        <StackPanel IsVisible="{Binding IsSetupRequired}"
+                    Spacing="14"
+                    Width="360"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
 
-        <TextBlock Text="PCRemote"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"/>
-
-        <TextBlock Grid.Row="1"
-                   Text="Connect your Telegram bot"
-                   FontSize="16"
-                   Margin="0,12,0,24"
-                   HorizontalAlignment="Center"/>
-
-        <TextBox Grid.Row="2"
-                 Text="{Binding BotToken}"
-                 PlaceholderText="Enter Telegram bot token"
-                 PasswordChar="●"/>
-
-        <Button Grid.Row="3"
-                Content="Connect"
-                Command="{Binding ConnectTelegramCommand}"
-                IsEnabled="{Binding !IsBusy}"
-                Margin="0,12,0,0"
-                HorizontalAlignment="Stretch"/>
-
-        <StackPanel Grid.Row="4"
-                    Spacing="12"
-                    Margin="0,16,0,0"
-                    HorizontalAlignment="Center">
-
-            <TextBlock Text="{Binding StatusMessage}"
-                       TextWrapping="Wrap"
-                       HorizontalAlignment="Center"/>
-
-            <TextBlock Text="{Binding AgentStatus.BotUsername,
-                              StringFormat='Bot: @{0}'}"
-                       HorizontalAlignment="Center"/>
-
-            <TextBlock Text="{Binding AgentStatus.IsRunning,
-                              StringFormat='Agent running: {0}'}"
-                       HorizontalAlignment="Center"/>
-
-            <TextBlock Text="{Binding AgentStatus.IsTelegramConnected,
-                              StringFormat='Telegram connected: {0}'}"
-                       HorizontalAlignment="Center"/>
-
-            <TextBlock Text="{Binding AgentStatus.PairingCode,
-                              StringFormat='Pairing code: {0}'}"
-                       FontSize="20"
+            <TextBlock Text="PCRemote"
+                       FontSize="30"
                        FontWeight="Bold"
                        HorizontalAlignment="Center"/>
 
+            <TextBlock Text="Connect your Telegram bot"
+                       FontSize="16"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,12"/>
+
+            <TextBox Text="{Binding BotToken}"
+                     PlaceholderText="Enter Telegram bot token"
+                     PasswordChar="●"/>
+
+            <Button Content="Connect"
+                    Command="{Binding ConnectTelegramCommand}"
+                    IsEnabled="{Binding !IsBusy}"
+                    HorizontalAlignment="Stretch"/>
+
+            <TextBlock Text="{Binding StatusMessage}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"
+                       Margin="0,8,0,0"/>
         </StackPanel>
+
+        <StackPanel IsVisible="{Binding !IsSetupRequired}"
+                    Spacing="16"
+                    Width="400"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+            <TextBlock Text="PCRemote"
+                       FontSize="30"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Text="Computer agent"
+                       FontSize="16"
+                       HorizontalAlignment="Center"/>
+
+            <Separator/>
+
+            <TextBlock Text="{Binding AgentStatus.BotUsername,
+                                      StringFormat='Telegram bot: @{0}'}"/>
+
+            <TextBlock Text="{Binding AgentStatus.IsRunning,
+                                      StringFormat='Agent running: {0}'}"/>
+
+            <TextBlock Text="{Binding AgentStatus.IsTelegramConnected,
+                                      StringFormat='Telegram connected: {0}'}"/>
+            
+            <StackPanel Orientation="Horizontal"
+                        Spacing="10"
+                        HorizontalAlignment="Center">
+                <Button Content="Start Agent"
+                        Command="{Binding StartAgentCommand}"
+                        IsEnabled="{Binding !IsBusy}"/>
+
+                <Button Content="Stop Agent"
+                        Command="{Binding StopAgentCommand}"
+                        IsEnabled="{Binding !IsBusy}"/>
+            </StackPanel>
+
+            <Separator/>
+
+            <TextBlock Text="Pairing code"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Text="{Binding AgentStatus.PairingCode}"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+
+            <TextBlock Text="{Binding StatusMessage}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"
+                       Margin="0,8,0,0"/>
+        </StackPanel>
+        
+        
     </Grid>
+
 </Window>

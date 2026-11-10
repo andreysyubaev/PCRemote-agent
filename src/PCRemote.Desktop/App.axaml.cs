@@ -30,12 +30,19 @@ public partial class App : Application
 
             _agentRuntime = _host.Services.GetRequiredService<AgentRuntime>();
 
+            var mainViewModel = new MainViewModel(
+                _host.Services.GetRequiredService<TelegramSetupService>(),
+                _agentRuntime,
+                _host.Services.GetRequiredService<AgentStatus>());
+
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(
-                    _host.Services.GetRequiredService<TelegramSetupService>(),
-                    _agentRuntime,
-                    _host.Services.GetRequiredService<AgentStatus>()),
+                DataContext = mainViewModel,
+            };
+
+            desktop.MainWindow.Opened += async (_, _) =>
+            {
+                await mainViewModel.InitializeAsync();
             };
 
             desktop.Exit += OnDesktopExit;

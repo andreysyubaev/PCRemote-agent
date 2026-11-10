@@ -37,6 +37,12 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
     
+    [ObservableProperty]
+    public partial bool IsSetupRequired { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsInitialized { get; set; }
+    
     [RelayCommand]
     private async Task ConnectTelegramAsync()
     {
@@ -55,6 +61,7 @@ public partial class MainViewModel : ViewModelBase
             await _agentRuntime.StartAsync();
 
             BotToken = string.Empty;
+            IsSetupRequired = false;
             StatusMessage = $"Connected to @{BotUsername}. Token saved.";
         }
         catch (Exception exception)
@@ -64,6 +71,86 @@ public partial class MainViewModel : ViewModelBase
         finally
         {
             IsBusy = false;
+        }
+    }
+    
+    [RelayCommand]
+    private async Task StartAgentAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Starting PCRemote Agent...";
+
+            await _agentRuntime.StartAsync();
+
+            StatusMessage = "PCRemote Agent is running.";
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = exception.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task StopAgentAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Stopping PCRemote Agent...";
+
+            await _agentRuntime.StopAsync();
+
+            StatusMessage = "PCRemote Agent stopped.";
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = exception.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+    
+    public async Task InitializeAsync()
+    {
+        try
+        {
+            IsBusy = true;
+            StatusMessage = "Checking configuration...";
+
+            var isTokenConfigured =
+                await _telegramSetupService.IsTokenConfiguredAsync();
+
+            if (isTokenConfigured)
+            {
+                StatusMessage = "Starting PCRemote Agent...";
+
+                await _agentRuntime.StartAsync();
+
+                IsSetupRequired = false;
+                StatusMessage = "PCRemote Agent is running.";
+            }
+            else
+            {
+                IsSetupRequired = true;
+                StatusMessage = "Enter your Telegram bot token.";
+            }
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = exception.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+            IsInitialized = true;
         }
     }
 }

@@ -19,9 +19,9 @@ public static class AgentHost
         builder.Services.Configure<TelegramSettings>(
             builder.Configuration.GetSection(TelegramSettings.SectionName));
 
-        builder.Services.AddSingleton<Worker>();
-        builder.Services.AddSingleton<TelegramBotService>();
-        
+        builder.Services.AddTransient<Worker>();
+        builder.Services.AddTransient<TelegramBotService>();
+
         builder.Services.AddSingleton<AgentRuntime>();
         builder.Services.AddSingleton<AgentStatus>();
 
