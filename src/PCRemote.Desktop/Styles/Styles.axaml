@@ -1,0 +1,63 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Colors -->
+    <Styles.Resources>
+        <SolidColorBrush x:Key="AppBackground" Color="#F5F6F8"/>
+        <SolidColorBrush x:Key="SurfaceBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="PrimaryText" Color="#20242B"/>
+        <SolidColorBrush x:Key="SecondaryText" Color="#737B87"/>
+        <SolidColorBrush x:Key="Accent" Color="#5865F2"/>
+        <SolidColorBrush x:Key="Success" Color="#249B68"/>
+        <SolidColorBrush x:Key="Danger" Color="#D94B4B"/>
+        <SolidColorBrush x:Key="Border" Color="#E6E8ED"/>
+    </Styles.Resources>
+
+    <!-- Text -->
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource PrimaryText}"/>
+        <Setter Property="FontFamily" Value="Arial"/>
+    </Style>
+
+    <!-- Buttons -->
+    <Style Selector="Button">
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Background" Value="{StaticResource Accent}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- Hover -->
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#4652D9"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <!-- Pressed -->
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#3844C7"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style Selector="Button:disabled">
+        <Setter Property="Opacity" Value="0.5"/>
+    </Style>
+
+    <!-- Inputs -->
+    <Style Selector="TextBox">
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{StaticResource SurfaceBackground}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Border}"/>
+    </Style>
+    
+</Styles>

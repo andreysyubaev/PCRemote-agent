@@ -13,6 +13,7 @@ public class AgentStatus : INotifyPropertyChanged
     private string? _botUsername;
     private bool _isRunning;
     private bool _isTelegramConnected;
+    private bool _isPaired;
 
     public string? PairingCode
     {
@@ -42,6 +43,12 @@ public class AgentStatus : INotifyPropertyChanged
     {
         get => _isTelegramConnected;
         set => SetField(ref _isTelegramConnected, value);
+    }
+    
+    public bool IsPaired
+    {
+        get => _isPaired;
+        set => SetField(ref _isPaired, value);
     }
 
     private void SetField<T>(

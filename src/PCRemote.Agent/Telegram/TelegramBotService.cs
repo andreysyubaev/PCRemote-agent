@@ -89,9 +89,12 @@ public class TelegramBotService : BackgroundService
             Console.WriteLine("The code expires in 5 minutes.");
             Console.WriteLine();
         }
+        
+        _agentStatus.IsPaired = _allowedUserId.HasValue;
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            RefreshPairingCodeIfExpired();
             try
             {
                 if (!isConnected)
@@ -176,6 +179,7 @@ public class TelegramBotService : BackgroundService
                             stoppingToken);
 
                         _allowedUserId = null;
+                        _agentStatus.IsPaired = false;
 
                         GeneratePairingCode();
 
@@ -666,12 +670,15 @@ public class TelegramBotService : BackgroundService
         CancellationToken cancellationToken)
     {
         if (_pairingCode is null ||
-            DateTimeOffset.UtcNow > _pairingCodeExpiresAt)
+            DateTimeOffset.UtcNow >= _pairingCodeExpiresAt)
         {
+            GeneratePairingCode();
+
             await _botClient.SendMessage(
                 chatId: message.Chat.Id,
-                text: "🔐 PCRemote ещё не привязан.\n\nОтправь /pair КОД для подключения.",
-                replyMarkup: new ReplyKeyboardRemove());
+                text: "⏳ Срок действия кода истёк.\n\nПолучен новый код. Возьми его из приложения PCRemote и попробуй снова.",
+                replyMarkup: new ReplyKeyboardRemove(),
+                cancellationToken: cancellationToken);
 
             return;
         }
@@ -705,6 +712,7 @@ public class TelegramBotService : BackgroundService
         _pairingCode = null;
         _agentStatus.PairingCode = null;
         _agentStatus.PairingCodeExpiresAt = null;
+        _agentStatus.IsPaired = true;
 
         await _botClient.SendMessage(
             chatId: message.Chat.Id,
@@ -816,5 +824,20 @@ public class TelegramBotService : BackgroundService
 
         _agentStatus.PairingCode = _pairingCode;
         _agentStatus.PairingCodeExpiresAt = _pairingCodeExpiresAt;
+    }
+    
+    private void RefreshPairingCodeIfExpired()
+    {
+        if (_allowedUserId is not null)
+            return;
+
+        if (_pairingCode is null ||
+            DateTimeOffset.UtcNow >= _pairingCodeExpiresAt)
+        {
+            GeneratePairingCode();
+
+            _logger.LogInformation(
+                "Pairing code expired. A new code has been generated.");
+        }
     }
 }

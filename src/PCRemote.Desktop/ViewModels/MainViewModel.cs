@@ -5,6 +5,8 @@ using CommunityToolkit.Mvvm.Input;
 using PCRemote.Agent.Configuration;
 using PCRemote.Agent.Runtime;
 using PCRemote.Core.Models;
+using System.ComponentModel;
+using Avalonia.Threading;
 
 namespace PCRemote.Desktop.ViewModels;
 
@@ -12,6 +14,10 @@ public partial class MainViewModel : ViewModelBase
 {
     private readonly TelegramSetupService _telegramSetupService;
     private readonly AgentRuntime _agentRuntime;
+    private readonly DispatcherTimer _pairingTimer = new()
+    {
+        Interval = TimeSpan.FromSeconds(1)
+    };
 
     public MainViewModel(
         TelegramSetupService telegramSetupService,
@@ -21,6 +27,10 @@ public partial class MainViewModel : ViewModelBase
         _telegramSetupService = telegramSetupService;
         _agentRuntime = agentRuntime;
         AgentStatus = agentStatus;
+        AgentStatus.PropertyChanged += AgentStatus_PropertyChanged;
+        _pairingTimer.Tick += PairingTimer_Tick;
+
+        UpdatePairingTimer();
     }
     
     public AgentStatus AgentStatus { get; }
@@ -42,6 +52,9 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     public partial bool IsInitialized { get; set; }
+    
+    [ObservableProperty]
+    public partial string RemainingPairingTime { get; set; } = "05:00";
     
     [RelayCommand]
     private async Task ConnectTelegramAsync()
@@ -152,5 +165,48 @@ public partial class MainViewModel : ViewModelBase
             IsBusy = false;
             IsInitialized = true;
         }
+    }
+    
+    private void AgentStatus_PropertyChanged(
+        object? sender,
+        PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AgentStatus.PairingCodeExpiresAt) ||
+            e.PropertyName == nameof(AgentStatus.IsPaired))
+        {
+            Dispatcher.UIThread.Post(UpdatePairingTimer);
+        }
+    }
+
+    private void PairingTimer_Tick(object? sender, EventArgs e)
+    {
+        UpdatePairingTimer();
+    }
+
+    private void UpdatePairingTimer()
+    {
+        if (AgentStatus.IsPaired ||
+            AgentStatus.PairingCodeExpiresAt is not DateTimeOffset expiresAt)
+        {
+            _pairingTimer.Stop();
+            RemainingPairingTime = "05:00";
+            return;
+        }
+
+        var remaining = expiresAt - DateTimeOffset.UtcNow;
+
+        if (remaining <= TimeSpan.Zero)
+        {
+            RemainingPairingTime = "00:00";
+        }
+        else
+        {
+            var totalSeconds = (int)Math.Ceiling(remaining.TotalSeconds);
+
+            RemainingPairingTime =
+                $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
+        }
+
+        _pairingTimer.Start();
     }
 }
