@@ -33,6 +33,8 @@ public partial class HomePageViewModel : ViewModelBase
     }
 
     public AgentStatus AgentStatus { get; }
+    
+    public bool IsPairingRequired => !AgentStatus.IsPaired;
 
     public bool CanStartAgent => !AgentStatus.IsRunning && !IsBusy;
 
@@ -103,6 +105,11 @@ public partial class HomePageViewModel : ViewModelBase
         {
             OnPropertyChanged(nameof(CanStartAgent));
             OnPropertyChanged(nameof(CanStopAgent));
+        }
+
+        if (e.PropertyName == nameof(AgentStatus.IsPaired))
+        {
+            OnPropertyChanged(nameof(IsPairingRequired));
         }
 
         if (e.PropertyName == nameof(AgentStatus.PairingCodeExpiresAt) ||

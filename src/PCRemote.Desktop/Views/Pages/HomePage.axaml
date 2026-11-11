@@ -51,7 +51,8 @@
                     BorderBrush="{DynamicResource Border}"
                     BorderThickness="1"
                     CornerRadius="12"
-                    Padding="20">
+                    Padding="20"
+                    IsVisible="{Binding IsPairingRequired}">
 
                 <StackPanel Spacing="12">
 
@@ -59,10 +60,20 @@
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
-                    <TextBlock Text="{Binding AgentStatus.PairingCode}"
-                               FontSize="28"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Spacing="12">
+
+                        <TextBlock Text="{Binding AgentStatus.PairingCode}"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+
+                        <Button Content="Copy"
+                                VerticalAlignment="Center"
+                                Click="OnCopyPairingCodeClick"/>
+
+                    </StackPanel>
 
                     <TextBlock Text="{Binding RemainingPairingTime,
                                                StringFormat='Expires in: {0}'}"
