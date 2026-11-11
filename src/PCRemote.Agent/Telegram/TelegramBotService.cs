@@ -141,6 +141,9 @@ public class TelegramBotService : BackgroundService
                     }
 
                     var command = message.Text.Trim();
+                    _logger.LogInformation(
+                        "Received Telegram command from user {UserId}.",
+                        message.From?.Id);
 
                     if (_allowedUserId is null)
                     {
@@ -165,8 +168,8 @@ public class TelegramBotService : BackgroundService
                     if (message.From?.Id != _allowedUserId)
                     {
                         _logger.LogWarning(
-                            "Unauthorized Telegram user attempted access: {UserId}",
-                            message.From?.Id);
+                            "Unauthorized Telegram user attempted access: {Username}",
+                            GetUsername(message.From));
 
                         offset = update.Id + 1;
                         continue;
@@ -190,8 +193,8 @@ public class TelegramBotService : BackgroundService
                             cancellationToken: stoppingToken);
 
                         _logger.LogInformation(
-                            "Telegram user {UserId} unpaired successfully.",
-                            message.From?.Id);
+                            "Telegram user {Username} unpaired successfully.",
+                            GetUsername(message.From));
 
                         offset = update.Id + 1;
                         continue;
@@ -277,6 +280,10 @@ public class TelegramBotService : BackgroundService
                                 "Исходный код и развитие проекта доступны на GitHub:",
                                 replyMarkup: helpKeyboard,
                                 cancellationToken: stoppingToken);
+                            
+                            _logger.LogInformation(
+                                "Help message sent to user {Username}.",
+                                GetUsername(message.From));
 
                             break;
                         }
@@ -550,6 +557,11 @@ public class TelegramBotService : BackgroundService
 
     if (pendingAction.ExpiresAt <= DateTimeOffset.UtcNow)
     {
+        _logger.LogWarning(
+            "Power action {Action} confirmation expired. User: {Username}.",
+            pendingAction.Action,
+            GetUsername(callbackQuery.From));
+        
         _pendingActions.TryRemove(confirmationId, out _);
 
         await _botClient.AnswerCallbackQuery(
@@ -585,6 +597,11 @@ public class TelegramBotService : BackgroundService
 
     if (isCancellation)
     {
+        _logger.LogInformation(
+            "Power action {Action} cancelled by user {Username}.",
+            confirmedAction.Action,
+            GetUsername(callbackQuery.From));
+
         await _botClient.DeleteMessage(
             chatId: chatId,
             messageId: confirmedAction.MessageId,
@@ -598,6 +615,11 @@ public class TelegramBotService : BackgroundService
         messageId: confirmedAction.MessageId,
         text: "⏳ Команда принята, выполняю...",
         cancellationToken: cancellationToken);
+    
+    _logger.LogWarning(
+        "Power action {Action} confirmed by user {Username}.",
+        confirmedAction.Action,
+        GetUsername(callbackQuery.From));
 
     await ExecutePowerActionAsync(
         chatId,
@@ -636,6 +658,13 @@ public class TelegramBotService : BackgroundService
                 default:
                     resultText = "❌ Неизвестная команда.";
                     break;
+            }
+            
+            if (action is "shutdown" or "restart" or "sleep")
+            {
+                _logger.LogInformation(
+                    "Power action {Action} request completed.",
+                    action);
             }
 
             await _botClient.EditMessageText(
@@ -721,8 +750,8 @@ public class TelegramBotService : BackgroundService
             cancellationToken: cancellationToken);
 
         _logger.LogInformation(
-            "PCRemote successfully paired with Telegram user {UserId}.",
-            userId.Value);
+            "PCRemote successfully paired with Telegram user {Username}.",
+            GetUsername(message.From));
     }
     
     private async Task RegisterBotCommandsAsync(
@@ -813,6 +842,13 @@ public class TelegramBotService : BackgroundService
         };
     }
     
+    private static string GetUsername(User? user)
+    {
+        return string.IsNullOrWhiteSpace(user?.Username)
+            ? "username unavailable"
+            : $"@{user.Username}";
+    }
+    
     private void GeneratePairingCode()
     {
         _pairingCode = RandomNumberGenerator
@@ -835,9 +871,6 @@ public class TelegramBotService : BackgroundService
             DateTimeOffset.UtcNow >= _pairingCodeExpiresAt)
         {
             GeneratePairingCode();
-
-            _logger.LogInformation(
-                "Pairing code expired. A new code has been generated.");
         }
     }
 }

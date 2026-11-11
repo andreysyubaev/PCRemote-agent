@@ -1,0 +1,122 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
+             x:Class="PCRemote.Desktop.Views.Pages.LogsPage"
+             x:DataType="vm:LogsPageViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*"
+          RowSpacing="16">
+
+        <!-- Заголовок -->
+        <StackPanel Grid.Row="0"
+                    Spacing="4">
+            <TextBlock Text="Logs"
+                       FontSize="28"
+                       FontWeight="Bold"/>
+
+            <TextBlock Text="Application and agent activity"
+                       Foreground="{DynamicResource SecondaryText}"/>
+        </StackPanel>
+
+        <!-- Панель поиска -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="12">
+
+            <TextBox PlaceholderText="Search messages, sources, exceptions..."
+                     Text="{Binding SearchText, Mode=TwoWay}"
+                     VerticalContentAlignment="Center"/>
+
+            <Button Grid.Column="1"
+                    Content="Export"
+                    Click="OnExportClick"
+                    VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Фильтры -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,*,Auto"
+              ColumnSpacing="12">
+
+            <ComboBox Grid.Column="0"
+                      ItemsSource="{Binding Levels}"
+                      SelectedItem="{Binding SelectedLevel, Mode=TwoWay}"
+                      HorizontalAlignment="Stretch"/>
+
+            <ComboBox Grid.Column="1"
+                      ItemsSource="{Binding Sources}"
+                      SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
+                      HorizontalAlignment="Stretch"/>
+
+            <Button Grid.Column="2"
+                    Content="Clear filters"
+                    Command="{Binding ResetFiltersCommand}"
+                    VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Список логов -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource SurfaceBackground}"
+                BorderBrush="{DynamicResource Border}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="16">
+
+            <Grid>
+                <TextBlock Text="Loading logs..."
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding IsLoading}"/>
+
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="#E05252"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding ErrorMessage}"/>
+
+                <TextBlock Text="No log entries found."
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding FilteredEntries.Count, Converter={x:Static ObjectConverters.IsNull}}"/>
+
+                <ListBox x:Name="LogsList"
+                         ItemsSource="{Binding FilteredEntries}"
+                         BorderThickness="0"
+                         AutoScrollToSelectedItem="False">
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="170,90,*"
+                                  ColumnSpacing="12"
+                                  Margin="4,8">
+
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Timestamp, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
+                                           Foreground="{DynamicResource SecondaryText}"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Level}"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"/>
+
+                                <StackPanel Grid.Column="2"
+                                            Spacing="3">
+
+                                    <TextBlock Text="{Binding Message}"
+                                               TextWrapping="Wrap"/>
+
+                                    <TextBlock Text="{Binding Source}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource SecondaryText}"/>
+
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>

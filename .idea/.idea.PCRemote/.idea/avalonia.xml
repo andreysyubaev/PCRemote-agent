@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="src/PCRemote.Desktop/App.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/Styles/Styles.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/ViewModels/Pages/LogsPageViewModel.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/Views/MainWindow.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/Views/Pages/HomePage.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/Views/Pages/LogsPage.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/Views/Pages/SettingsPage.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/Views/SetupWindow.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

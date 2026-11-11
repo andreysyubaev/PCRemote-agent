@@ -8,16 +8,19 @@ public partial class MainViewModel : ViewModelBase
 {
     public HomePageViewModel HomePage { get; }
     public SettingsPageViewModel SettingsPage { get; }
+    public LogsPageViewModel LogsPage { get; }
 
     [ObservableProperty]
     public partial object? CurrentPage { get; set; }
 
     public MainViewModel(
         HomePageViewModel homePage,
-        SettingsPageViewModel settingsPage)
+        SettingsPageViewModel settingsPage,
+        LogsPageViewModel logsPage)
     {
         HomePage = homePage;
         SettingsPage = settingsPage;
+        LogsPage = logsPage;
 
         CurrentPage = HomePage;
     }
@@ -32,5 +35,11 @@ public partial class MainViewModel : ViewModelBase
     private void NavigateSettings()
     {
         CurrentPage = SettingsPage;
+    }
+
+    [RelayCommand]
+    private void NavigateLogs()
+    {
+        CurrentPage = LogsPage;
     }
 }

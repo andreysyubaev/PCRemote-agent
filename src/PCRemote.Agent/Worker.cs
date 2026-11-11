@@ -29,7 +29,7 @@ public class Worker(ILogger<Worker> logger, ISystemInfoProvider systemInfoProvid
             logger.LogInformation("Total RAM: {RAM} GB",
                 systemInfo.TotalMemoryBytes / 1024.0 / 1024 / 1024);
 
-            logger.LogInformation("Free Disk Space: {Disk} GB",
+            logger.LogInformation("Free Disk Space: {Disk:F2} GB",
                 systemInfo.FreeDiskSpaceBytes / 1024.0 / 1024 / 1024);
 
             while (!stoppingToken.IsCancellationRequested)

@@ -21,6 +21,10 @@
         <DataTemplate DataType="pagesVm:SettingsPageViewModel">
             <pages:SettingsPage/>
         </DataTemplate>
+        
+        <DataTemplate DataType="pagesVm:LogsPageViewModel">
+            <pages:LogsPage/>
+        </DataTemplate>
     </Window.DataTemplates>
 
     <Grid ColumnDefinitions="220,*">
@@ -45,6 +49,10 @@
 
                 <Button Content="Settings"
                         Command="{Binding NavigateSettingsCommand}"
+                        HorizontalAlignment="Stretch"/>
+                
+                <Button Content="Logs"
+                        Command="{Binding NavigateLogsCommand}"
                         HorizontalAlignment="Stretch"/>
 
             </StackPanel>

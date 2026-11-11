@@ -1,12 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PCRemote.Agent.Telegram;
 using PCRemote.Core.Models;
+
 namespace PCRemote.Agent.Runtime;
 
 public class AgentRuntime
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly AgentStatus _agentStatus;
+    private readonly ILogger<AgentRuntime> _logger;
 
     private AsyncServiceScope? _scope;
     private Worker? _worker;
@@ -14,17 +17,24 @@ public class AgentRuntime
 
     public AgentRuntime(
         IServiceScopeFactory scopeFactory,
-        AgentStatus agentStatus)
+        AgentStatus agentStatus,
+        ILogger<AgentRuntime> logger)
     {
         _scopeFactory = scopeFactory;
         _agentStatus = agentStatus;
+        _logger = logger;
     }
 
     public async Task StartAsync(
         CancellationToken cancellationToken = default)
     {
         if (_scope is not null)
+        {
+            _logger.LogDebug("Agent is already running.");
             return;
+        }
+
+        _logger.LogInformation("Starting agent...");
 
         _scope = _scopeFactory.CreateAsyncScope();
 
@@ -40,9 +50,13 @@ public class AgentRuntime
             await _telegramBotService.StartAsync(cancellationToken);
 
             _agentStatus.IsRunning = true;
+
+            _logger.LogInformation("Agent started successfully.");
         }
-        catch
+        catch (Exception exception)
         {
+            _logger.LogError(exception, "Failed to start agent.");
+
             await StopAsync(cancellationToken);
             throw;
         }
@@ -52,7 +66,12 @@ public class AgentRuntime
         CancellationToken cancellationToken = default)
     {
         if (_scope is null)
+        {
+            _logger.LogDebug("Agent is already stopped.");
             return;
+        }
+
+        _logger.LogInformation("Stopping agent...");
 
         try
         {
@@ -61,6 +80,11 @@ public class AgentRuntime
 
             if (_worker is not null)
                 await _worker.StopAsync(cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error while stopping agent.");
+            throw;
         }
         finally
         {
@@ -72,6 +96,8 @@ public class AgentRuntime
 
             _agentStatus.IsRunning = false;
             _agentStatus.IsTelegramConnected = false;
+
+            _logger.LogInformation("Agent stopped.");
         }
     }
 }

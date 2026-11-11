@@ -1,11 +1,13 @@
+using System;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 
 namespace PCRemote.Desktop.Views;
 
 public partial class MainWindow : Window
 {
     public bool IsExiting { get; set; }
+
+    public event Action? WindowHidden;
 
     public MainWindow()
     {
@@ -20,6 +22,7 @@ public partial class MainWindow : Window
         {
             e.Cancel = true;
             Hide();
+            WindowHidden?.Invoke();
         }
     }
 }

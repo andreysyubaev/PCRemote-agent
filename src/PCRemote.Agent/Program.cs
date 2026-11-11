@@ -1,8 +1,14 @@
+using System;
+using System.IO;
+using Microsoft.Extensions.Logging;
 using PCRemote.Agent.DependencyInjection;
 using PCRemote.Agent.Configuration;
 using PCRemote.Agent.Telegram;
 using PCRemote.Agent.Runtime;
 using PCRemote.Core.Models;
+using Serilog;
+using PCRemote.Agent.Logging;
+using PCRemote.Core.Interfaces.Logging;
 
 namespace PCRemote.Agent;
 
@@ -12,10 +18,41 @@ public static class AgentHost
     {
         var builder = Host.CreateApplicationBuilder(args);
 
+        var logsDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "PCRemote",
+            "Logs");
+
+        Directory.CreateDirectory(logsDirectory);
+        
+        var logWatcher = new FileLogWatcher();
+
+        var logFilePath = Path.Combine(
+            logsDirectory,
+            "pcremote-.log");
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .Enrich.FromLogContext()
+            .WriteTo.File(
+                path: logFilePath,
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7,
+                fileSizeLimitBytes: 10 * 1024 * 1024,
+                rollOnFileSizeLimit: true,
+                outputTemplate:
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
+            .WriteTo.Sink(
+                new LogNotificationSink(logWatcher.NotifyLogsChanged))
+            .CreateLogger();
+
+        builder.Logging.ClearProviders();
+        builder.Services.AddSerilog();
+
         builder.Services.AddPlatformServices();
 
         builder.Services.AddSingleton<TelegramSetupService>();
-
+        
         builder.Services.Configure<TelegramSettings>(
             builder.Configuration.GetSection(TelegramSettings.SectionName));
 
@@ -24,6 +61,9 @@ public static class AgentHost
 
         builder.Services.AddSingleton<AgentRuntime>();
         builder.Services.AddSingleton<AgentStatus>();
+        
+        builder.Services.AddSingleton<ILogReader, FileLogReader>();
+        builder.Services.AddSingleton<ILogWatcher>(logWatcher);
 
         return builder.Build();
     }
