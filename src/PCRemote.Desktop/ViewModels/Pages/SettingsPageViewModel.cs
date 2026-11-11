@@ -32,30 +32,59 @@ public partial class SettingsPageViewModel : ViewModelBase
         return Path.Combine(appDataPath, "PCRemote", "theme.txt");
     }
     
-    private static bool LoadThemePreference()
+    private static string LoadThemePreference()
     {
         var path = GetThemeSettingsPath();
 
         if (!File.Exists(path))
+            return "Система";
+
+        var savedTheme = File.ReadAllText(path).Trim();
+
+        // Поддержка настроек, сохранённых в старом формате.
+        if (bool.TryParse(savedTheme, out var isDark))
+            return isDark ? "Тёмная" : "Светлая";
+
+        return savedTheme switch
         {
-            return Application.Current?.RequestedThemeVariant
-                   == ThemeVariant.Dark;
-        }
-
-        var savedTheme = File.ReadAllText(path);
-
-        return bool.TryParse(savedTheme, out var isDark)
-            ? isDark
-            : false;
+            "Светлая" => "Светлая",
+            "Тёмная" => "Тёмная",
+            "Система" => "Система",
+            _ => "Система"
+        };
     }
 
-    private static void SaveThemePreference(bool isDark)
+    private static void SaveThemePreference(string theme)
     {
         var path = GetThemeSettingsPath();
 
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
-        File.WriteAllText(path, isDark.ToString());
+        File.WriteAllText(path, theme);
+    }
+
+    partial void OnSelectedThemeChanged(string value)
+    {
+        var app = Application.Current;
+
+        if (app is null)
+            return;
+
+        app.RequestedThemeVariant = value switch
+        {
+            "Светлая" => ThemeVariant.Light,
+            "Тёмная" => ThemeVariant.Dark,
+            _ => ThemeVariant.Default
+        };
+
+        try
+        {
+            SaveThemePreference(value);
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = $"Theme save error: {exception.Message}";
+        }
     }
 
     public SettingsPageViewModel(
@@ -67,15 +96,22 @@ public partial class SettingsPageViewModel : ViewModelBase
         _telegramSetupService = telegramSetupService;
         _autoStartService = autoStartService;
 
-        IsDarkTheme = LoadThemePreference();
+        SelectedTheme = LoadThemePreference();
 
         _isInitializingAutoStart = true;
         IsAutoStartEnabled = _autoStartService.IsEnabled();
         _isInitializingAutoStart = false;
     }
 
+    public string[] ThemeOptions { get; } =
+    [
+        "Светлая",
+        "Тёмная",
+        "Система"
+    ];
+
     [ObservableProperty]
-    public partial bool IsDarkTheme { get; set; }
+    public partial string SelectedTheme { get; set; } = "Система";
 
     [ObservableProperty]
     public partial bool IsAutoStartEnabled { get; set; }
@@ -94,26 +130,26 @@ public partial class SettingsPageViewModel : ViewModelBase
 
     public event Action? DisconnectCompleted;
 
-    partial void OnIsDarkThemeChanged(bool value)
-    {
-        var app = Application.Current;
-
-        if (app is null)
-            return;
-
-        app.RequestedThemeVariant = value
-            ? ThemeVariant.Dark
-            : ThemeVariant.Light;
-
-        try
-        {
-            SaveThemePreference(value);
-        }
-        catch (Exception exception)
-        {
-            StatusMessage = $"Theme save error: {exception.Message}";
-        }
-    }
+    // partial void OnIsDarkThemeChanged(bool value)
+    // {
+    //     var app = Application.Current;
+    //
+    //     if (app is null)
+    //         return;
+    //
+    //     app.RequestedThemeVariant = value
+    //         ? ThemeVariant.Dark
+    //         : ThemeVariant.Light;
+    //
+    //     try
+    //     {
+    //         SaveThemePreference(value);
+    //     }
+    //     catch (Exception exception)
+    //     {
+    //         StatusMessage = $"Theme save error: {exception.Message}";
+    //     }
+    // }
 
     partial void OnIsAutoStartEnabledChanged(bool value)
     {

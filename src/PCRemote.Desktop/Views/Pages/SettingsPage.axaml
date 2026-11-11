@@ -28,17 +28,19 @@
                     <Grid ColumnDefinitions="*,Auto">
 
                         <StackPanel Spacing="4">
-                            <TextBlock Text="Dark theme"
+                            <TextBlock Text="Theme"
                                        FontWeight="Medium"/>
 
-                            <TextBlock Text="Use a dark color scheme throughout the application."
+                            <TextBlock Text="Choose the application color scheme."
                                        Foreground="{DynamicResource SecondaryText}"
                                        TextWrapping="Wrap"/>
                         </StackPanel>
 
-                        <ToggleSwitch Grid.Column="1"
-                                      IsChecked="{Binding IsDarkTheme}"
-                                      VerticalAlignment="Center"/>
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding ThemeOptions}"
+                                  SelectedItem="{Binding SelectedTheme}"
+                                  VerticalAlignment="Center"
+                                  MinWidth="130"/>
 
                     </Grid>
 
