@@ -1,6 +1,8 @@
+
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
+             xmlns:loc="using:PCRemote.Desktop.Localization"
              x:Class="PCRemote.Desktop.Views.Pages.LogsPage"
              x:DataType="vm:LogsPageViewModel">
 
@@ -10,11 +12,11 @@
         <!-- Заголовок -->
         <StackPanel Grid.Row="0"
                     Spacing="4">
-            <TextBlock Text="Logs"
+            <TextBlock Text="{loc:Loc Key=Logs_Title}"
                        FontSize="28"
                        FontWeight="Bold"/>
 
-            <TextBlock Text="Application and agent activity"
+            <TextBlock Text="{loc:Loc Key=Logs_Description}"
                        Foreground="{DynamicResource SecondaryText}"/>
         </StackPanel>
 
@@ -23,12 +25,12 @@
               ColumnDefinitions="*,Auto"
               ColumnSpacing="12">
 
-            <TextBox PlaceholderText="Search messages, sources, exceptions..."
+            <TextBox PlaceholderText="{loc:Loc Key=Logs_SearchPlaceholder}"
                      Text="{Binding SearchText, Mode=TwoWay}"
                      VerticalContentAlignment="Center"/>
 
             <Button Grid.Column="1"
-                    Content="Export"
+                    Content="{loc:Loc Key=Logs_Export}"
                     Click="OnExportClick"
                     VerticalAlignment="Center"/>
         </Grid>
@@ -49,7 +51,7 @@
                       HorizontalAlignment="Stretch"/>
 
             <Button Grid.Column="2"
-                    Content="Clear filters"
+                    Content="{loc:Loc Key=Logs_ClearFilters}"
                     Command="{Binding ResetFiltersCommand}"
                     VerticalAlignment="Center"/>
         </Grid>
@@ -63,7 +65,7 @@
                 Padding="16">
 
             <Grid>
-                <TextBlock Text="Loading logs..."
+                <TextBlock Text="{loc:Loc Key=Logs_Loading}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            IsVisible="{Binding IsLoading}"/>
@@ -74,7 +76,7 @@
                            VerticalAlignment="Center"
                            IsVisible="{Binding ErrorMessage}"/>
 
-                <TextBlock Text="No log entries found."
+                <TextBlock Text="{loc:Loc Key=Logs_Empty}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
                            IsVisible="{Binding FilteredEntries.Count, Converter={x:Static ObjectConverters.IsNull}}"/>

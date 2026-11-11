@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -18,22 +20,31 @@ using PCRemote.Desktop.ViewModels.Pages;
 using PCRemote.Desktop.Views;
 using System.Threading;
 using System.Runtime.InteropServices;
+using PCRemote.Desktop.Localization;
 
 namespace PCRemote.Desktop;
 
 public partial class App : Application
 {
     private IHost? _host;
+
     private AgentRuntime? _agentRuntime;
     private AgentStatus? _agentStatus;
+
     private MainViewModel? _mainViewModel;
+
     private NativeMenuItem? _startAgentMenuItem;
     private NativeMenuItem? _stopAgentMenuItem;
+
     private bool _startMinimized;
+    private bool _restartRequested;
+    private bool _shutdownPrepared;
+
     private Mutex? _instanceMutex;
 
     public override void Initialize()
     {
+        LocalizationManager.Initialize();
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -43,15 +54,15 @@ public partial class App : Application
         {
             // приложение может работать без открытых окон
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            
+
             _startMinimized = desktop.Args.Contains(
                 "--minimized",
                 StringComparer.OrdinalIgnoreCase);
-            
+
             bool createdNew;
 
             _instanceMutex = new Mutex(
-                initiallyOwned: true,
+                initiallyOwned: false,
                 name: "PCRemote.Desktop.SingleInstance",
                 createdNew: out createdNew);
 
@@ -65,12 +76,12 @@ public partial class App : Application
                 base.OnFrameworkInitializationCompleted();
                 return;
             }
-            
+
             _host = AgentHost.Build([]);
 
             _agentRuntime = _host.Services.GetRequiredService<AgentRuntime>();
             _agentStatus = _host.Services.GetRequiredService<AgentStatus>();
-            
+
             SetDockVisibility(false);
             InitializeTray();
 
@@ -95,10 +106,7 @@ public partial class App : Application
 
             setupViewModel.SetupCompleted += () =>
             {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    ShowMainWindow(desktop, setupWindow);
-                });
+                Dispatcher.UIThread.Post(() => { ShowMainWindow(desktop, setupWindow); });
             };
 
             setupWindow.Opened += async (_, _) =>
@@ -128,7 +136,7 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
-    
+
 
     [DllImport("/usr/lib/libobjc.A.dylib", EntryPoint = "objc_getClass")]
     private static extern IntPtr objc_getClass(
@@ -148,7 +156,7 @@ public partial class App : Application
         IntPtr receiver,
         IntPtr selector,
         nint policy);
-    
+
     private static void SetDockVisibility(bool visible)
     {
         if (!OperatingSystem.IsMacOS())
@@ -246,7 +254,7 @@ public partial class App : Application
                 $"Startup error: {exception.Message}";
         }
     }
-    
+
     private void ShowMainWindow(
         IClassicDesktopStyleApplicationLifetime desktop,
         SetupWindow setupWindow)
@@ -278,7 +286,7 @@ public partial class App : Application
 
         UpdateTrayMenuState();
     }
-    
+
     private MainWindow CreateMainWindow()
     {
         var homePage = new HomePageViewModel(
@@ -289,42 +297,38 @@ public partial class App : Application
             _agentRuntime!,
             _host!.Services.GetRequiredService<TelegramSetupService>(),
             _host.Services.GetRequiredService<IAutoStartService>());
-        
-        settingsPage.DisconnectCompleted += () =>
-        {
-            Dispatcher.UIThread.Post(ShowSetupWindowAfterDisconnect);
-        };
-        
+
+        settingsPage.RestartRequested += RequestRestart;
+
+        settingsPage.DisconnectCompleted += () => { Dispatcher.UIThread.Post(ShowSetupWindowAfterDisconnect); };
+
         var logsPage = new LogsPageViewModel(
             _host!.Services.GetRequiredService<PCRemote.Core.Interfaces.Logging.ILogReader>(),
             _host.Services.GetRequiredService<PCRemote.Core.Interfaces.Logging.ILogWatcher>());
-        
+
         var aboutPage = new AboutPageViewModel();
-        
+
         _mainViewModel = new MainViewModel(
             homePage,
             settingsPage,
             logsPage,
             aboutPage);
-        
+
         var mainWindow = new MainWindow
         {
             DataContext = _mainViewModel
         };
 
-        mainWindow.WindowHidden += () =>
-        {
-            SetDockVisibility(false);
-        };
+        mainWindow.WindowHidden += () => { SetDockVisibility(false); };
 
         return mainWindow;
     }
-    
+
     private void ShowSetupWindowAfterDisconnect()
     {
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
             return;
-        
+
         var oldWindow = desktop.MainWindow as MainWindow;
 
         var setupViewModel = new SetupViewModel(
@@ -338,10 +342,7 @@ public partial class App : Application
 
         setupViewModel.SetupCompleted += () =>
         {
-            Dispatcher.UIThread.Post(() =>
-            {
-                ShowMainWindow(desktop, setupWindow);
-            });
+            Dispatcher.UIThread.Post(() => { ShowMainWindow(desktop, setupWindow); });
         };
 
         desktop.MainWindow = setupWindow;
@@ -352,7 +353,7 @@ public partial class App : Application
         {
             // получаем окно через сохранённую ссылку
         }
-        
+
         if (oldWindow is not null)
         {
             oldWindow.IsExiting = true;
@@ -388,7 +389,7 @@ public partial class App : Application
 
         await _mainViewModel.HomePage.StopAgentCommand.ExecuteAsync(null);
     }
-    
+
     private void Exit_Click(object? sender, EventArgs e)
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -401,19 +402,30 @@ public partial class App : Application
         object? sender,
         ControlledApplicationLifetimeExitEventArgs e)
     {
-        _instanceMutex?.ReleaseMutex();
-        _instanceMutex?.Dispose();
-        _instanceMutex = null;
-        
-        if (_agentRuntime is not null)
+        try
         {
-            await _agentRuntime.StopAsync();
-        }
+            // При перезапуске службы уже остановлены в RequestRestart().
+            if (!_shutdownPrepared)
+            {
+                if (_agentRuntime is not null)
+                    await _agentRuntime.StopAsync();
 
-        if (_host is not null)
+                if (_host is not null)
+                    await _host.StopAsync();
+            }
+        }
+        catch (Exception exception)
         {
-            await _host.StopAsync();
-            _host.Dispose();
+            Console.Error.WriteLine(
+                $"Application shutdown error: {exception}");
+        }
+        finally
+        {
+            _host?.Dispose();
+            _host = null;
+
+            _instanceMutex?.Dispose();
+            _instanceMutex = null;
         }
     }
 
@@ -429,5 +441,110 @@ public partial class App : Application
 
         if (_stopAgentMenuItem is not null)
             _stopAgentMenuItem.IsEnabled = isRunning;
+    }
+
+    private async void RequestRestart()
+    {
+        if (_restartRequested)
+            return;
+
+        _restartRequested = true;
+
+        try
+        {
+            Console.WriteLine("Preparing application restart...");
+
+            if (_agentRuntime is not null)
+                await _agentRuntime.StopAsync();
+
+            if (_host is not null)
+                await _host.StopAsync();
+
+            _shutdownPrepared = true;
+
+            Console.WriteLine("Application services stopped.");
+
+            StartNewInstance();
+
+            Console.WriteLine("Restart helper launched.");
+
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                desktop.Shutdown();
+        }
+        catch (Exception exception)
+        {
+            _restartRequested = false;
+
+            Console.Error.WriteLine(
+                $"Application restart error: {exception}");
+        }
+    }
+
+    private static void StartNewInstance()
+    {
+        var processPath = Environment.ProcessPath;
+
+        if (string.IsNullOrWhiteSpace(processPath))
+            throw new InvalidOperationException(
+                "Unable to determine application executable path.");
+
+        if (OperatingSystem.IsMacOS())
+        {
+            var script = "while /bin/kill -0 \"$1\" 2>/dev/null; do /bin/sleep 0.2; done; shift; exec \"$@\"";
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "/bin/bash",
+                UseShellExecute = false
+            };
+
+            startInfo.ArgumentList.Add("-c");
+            startInfo.ArgumentList.Add(script);
+            startInfo.ArgumentList.Add("PCRemoteRestart");
+            startInfo.ArgumentList.Add(Environment.ProcessId.ToString());
+            startInfo.ArgumentList.Add(processPath);
+
+            foreach (var argument in Environment.GetCommandLineArgs().Skip(1))
+            {
+                startInfo.ArgumentList.Add(argument);
+            }
+
+            var process = Process.Start(startInfo);
+
+            if (process is null)
+                throw new InvalidOperationException(
+                    "Failed to start restart helper.");
+
+            Console.WriteLine($"Restart helper PID: {process.Id}");
+
+            return;
+        }
+
+        var arguments = Environment.GetCommandLineArgs();
+
+        var isDotnetHost = string.Equals(
+            Path.GetFileNameWithoutExtension(processPath),
+            "dotnet",
+            StringComparison.OrdinalIgnoreCase);
+
+        var windowsStartInfo = new ProcessStartInfo
+        {
+            FileName = processPath,
+            WorkingDirectory = AppContext.BaseDirectory,
+            UseShellExecute = false
+        };
+
+        var firstArgumentIndex = isDotnetHost ? 0 : 1;
+
+        for (var i = firstArgumentIndex; i < arguments.Length; i++)
+        {
+            windowsStartInfo.ArgumentList.Add(arguments[i]);
+        }
+
+        var windowsProcess = Process.Start(windowsStartInfo);
+
+        if (windowsProcess is null)
+            throw new InvalidOperationException(
+                "Failed to start application process.");
     }
 }

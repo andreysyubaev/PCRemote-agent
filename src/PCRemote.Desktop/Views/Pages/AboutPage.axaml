@@ -1,16 +1,19 @@
+
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
+             xmlns:loc="using:PCRemote.Desktop.Localization"
              x:Class="PCRemote.Desktop.Views.Pages.AboutPage"
              x:DataType="vm:AboutPageViewModel">
 
     <StackPanel Spacing="20">
+
         <StackPanel Spacing="4">
-            <TextBlock Text="About"
+            <TextBlock Text="{loc:Loc Key=About_Title}"
                        FontSize="28"
                        FontWeight="Bold"/>
 
-            <TextBlock Text="Information about PCRemote"
+            <TextBlock Text="{loc:Loc Key=About_Description}"
                        Foreground="{DynamicResource SecondaryText}"/>
         </StackPanel>
 
@@ -19,7 +22,7 @@
                        FontSize="24"
                        FontWeight="Bold"/>
 
-            <TextBlock Text="Remote PC management through Telegram."
+            <TextBlock Text="{loc:Loc Key=About_ProjectDescription}"
                        FontSize="14"
                        Foreground="{DynamicResource SecondaryText}"/>
         </StackPanel>
@@ -31,16 +34,17 @@
                 Padding="16">
 
             <StackPanel Spacing="16">
-                <TextBlock Text="Project"
+
+                <TextBlock Text="{loc:Loc Key=About_Project}"
                            FontSize="16"
                            FontWeight="SemiBold"/>
 
-                <Button Content="GitHub Repository"
+                <Button Content="{loc:Loc Key=About_GitHub}"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Click="OnGitHubClick"/>
 
-                <TextBlock Text="Contact"
+                <TextBlock Text="{loc:Loc Key=About_Contact}"
                            FontSize="16"
                            FontWeight="SemiBold"
                            Margin="0,8,0,0"/>
@@ -49,7 +53,9 @@
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Left"
                         Click="OnTelegramClick"/>
+
             </StackPanel>
         </Border>
+
     </StackPanel>
 </UserControl>

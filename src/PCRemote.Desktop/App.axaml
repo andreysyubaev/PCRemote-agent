@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PCRemote.Desktop.App"
              xmlns:local="using:PCRemote.Desktop"
+             xmlns:loc="using:PCRemote.Desktop.Localization"
              RequestedThemeVariant="Light">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -53,23 +54,23 @@
 
                 <TrayIcon.Menu>
                     <NativeMenu>
-                        <NativeMenuItem Header="PCRemote"
+                        <NativeMenuItem Header="{loc:Loc Key=App_Name}"
                                         IsEnabled="False" />
 
                         <NativeMenuItemSeparator />
 
-                        <NativeMenuItem Header="Open PCRemote"
+                        <NativeMenuItem Header="{loc:Loc Key=Tray_Open}"
                                         Click="OpenPCRemote_Click"/>
 
-                        <NativeMenuItem Header="Start Agent"
+                        <NativeMenuItem Header="{loc:Loc Key=Tray_StartAgent}"
                                         Click="StartAgent_Click"/>
 
-                        <NativeMenuItem Header="Stop Agent"
+                        <NativeMenuItem Header="{loc:Loc Key=Tray_StopAgent}"
                                         Click="StopAgent_Click"/>
 
                         <NativeMenuItemSeparator />
 
-                        <NativeMenuItem Header="Exit"
+                        <NativeMenuItem Header="{loc:Loc Key=Tray_Exit}"
                                         Click="Exit_Click" />
                     </NativeMenu>
                 </TrayIcon.Menu>

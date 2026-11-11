@@ -2,13 +2,14 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
+             xmlns:loc="using:PCRemote.Desktop.Localization"
              x:Class="PCRemote.Desktop.Views.Pages.SettingsPage"
              x:DataType="vm:SettingsPageViewModel">
 
     <ScrollViewer>
         <StackPanel Spacing="20">
 
-            <TextBlock Text="Settings"
+            <TextBlock Text="{loc:Loc Key=Settings_Title}"
                        FontSize="28"
                        FontWeight="Bold"/>
 
@@ -21,28 +22,71 @@
 
                 <StackPanel Spacing="16">
 
-                    <TextBlock Text="Appearance"
+                    <TextBlock Text="{loc:Loc Key=Settings_Appearance}"
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
                     <Grid ColumnDefinitions="*,Auto">
 
                         <StackPanel Spacing="4">
-                            <TextBlock Text="Theme"
+                            <TextBlock Text="{loc:Loc Key=Settings_Theme}"
                                        FontWeight="Medium"/>
 
-                            <TextBlock Text="Choose the application color scheme."
+                            <TextBlock Text="{loc:Loc Key=Settings_ThemeDescription}"
                                        Foreground="{DynamicResource SecondaryText}"
                                        TextWrapping="Wrap"/>
                         </StackPanel>
 
                         <ComboBox Grid.Column="1"
                                   ItemsSource="{Binding ThemeOptions}"
-                                  SelectedItem="{Binding SelectedTheme}"
+                                  SelectedIndex="{Binding SelectedThemeIndex}"
                                   VerticalAlignment="Center"
                                   MinWidth="130"/>
 
                     </Grid>
+                    
+                    <!-- Language -->
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{loc:Loc Key=Settings_Language}"
+                                       FontWeight="Medium"/>
+
+                            <TextBlock Text="{loc:Loc Key=Settings_LanguageDescription}"
+                                       Foreground="{DynamicResource SecondaryText}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding LanguageOptions}"
+                                  SelectedIndex="{Binding SelectedLanguageIndex}"
+                                  VerticalAlignment="Center"
+                                  MinWidth="130"/>
+
+                    </Grid>
+
+                    <!-- Language restart notification -->
+                    <Border Background="{DynamicResource AppBackground}"
+                            CornerRadius="8"
+                            Padding="16"
+                            IsVisible="{Binding IsLanguageChangePending}">
+
+                        <StackPanel Spacing="12">
+
+                            <TextBlock Text="{loc:Loc Key=Settings_LanguageRestartTitle}"
+                                       FontWeight="SemiBold"
+                                       FontSize="16"/>
+
+                            <TextBlock Text="{loc:Loc Key=Settings_LanguageRestartDescription}"
+                                       Foreground="{DynamicResource SecondaryText}"
+                                       TextWrapping="Wrap"/>
+
+                            <Button Content="{loc:Loc Key=Settings_RestartApplication}"
+                                    Command="{Binding RestartApplicationCommand}"
+                                    HorizontalAlignment="Left"/>
+
+                        </StackPanel>
+                    </Border>
 
                 </StackPanel>
             </Border>
@@ -56,17 +100,17 @@
 
                 <StackPanel Spacing="16">
 
-                    <TextBlock Text="Application startup"
+                    <TextBlock Text="{loc:Loc Key=Settings_Startup}"
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
                     <Grid ColumnDefinitions="*,Auto">
 
                         <StackPanel Spacing="4">
-                            <TextBlock Text="Launch at system startup"
+                            <TextBlock Text="{loc:Loc Key=Settings_AutoStart}"
                                        FontWeight="Medium"/>
 
-                            <TextBlock Text="Automatically start PCRemote when you sign in to your computer."
+                            <TextBlock Text="{loc:Loc Key=Settings_AutoStartDescription}"
                                        Foreground="{DynamicResource SecondaryText}"
                                        TextWrapping="Wrap"/>
                         </StackPanel>
@@ -93,15 +137,15 @@
 
                 <StackPanel Spacing="16">
 
-                    <TextBlock Text="Telegram"
+                    <TextBlock Text="{loc:Loc Key=Settings_Telegram}"
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
-                    <TextBlock Text="Disconnect the current Telegram bot and remove its saved configuration."
+                    <TextBlock Text="{loc:Loc Key=Settings_DisconnectDescription}"
                                Foreground="{DynamicResource SecondaryText}"
                                TextWrapping="Wrap"/>
 
-                    <Button Content="Disconnect Telegram Bot"
+                    <Button Content="{loc:Loc Key=Settings_DisconnectBot}"
                             Command="{Binding ShowDisconnectConfirmationCommand}"
                             HorizontalAlignment="Left"
                             IsEnabled="{Binding !IsBusy}"/>
@@ -114,22 +158,22 @@
 
                         <StackPanel Spacing="12">
 
-                            <TextBlock Text="Are you sure?"
+                            <TextBlock Text="{loc:Loc Key=Settings_ConfirmTitle}"
                                        FontWeight="SemiBold"
                                        FontSize="16"/>
 
-                            <TextBlock Text="The agent will stop, and the saved bot token and account pairing will be deleted. You will need to connect a bot again."
+                            <TextBlock Text="{loc:Loc Key=Settings_ConfirmDescription}"
                                        TextWrapping="Wrap"
                                        Foreground="{DynamicResource SecondaryText}"/>
 
                             <StackPanel Orientation="Horizontal"
                                         Spacing="10">
 
-                                <Button Content="Cancel"
+                                <Button Content="{loc:Loc Key=Common_Cancel}"
                                         Command="{Binding CancelDisconnectCommand}"
                                         IsEnabled="{Binding !IsBusy}"/>
 
-                                <Button Content="Disconnect"
+                                <Button Content="{loc:Loc Key=Common_Disconnect}"
                                         Command="{Binding ConfirmDisconnectCommand}"
                                         IsEnabled="{Binding !IsBusy}"/>
 

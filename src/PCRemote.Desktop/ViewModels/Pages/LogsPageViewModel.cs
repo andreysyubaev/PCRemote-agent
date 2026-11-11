@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PCRemote.Core.Interfaces.Logging;
 using PCRemote.Core.Models.Logging;
+using PCRemote.Desktop.Localization;
 
 namespace PCRemote.Desktop.ViewModels.Pages;
 
@@ -20,13 +21,19 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
 
     private bool _reloadRequested;
 
+    private static string AllLevels =>
+        LocalizationManager.GetString("Logs_AllLevels");
+
+    private static string AllSources =>
+        LocalizationManager.GetString("Logs_AllSources");
+
     public ObservableCollection<LogEntry> Entries { get; } = new();
 
     public ObservableCollection<LogEntry> FilteredEntries { get; } = new();
 
     public ObservableCollection<string> Levels { get; } =
     [
-        "All levels",
+        AllLevels,
         "VRB",
         "DBG",
         "INF",
@@ -37,7 +44,7 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
 
     public ObservableCollection<string> Sources { get; } =
     [
-        "All sources"
+        AllSources
     ];
 
     [ObservableProperty]
@@ -50,10 +57,10 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
     public partial string SearchText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string SelectedLevel { get; set; } = "All levels";
+    public partial string SelectedLevel { get; set; } = AllLevels;
 
     [ObservableProperty]
-    public partial string SelectedSource { get; set; } = "All sources";
+    public partial string SelectedSource { get; set; } = AllSources;
 
     public LogsPageViewModel(
         ILogReader logReader,
@@ -114,7 +121,7 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
         }
         catch (Exception)
         {
-            ErrorMessage = "Не удалось загрузить журналы событий.";
+            ErrorMessage = LocalizationManager.GetString("Logs_LoadError");
         }
         finally
         {
@@ -170,21 +177,21 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
             .ToList();
 
         Sources.Clear();
-        Sources.Add("All sources");
+        Sources.Add(AllSources);
 
         foreach (var source in availableSources)
         {
             Sources.Add(source);
         }
 
-        if (currentSource != "All sources" &&
+        if (currentSource != AllSources &&
             Sources.Contains(currentSource))
         {
             SelectedSource = currentSource;
         }
         else
         {
-            SelectedSource = "All sources";
+            SelectedSource = AllSources;
         }
     }
 
@@ -196,13 +203,13 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
 
         foreach (var entry in Entries)
         {
-            if (SelectedLevel != "All levels" &&
+            if (SelectedLevel != AllLevels &&
                 entry.Level != SelectedLevel)
             {
                 continue;
             }
 
-            if (SelectedSource != "All sources" &&
+            if (SelectedSource != AllSources &&
                 entry.Source != SelectedSource)
             {
                 continue;
@@ -229,8 +236,8 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
     private void ResetFilters()
     {
         SearchText = string.Empty;
-        SelectedLevel = "All levels";
-        SelectedSource = "All sources";
+        SelectedLevel = AllLevels;
+        SelectedSource = AllSources;
     }
 
     private static bool AreEqual(LogEntry first, LogEntry second)

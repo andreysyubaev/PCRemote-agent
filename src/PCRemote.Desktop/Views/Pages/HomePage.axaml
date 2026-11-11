@@ -1,13 +1,15 @@
+
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
+             xmlns:loc="using:PCRemote.Desktop.Localization"
              x:Class="PCRemote.Desktop.Views.Pages.HomePage"
              x:DataType="vm:HomePageViewModel">
 
     <ScrollViewer>
         <StackPanel Spacing="20">
 
-            <TextBlock Text="Dashboard"
+            <TextBlock Text="{loc:Loc Key=Home_Title}"
                        FontSize="28"
                        FontWeight="Bold"/>
 
@@ -19,26 +21,23 @@
 
                 <StackPanel Spacing="12">
 
-                    <TextBlock Text="Agent status"
+                    <TextBlock Text="{loc:Loc Key=Home_AgentStatus}"
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
-                    <TextBlock Text="{Binding AgentStatus.IsRunning,
-                                               StringFormat='Running: {0}'}"/>
+                    <TextBlock Text="{Binding RunningStatusText}"/>
 
-                    <TextBlock Text="{Binding AgentStatus.IsTelegramConnected,
-                                               StringFormat='Telegram connected: {0}'}"/>
+                    <TextBlock Text="{Binding TelegramConnectedText}"/>
 
-                    <TextBlock Text="{Binding AgentStatus.IsPaired,
-                                               StringFormat='Account paired: {0}'}"/>
+                    <TextBlock Text="{Binding AccountPairedText}"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="10">
 
-                        <Button Content="Start Agent"
+                        <Button Content="{loc:Loc Key=Home_StartAgent}"
                                 Command="{Binding StartAgentCommand}"
                                 IsEnabled="{Binding CanStartAgent}"/>
 
-                        <Button Content="Stop Agent"
+                        <Button Content="{loc:Loc Key=Home_StopAgent}"
                                 Command="{Binding StopAgentCommand}"
                                 IsEnabled="{Binding CanStopAgent}"/>
 
@@ -56,7 +55,7 @@
 
                 <StackPanel Spacing="12">
 
-                    <TextBlock Text="Telegram pairing"
+                    <TextBlock Text="{loc:Loc Key=Home_TelegramPairing}"
                                FontSize="18"
                                FontWeight="SemiBold"/>
 
@@ -69,17 +68,17 @@
                                    FontWeight="Bold"
                                    VerticalAlignment="Center"/>
 
-                        <Button Content="Copy"
+                        <Button Content="{loc:Loc Key=Common_Copy}"
                                 VerticalAlignment="Center"
                                 Click="OnCopyPairingCodeClick"/>
 
                     </StackPanel>
 
                     <TextBlock Text="{Binding RemainingPairingTime,
-                                               StringFormat='Expires in: {0}'}"
+                                               StringFormat={loc:Loc Key=Home_PairingExpiresIn}}"
                                HorizontalAlignment="Center"/>
 
-                    <TextBlock Text="Open your Telegram bot and send /pair followed by the code."
+                    <TextBlock Text="{loc:Loc Key=Home_PairingInstructions}"
                                TextWrapping="Wrap"/>
 
                 </StackPanel>

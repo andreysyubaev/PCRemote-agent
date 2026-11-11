@@ -1,8 +1,10 @@
+
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PCRemote.Desktop.ViewModels"
         xmlns:pages="using:PCRemote.Desktop.Views.Pages"
         xmlns:pagesVm="using:PCRemote.Desktop.ViewModels.Pages"
+        xmlns:loc="using:PCRemote.Desktop.Localization"
         x:Class="PCRemote.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="PCRemote"
@@ -21,11 +23,11 @@
         <DataTemplate DataType="pagesVm:SettingsPageViewModel">
             <pages:SettingsPage/>
         </DataTemplate>
-        
+
         <DataTemplate DataType="pagesVm:LogsPageViewModel">
             <pages:LogsPage/>
         </DataTemplate>
-        
+
         <DataTemplate DataType="pagesVm:AboutPageViewModel">
             <pages:AboutPage/>
         </DataTemplate>
@@ -47,19 +49,19 @@
                            FontWeight="Bold"
                            Margin="4,8,4,24"/>
 
-                <Button Content="Home"
+                <Button Content="{loc:Loc Key=Navigation_Home}"
                         Command="{Binding NavigateHomeCommand}"
                         HorizontalAlignment="Stretch"/>
 
-                <Button Content="Settings"
+                <Button Content="{loc:Loc Key=Navigation_Settings}"
                         Command="{Binding NavigateSettingsCommand}"
                         HorizontalAlignment="Stretch"/>
-                
-                <Button Content="Logs"
+
+                <Button Content="{loc:Loc Key=Navigation_Logs}"
                         Command="{Binding NavigateLogsCommand}"
                         HorizontalAlignment="Stretch"/>
-                
-                <Button Content="About"
+
+                <Button Content="{loc:Loc Key=Navigation_About}"
                         Command="{Binding NavigateAboutCommand}"
                         HorizontalAlignment="Stretch"/>
 

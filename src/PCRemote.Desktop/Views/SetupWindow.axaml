@@ -1,9 +1,11 @@
+
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PCRemote.Desktop.ViewModels"
+        xmlns:loc="using:PCRemote.Desktop.Localization"
         x:Class="PCRemote.Desktop.Views.SetupWindow"
         x:DataType="vm:SetupViewModel"
-        Title="PCRemote Setup"
+        Title="{loc:Loc Key=Setup_Title}"
         Width="520"
         Height="420"
         MinWidth="460"
@@ -27,16 +29,16 @@
                            FontWeight="Bold"
                            HorizontalAlignment="Center"/>
 
-                <TextBlock Text="Connect your Telegram bot"
+                <TextBlock Text="{loc:Loc Key=Setup_Description}"
                            FontSize="16"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,12"/>
 
                 <TextBox Text="{Binding BotToken}"
-                         PlaceholderText="Enter Telegram bot token"
+                         PlaceholderText="{loc:Loc Key=Setup_TokenPlaceholder}"
                          PasswordChar="●"/>
 
-                <Button Content="Connect"
+                <Button Content="{loc:Loc Key=Common_Connect}"
                         Command="{Binding ConnectTelegramCommand}"
                         IsEnabled="{Binding !IsBusy}"
                         HorizontalAlignment="Stretch"/>
@@ -49,7 +51,7 @@
             </StackPanel>
         </Border>
 
-        <Button Content="Toggle theme"
+        <Button Content="{loc:Loc Key=Common_ToggleTheme}"
                 Click="ToggleTheme_Click"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"

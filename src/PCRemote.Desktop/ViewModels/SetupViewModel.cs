@@ -1,9 +1,11 @@
+
 using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PCRemote.Agent.Configuration;
 using PCRemote.Agent.Runtime;
+using PCRemote.Desktop.Localization;
 
 namespace PCRemote.Desktop.ViewModels;
 
@@ -18,6 +20,8 @@ public partial class SetupViewModel : ViewModelBase
     {
         _telegramSetupService = telegramSetupService;
         _agentRuntime = agentRuntime;
+
+        StatusMessage = LocalizationManager.GetString("Setup_InitialStatus");
     }
 
     [ObservableProperty]
@@ -27,8 +31,7 @@ public partial class SetupViewModel : ViewModelBase
     public partial string BotUsername { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string StatusMessage { get; set; }
-        = "Enter your Telegram bot token.";
+    public partial string StatusMessage { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
@@ -40,14 +43,14 @@ public partial class SetupViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(BotToken))
         {
-            StatusMessage = "Please enter your bot token.";
+            StatusMessage = LocalizationManager.GetString("Setup_EmptyToken");
             return;
         }
 
         try
         {
             IsBusy = true;
-            StatusMessage = "Connecting to Telegram...";
+            StatusMessage = LocalizationManager.GetString("Setup_Connecting");
 
             BotUsername = await _telegramSetupService.SetupAsync(BotToken);
 
@@ -55,7 +58,9 @@ public partial class SetupViewModel : ViewModelBase
 
             BotToken = string.Empty;
 
-            StatusMessage = $"Connected to @{BotUsername}. Token saved.";
+            StatusMessage = string.Format(
+                LocalizationManager.GetString("Setup_Connected"),
+                BotUsername);
 
             SetupCompleted?.Invoke();
         }

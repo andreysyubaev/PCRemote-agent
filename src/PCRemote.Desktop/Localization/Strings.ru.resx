@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+    </resheader>
+
+    <data name="App_Name" xml:space="preserve">
+    <value>PCRemote</value>
+  </data>
+    <data name="Tray_Open" xml:space="preserve">
+    <value>Открыть PCRemote</value>
+  </data>
+    <data name="Tray_StartAgent" xml:space="preserve">
+    <value>Запустить агент</value>
+  </data>
+    <data name="Tray_StopAgent" xml:space="preserve">
+    <value>Остановить агент</value>
+  </data>
+    <data name="Tray_Exit" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+
+    <data name="Setup_Title" xml:space="preserve">
+    <value>Настройка PCRemote</value>
+</data>
+    <data name="Setup_Description" xml:space="preserve">
+    <value>Подключите своего Telegram-бота</value>
+</data>
+    <data name="Setup_TokenPlaceholder" xml:space="preserve">
+    <value>Введите токен Telegram-бота</value>
+</data>
+    <data name="Common_Connect" xml:space="preserve">
+    <value>Подключить</value>
+</data>
+    <data name="Common_ToggleTheme" xml:space="preserve">
+    <value>Переключить тему</value>
+</data>
+
+    <data name="Navigation_Home" xml:space="preserve">
+    <value>Главная</value>
+</data>
+    <data name="Navigation_Settings" xml:space="preserve">
+    <value>Настройки</value>
+</data>
+    <data name="Navigation_Logs" xml:space="preserve">
+    <value>Журнал</value>
+</data>
+    <data name="Navigation_About" xml:space="preserve">
+    <value>О приложении</value>
+</data>
+
+    <data name="Home_Title" xml:space="preserve">
+    <value>Панель управления</value>
+</data>
+    <data name="Home_AgentStatus" xml:space="preserve">
+    <value>Состояние агента</value>
+</data>
+    <data name="Home_StartAgent" xml:space="preserve">
+    <value>Запустить агента</value>
+</data>
+    <data name="Home_StopAgent" xml:space="preserve">
+    <value>Остановить агента</value>
+</data>
+    <data name="Home_TelegramPairing" xml:space="preserve">
+    <value>Привязка Telegram</value>
+</data>
+    <data name="Common_Copy" xml:space="preserve">
+    <value>Копировать</value>
+</data>
+    <data name="Home_PairingExpiresIn" xml:space="preserve">
+    <value>Истекает через: {0}</value>
+</data>
+    <data name="Home_PairingInstructions" xml:space="preserve">
+    <value>Откройте своего Telegram-бота и отправьте команду /pair, указав после неё код.</value>
+</data>
+
+    <data name="Common_Yes" xml:space="preserve">
+    <value>Да</value>
+</data>
+    <data name="Common_No" xml:space="preserve">
+    <value>Нет</value>
+</data>
+    <data name="Common_Error" xml:space="preserve">
+    <value>Ошибка</value>
+</data>
+    <data name="Home_Running" xml:space="preserve">
+    <value>Агент запущен: {0}</value>
+</data>
+    <data name="Home_TelegramConnected" xml:space="preserve">
+    <value>Telegram подключён: {0}</value>
+</data>
+    <data name="Home_AccountPaired" xml:space="preserve">
+    <value>Аккаунт привязан: {0}</value>
+</data>
+    <data name="Home_StatusReady" xml:space="preserve">
+    <value>PCRemote готов к работе.</value>
+</data>
+    <data name="Home_StatusStarting" xml:space="preserve">
+    <value>Запуск агента PCRemote...</value>
+</data>
+    <data name="Home_StatusStarted" xml:space="preserve">
+    <value>Агент PCRemote запущен.</value>
+</data>
+    <data name="Home_StatusStopping" xml:space="preserve">
+    <value>Остановка агента PCRemote...</value>
+</data>
+    <data name="Home_StatusStopped" xml:space="preserve">
+    <value>Агент PCRemote остановлен.</value>
+</data>
+
+    <data name="Settings_Title" xml:space="preserve">
+    <value>Настройки</value>
+</data>
+    <data name="Settings_Appearance" xml:space="preserve">
+    <value>Оформление</value>
+</data>
+    <data name="Settings_Theme" xml:space="preserve">
+    <value>Тема</value>
+</data>
+    <data name="Settings_ThemeDescription" xml:space="preserve">
+    <value>Выберите цветовую схему приложения.</value>
+</data>
+    <data name="Settings_Startup" xml:space="preserve">
+    <value>Запуск приложения</value>
+</data>
+    <data name="Settings_AutoStart" xml:space="preserve">
+    <value>Запускать вместе с системой</value>
+</data>
+    <data name="Settings_AutoStartDescription" xml:space="preserve">
+    <value>Автоматически запускать PCRemote при входе в систему.</value>
+</data>
+    <data name="Settings_Telegram" xml:space="preserve">
+    <value>Telegram</value>
+</data>
+    <data name="Settings_DisconnectDescription" xml:space="preserve">
+    <value>Отключить текущего Telegram-бота и удалить сохранённую конфигурацию.</value>
+</data>
+    <data name="Settings_DisconnectBot" xml:space="preserve">
+    <value>Отключить Telegram-бота</value>
+</data>
+    <data name="Settings_ConfirmTitle" xml:space="preserve">
+    <value>Вы уверены?</value>
+</data>
+    <data name="Settings_ConfirmDescription" xml:space="preserve">
+    <value>Агент будет остановлен, а сохранённый токен бота и привязка аккаунта будут удалены. Вам потребуется подключить бота заново.</value>
+</data>
+    <data name="Common_Cancel" xml:space="preserve">
+    <value>Отмена</value>
+</data>
+    <data name="Common_Disconnect" xml:space="preserve">
+    <value>Отключить</value>
+</data>
+
+    <data name="Settings_ThemeLight" xml:space="preserve">
+    <value>Светлая</value>
+</data>
+    <data name="Settings_ThemeDark" xml:space="preserve">
+    <value>Тёмная</value>
+</data>
+    <data name="Settings_ThemeSystem" xml:space="preserve">
+    <value>Системная</value>
+</data>
+    <data name="Settings_AutoStartEnabled" xml:space="preserve">
+    <value>Автозапуск включён.</value>
+</data>
+    <data name="Settings_AutoStartDisabled" xml:space="preserve">
+    <value>Автозапуск отключён.</value>
+</data>
+    <data name="Settings_AutoStartError" xml:space="preserve">
+    <value>Ошибка автозапуска: {0}</value>
+</data>
+    <data name="Settings_ThemeSaveError" xml:space="preserve">
+    <value>Ошибка сохранения темы: {0}</value>
+</data>
+    <data name="Settings_Disconnecting" xml:space="preserve">
+    <value>Отключение Telegram-бота...</value>
+</data>
+    <data name="Settings_Disconnected" xml:space="preserve">
+    <value>Telegram-бот отключён.</value>
+</data>
+    <data name="Settings_DisconnectError" xml:space="preserve">
+    <value>Ошибка отключения: {0}</value>
+</data>
+
+    <data name="Logs_Title" xml:space="preserve">
+  <value>Журнал</value>
+</data>
+    <data name="Logs_Description" xml:space="preserve">
+  <value>Активность приложения и агента</value>
+</data>
+    <data name="Logs_SearchPlaceholder" xml:space="preserve">
+  <value>Поиск сообщений, источников, исключений...</value>
+</data>
+    <data name="Logs_Export" xml:space="preserve">
+  <value>Экспорт</value>
+</data>
+    <data name="Logs_ClearFilters" xml:space="preserve">
+  <value>Сбросить фильтры</value>
+</data>
+    <data name="Logs_Loading" xml:space="preserve">
+  <value>Загрузка журнала...</value>
+</data>
+    <data name="Logs_Empty" xml:space="preserve">
+  <value>Записи не найдены.</value>
+</data>
+
+    <data name="Logs_AllLevels" xml:space="preserve">
+  <value>Все уровни</value>
+</data>
+    <data name="Logs_AllSources" xml:space="preserve">
+  <value>Все источники</value>
+</data>
+    <data name="Logs_LoadError" xml:space="preserve">
+  <value>Не удалось загрузить записи журнала.</value>
+</data>
+
+    <data name="About_Title" xml:space="preserve">
+  <value>О приложении</value>
+</data>
+    <data name="About_Description" xml:space="preserve">
+  <value>Информация о PCRemote</value>
+</data>
+    <data name="About_ProjectDescription" xml:space="preserve">
+  <value>Удалённое управление компьютером через Telegram.</value>
+</data>
+    <data name="About_Project" xml:space="preserve">
+  <value>Проект</value>
+</data>
+    <data name="About_GitHub" xml:space="preserve">
+  <value>Репозиторий GitHub</value>
+</data>
+    <data name="About_Contact" xml:space="preserve">
+  <value>Контакты</value>
+</data>
+
+    <data name="Setup_InitialStatus" xml:space="preserve">
+  <value>Введите токен Telegram-бота.</value>
+</data>
+    <data name="Setup_EmptyToken" xml:space="preserve">
+  <value>Пожалуйста, введите токен бота.</value>
+</data>
+    <data name="Setup_Connecting" xml:space="preserve">
+  <value>Подключение к Telegram...</value>
+</data>
+    <data name="Setup_Connected" xml:space="preserve">
+  <value>Подключено к @{0}. Токен сохранён.</value>
+</data>
+
+    <data name="Settings_Language" xml:space="preserve">
+  <value>Язык</value>
+</data>
+    <data name="Settings_LanguageDescription" xml:space="preserve">
+  <value>Язык интерфейса приложения.</value>
+</data>
+    <data name="Settings_LanguageSystem" xml:space="preserve">
+  <value>Системный</value>
+</data>
+    <data name="Settings_LanguageRussian" xml:space="preserve">
+  <value>Русский</value>
+</data>
+    <data name="Settings_LanguageEnglish" xml:space="preserve">
+  <value>English</value>
+</data>
+    <data name="Settings_LanguageSaveError" xml:space="preserve">
+  <value>Ошибка сохранения настроек языка: {0}</value>
+</data>
+
+    <data name="Settings_LanguageRestartTitle" xml:space="preserve">
+  <value>Требуется перезапуск</value>
+</data>
+    <data name="Settings_LanguageRestartDescription" xml:space="preserve">
+  <value>Перезапустите PCRemote, чтобы применить выбранный язык.</value>
+</data>
+    <data name="Settings_RestartApplication" xml:space="preserve">
+  <value>Перезапустить PCRemote</value>
+</data>
+</root>
