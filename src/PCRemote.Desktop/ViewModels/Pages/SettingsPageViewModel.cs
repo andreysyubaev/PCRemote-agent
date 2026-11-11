@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Styling;
@@ -17,6 +18,45 @@ public partial class SettingsPageViewModel : ViewModelBase
     private readonly IAutoStartService _autoStartService;
 
     private bool _isInitializingAutoStart;
+    
+    private static string GetThemeSettingsPath()
+    {
+        var appDataPath = OperatingSystem.IsMacOS()
+            ? Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Library",
+                "Application Support")
+            : Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData);
+
+        return Path.Combine(appDataPath, "PCRemote", "theme.txt");
+    }
+    
+    private static bool LoadThemePreference()
+    {
+        var path = GetThemeSettingsPath();
+
+        if (!File.Exists(path))
+        {
+            return Application.Current?.RequestedThemeVariant
+                   == ThemeVariant.Dark;
+        }
+
+        var savedTheme = File.ReadAllText(path);
+
+        return bool.TryParse(savedTheme, out var isDark)
+            ? isDark
+            : false;
+    }
+
+    private static void SaveThemePreference(bool isDark)
+    {
+        var path = GetThemeSettingsPath();
+
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
+        File.WriteAllText(path, isDark.ToString());
+    }
 
     public SettingsPageViewModel(
         AgentRuntime agentRuntime,
@@ -27,8 +67,7 @@ public partial class SettingsPageViewModel : ViewModelBase
         _telegramSetupService = telegramSetupService;
         _autoStartService = autoStartService;
 
-        IsDarkTheme = Application.Current?.RequestedThemeVariant
-            == ThemeVariant.Dark;
+        IsDarkTheme = LoadThemePreference();
 
         _isInitializingAutoStart = true;
         IsAutoStartEnabled = _autoStartService.IsEnabled();
@@ -65,6 +104,15 @@ public partial class SettingsPageViewModel : ViewModelBase
         app.RequestedThemeVariant = value
             ? ThemeVariant.Dark
             : ThemeVariant.Light;
+
+        try
+        {
+            SaveThemePreference(value);
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = $"Theme save error: {exception.Message}";
+        }
     }
 
     partial void OnIsAutoStartEnabledChanged(bool value)
