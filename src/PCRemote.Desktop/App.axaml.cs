@@ -298,10 +298,14 @@ public partial class App : Application
         var logsPage = new LogsPageViewModel(
             _host!.Services.GetRequiredService<PCRemote.Core.Interfaces.Logging.ILogReader>(),
             _host.Services.GetRequiredService<PCRemote.Core.Interfaces.Logging.ILogWatcher>());
+        
+        var aboutPage = new AboutPageViewModel();
+        
         _mainViewModel = new MainViewModel(
             homePage,
             settingsPage,
-            logsPage);
+            logsPage,
+            aboutPage);
         
         var mainWindow = new MainWindow
         {

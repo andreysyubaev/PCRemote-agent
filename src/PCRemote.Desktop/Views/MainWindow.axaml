@@ -25,6 +25,10 @@
         <DataTemplate DataType="pagesVm:LogsPageViewModel">
             <pages:LogsPage/>
         </DataTemplate>
+        
+        <DataTemplate DataType="pagesVm:AboutPageViewModel">
+            <pages:AboutPage/>
+        </DataTemplate>
     </Window.DataTemplates>
 
     <Grid ColumnDefinitions="220,*">
@@ -53,6 +57,10 @@
                 
                 <Button Content="Logs"
                         Command="{Binding NavigateLogsCommand}"
+                        HorizontalAlignment="Stretch"/>
+                
+                <Button Content="About"
+                        Command="{Binding NavigateAboutCommand}"
                         HorizontalAlignment="Stretch"/>
 
             </StackPanel>
