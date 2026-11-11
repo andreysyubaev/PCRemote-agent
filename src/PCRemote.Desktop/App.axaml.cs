@@ -388,6 +388,14 @@ public partial class App : Application
 
         await _mainViewModel.HomePage.StopAgentCommand.ExecuteAsync(null);
     }
+    
+    private void Exit_Click(object? sender, EventArgs e)
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.Shutdown();
+        }
+    }
 
     private async void OnDesktopExit(
         object? sender,

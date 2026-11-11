@@ -70,7 +70,7 @@
                         <NativeMenuItemSeparator />
 
                         <NativeMenuItem Header="Exit"
-                                        IsEnabled="False" />
+                                        Click="Exit_Click" />
                     </NativeMenu>
                 </TrayIcon.Menu>
 
