@@ -56,6 +56,10 @@ public static class AgentHost
         builder.Services.Configure<TelegramSettings>(
             builder.Configuration.GetSection(TelegramSettings.SectionName));
 
+        builder.Services.AddSingleton<
+            ITelegramBotClientFactory,
+            TelegramBotClientFactory>();
+
         builder.Services.AddTransient<Worker>();
         builder.Services.AddTransient<TelegramBotService>();
 

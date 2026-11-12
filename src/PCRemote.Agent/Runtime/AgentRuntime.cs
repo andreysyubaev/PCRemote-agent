@@ -57,13 +57,22 @@ public class AgentRuntime
         {
             _logger.LogError(exception, "Failed to start agent.");
 
-            await StopAsync(cancellationToken);
+            try
+            {
+                await StopAsync(CancellationToken.None);
+            }
+            catch (Exception stopException)
+            {
+                _logger.LogError(
+                    stopException,
+                    "Failed to clean up after agent startup failure.");
+            }
+
             throw;
         }
     }
 
-    public async Task StopAsync(
-        CancellationToken cancellationToken = default)
+    public async Task StopAsync(CancellationToken cancellationToken = default)
     {
         if (_scope is null)
         {
@@ -73,31 +82,56 @@ public class AgentRuntime
 
         _logger.LogInformation("Stopping agent...");
 
+        Exception? stopException = null;
+
         try
         {
             if (_telegramBotService is not null)
-                await _telegramBotService.StopAsync(cancellationToken);
+            {
+                try
+                {
+                    await _telegramBotService.StopAsync(cancellationToken);
+                }
+                catch (Exception exception)
+                {
+                    stopException = exception;
+                    _logger.LogError(exception, "Error while stopping Telegram bot.");
+                }
+            }
 
             if (_worker is not null)
-                await _worker.StopAsync(cancellationToken);
-        }
-        catch (Exception exception)
-        {
-            _logger.LogError(exception, "Error while stopping agent.");
-            throw;
+            {
+                try
+                {
+                    await _worker.StopAsync(cancellationToken);
+                }
+                catch (Exception exception)
+                {
+                    stopException ??= exception;
+                    _logger.LogError(exception, "Error while stopping worker.");
+                }
+            }
         }
         finally
         {
-            await _scope.Value.DisposeAsync();
+            try
+            {
+                await _scope.Value.DisposeAsync();
+            }
+            finally
+            {
+                _scope = null;
+                _worker = null;
+                _telegramBotService = null;
 
-            _scope = null;
-            _worker = null;
-            _telegramBotService = null;
+                _agentStatus.IsRunning = false;
+                _agentStatus.IsTelegramConnected = false;
 
-            _agentStatus.IsRunning = false;
-            _agentStatus.IsTelegramConnected = false;
-
-            _logger.LogInformation("Agent stopped.");
+                _logger.LogInformation("Agent stopped.");
+            }
         }
+
+        if (stopException is not null)
+            throw stopException;
     }
 }

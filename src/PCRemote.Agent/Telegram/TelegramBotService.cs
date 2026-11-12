@@ -17,20 +17,21 @@ public class TelegramBotService : BackgroundService
 {
     private readonly ILogger<TelegramBotService> _logger;
     private readonly ISecretStore _secretStore;
-    private TelegramBotClient _botClient = null!;
+    private ITelegramBotClient _botClient = null!;
     private readonly ISystemInfoProvider _systemInfoProvider;
     private readonly IScreenshotService _screenshotService;
     private readonly IPowerManager _powerManager;
     private readonly ConcurrentDictionary<string, PendingPowerAction>
         _pendingActions = new();
     private readonly TelegramSettings _settings;
+    private readonly ITelegramBotClientFactory _botClientFactory;
+    private readonly AgentStatus _agentStatus;
+    private static readonly TimeSpan PairingCodeLifetime =
+        TimeSpan.FromMinutes(5);
     private long? _allowedUserId;
     private string? _pairingCode;
     private DateTimeOffset _pairingCodeExpiresAt;
-    private static readonly TimeSpan PairingCodeLifetime =
-        TimeSpan.FromMinutes(5);
-    private readonly AgentStatus _agentStatus;
-
+    
     public TelegramBotService(
         ILogger<TelegramBotService> logger,
         ISecretStore secretStore,
@@ -38,7 +39,8 @@ public class TelegramBotService : BackgroundService
         ISystemInfoProvider systemInfoProvider,
         IScreenshotService screenshotService,
         IPowerManager powerManager,
-        AgentStatus agentStatus)
+        AgentStatus agentStatus,
+        ITelegramBotClientFactory botClientFactory)
     {
         _logger = logger;
         _secretStore = secretStore;
@@ -47,6 +49,7 @@ public class TelegramBotService : BackgroundService
         _screenshotService = screenshotService;
         _powerManager = powerManager;
         _agentStatus = agentStatus;
+        _botClientFactory = botClientFactory;
     }
 
     protected override async Task ExecuteAsync(
@@ -67,7 +70,7 @@ public class TelegramBotService : BackgroundService
             return;
         }
 
-        _botClient = new TelegramBotClient(botToken);
+        _botClient = _botClientFactory.Create(botToken);
         
         var storedUserId = await _secretStore.GetSecretAsync(
             SecretKeys.TelegramAllowedUserId,
