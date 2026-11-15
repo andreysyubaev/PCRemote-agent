@@ -8,33 +8,13 @@
 
     <Application.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-
-                <!-- Light Theme -->
-                <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="AppBackground" Color="#F5F6F8"/>
-                    <SolidColorBrush x:Key="SurfaceBackground" Color="#FFFFFF"/>
-                    <SolidColorBrush x:Key="PrimaryText" Color="#20242B"/>
-                    <SolidColorBrush x:Key="SecondaryText" Color="#737B87"/>
-                    <SolidColorBrush x:Key="Accent" Color="#5865F2"/>
-                    <SolidColorBrush x:Key="Success" Color="#249B68"/>
-                    <SolidColorBrush x:Key="Danger" Color="#D94B4B"/>
-                    <SolidColorBrush x:Key="Border" Color="#E6E8ED"/>
-                </ResourceDictionary>
-
-                <!-- Dark Theme -->
-                <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="AppBackground" Color="#171A21"/>
-                    <SolidColorBrush x:Key="SurfaceBackground" Color="#222630"/>
-                    <SolidColorBrush x:Key="PrimaryText" Color="#F0F2F5"/>
-                    <SolidColorBrush x:Key="SecondaryText" Color="#A0A8B5"/>
-                    <SolidColorBrush x:Key="Accent" Color="#5865F2"/>
-                    <SolidColorBrush x:Key="Success" Color="#35B982"/>
-                    <SolidColorBrush x:Key="Danger" Color="#F06B6B"/>
-                    <SolidColorBrush x:Key="Border" Color="#343A46"/>
-                </ResourceDictionary>
-
-            </ResourceDictionary.ThemeDictionaries>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://PCRemote.Desktop/Themes/Colors.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <FontFamily x:Key="Inter">
+                avares://PCRemote.Desktop/Assets/Fonts#Inter
+            </FontFamily>
         </ResourceDictionary>
     </Application.Resources>
     
@@ -44,7 +24,13 @@
 
     <Application.Styles>
         <FluentTheme />
-        <StyleInclude Source="avares://PCRemote.Desktop/Styles/Styles.axaml" />
+
+        <Style Selector="Window">
+            <Setter Property="TextElement.FontFamily"
+                    Value="{DynamicResource Inter}"/>
+        </Style>
+
+        <StyleInclude Source="avares://PCRemote.Desktop/Styles/Styles.axaml"/>
     </Application.Styles>
 
     <TrayIcon.Icons>

@@ -1,0 +1,58 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <ResourceDictionary.ThemeDictionaries>
+
+                <!-- Light Theme -->
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AppBackground" Color="#F6F6F7"/>
+                    <SolidColorBrush x:Key="SurfaceBackground" Color="#FFFFFF"/>
+                    <SolidColorBrush x:Key="SurfaceElevatedBackground" Color="#ECEDEF"/>
+                    <SolidColorBrush x:Key="PrimaryText" Color="#191B20"/>
+                    <SolidColorBrush x:Key="PrimaryInverseText" Color="#F5F5F5"/>
+                    <SolidColorBrush x:Key="SecondaryText" Color="#64191B20"/>
+                    <SolidColorBrush x:Key="MutedText" Color="#68707C"/>
+                    <SolidColorBrush x:Key="ButtonText" Color="#F5F5F5"/>
+                    <SolidColorBrush x:Key="ButtonTextDisabled" Color="#64F5F5F5"/>
+                    <SolidColorBrush x:Key="Accent" Color="#FF4401"/>
+                    <SolidColorBrush x:Key="AccentDisabled" Color="#32FF4401"/>
+                    <SolidColorBrush x:Key="Success" Color="#16803C"/>
+                    <SolidColorBrush x:Key="Danger" Color="#C6283D"/>
+                    <SolidColorBrush x:Key="Info" Color="#2459B8"/>
+                    <SolidColorBrush x:Key="Neutral" Color="#626B78"/>
+                    <SolidColorBrush x:Key="Debug" Color="#7046C8"/>
+                    <SolidColorBrush x:Key="Warning" Color="#946200"/>
+                    <SolidColorBrush x:Key="Fatal" Color="#C93600"/>
+                    <SolidColorBrush x:Key="Border" Color="#D9DCE1"/>
+                    
+                    <x:String x:Key="SvgIconCss">path, circle, rect { fill: #191B20 !important; }</x:String>
+                </ResourceDictionary>
+
+                <!-- Dark Theme -->
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AppBackground" Color="#111214"/>
+                    <SolidColorBrush x:Key="SurfaceBackground" Color="#1B1D21"/>
+                    <SolidColorBrush x:Key="SurfaceElevatedBackground" Color="#25282D"/>
+                    <SolidColorBrush x:Key="PrimaryText" Color="#F5F5F5"/>
+                    <SolidColorBrush x:Key="PrimaryInverseText" Color="#191B20"/>
+                    <SolidColorBrush x:Key="SecondaryText" Color="#64F5F5F5"/>
+                    <SolidColorBrush x:Key="MutedText" Color="#92969F"/>
+                    <SolidColorBrush x:Key="ButtonText" Color="#F5F5F5"/>
+                    <SolidColorBrush x:Key="ButtonTextDisabled" Color="#64F5F5F5"/>
+                    <SolidColorBrush x:Key="Accent" Color="#FF4401"/>
+                    <SolidColorBrush x:Key="AccentDisabled" Color="#32FF4401"/>
+                    <SolidColorBrush x:Key="Success" Color="#42DE80"/>
+                    <SolidColorBrush x:Key="Danger" Color="#FB7185"/>
+                    <SolidColorBrush x:Key="Info" Color="#60A5F2"/>
+                    <SolidColorBrush x:Key="Neutral" Color="#A1A1AA"/>
+                    <SolidColorBrush x:Key="Debug" Color="#A78BFA"/>
+                    <SolidColorBrush x:Key="Warning" Color="#FBBF24"/>
+                    <SolidColorBrush x:Key="Fatal" Color="#FF4401"/>
+                    <SolidColorBrush x:Key="Border" Color="#383B42"/>
+
+                    <x:String x:Key="SvgIconCss">path, circle, rect { fill: #F5F5F5 !important; }</x:String>
+                </ResourceDictionary>
+
+            </ResourceDictionary.ThemeDictionaries>
+    
+</ResourceDictionary>
