@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +15,7 @@ using PCRemote.Agent;
 using PCRemote.Agent.Configuration;
 using PCRemote.Agent.Runtime;
 using PCRemote.Core.Interfaces;
+using PCRemote.Core.Interfaces.Logging;
 using PCRemote.Core.Models;
 using PCRemote.Desktop.ViewModels;
 using PCRemote.Desktop.ViewModels.Pages;
@@ -35,6 +37,10 @@ public partial class App : Application
 
     private NativeMenuItem? _startAgentMenuItem;
     private NativeMenuItem? _stopAgentMenuItem;
+
+    private TrayIcon? _trayIcon;
+    private WindowIcon? _agentOnIcon;
+    private WindowIcon? _agentOffIcon;
 
     private bool _startMinimized;
     private bool _restartRequested;
@@ -111,6 +117,11 @@ public partial class App : Application
 
             setupWindow.Opened += async (_, _) =>
             {
+                // macOS paints the bundle icon over an icon set before the app
+                // finishes launching, so apply ours once a window is visible.
+                SetDockVisibility(true);
+                SetDockIcon();
+
                 await InitializeStartupAsync(
                     desktop,
                     setupWindow,
@@ -157,6 +168,18 @@ public partial class App : Application
         IntPtr selector,
         nint policy);
 
+    [DllImport("/usr/lib/libobjc.A.dylib", EntryPoint = "objc_msgSend")]
+    private static extern IntPtr objc_msgSend(
+        IntPtr receiver,
+        IntPtr selector,
+        IntPtr argument);
+
+    [DllImport("/usr/lib/libobjc.A.dylib", EntryPoint = "objc_msgSend")]
+    private static extern IntPtr objc_msgSend(
+        IntPtr receiver,
+        IntPtr selector,
+        [MarshalAs(UnmanagedType.LPUTF8Str)] string argument);
+
     private static void SetDockVisibility(bool visible)
     {
         if (!OperatingSystem.IsMacOS())
@@ -182,10 +205,54 @@ public partial class App : Application
             visible ? 0 : 1);
     }
 
+    private static void SetDockIcon()
+    {
+        if (!OperatingSystem.IsMacOS())
+            return;
+
+        var iconPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Icons",
+            "App",
+            "app-icon.icns");
+
+        if (!File.Exists(iconPath))
+            return;
+
+        var application = objc_msgSend(
+            objc_getClass("NSApplication"),
+            sel_registerName("sharedApplication"));
+
+        if (application == IntPtr.Zero)
+            return;
+
+        var imagePath = objc_msgSend(
+            objc_getClass("NSString"),
+            sel_registerName("stringWithUTF8String:"),
+            iconPath);
+
+        var image = objc_msgSend(
+            objc_msgSend(objc_getClass("NSImage"), sel_registerName("alloc")),
+            sel_registerName("initWithContentsOfFile:"),
+            imagePath);
+
+        if (image == IntPtr.Zero)
+            return;
+
+        objc_msgSend(
+            application,
+            sel_registerName("setApplicationIconImage:"),
+            image);
+
+        objc_msgSend(image, sel_registerName("release"));
+    }
+
     private void InitializeTray()
     {
-        var trayIcon = TrayIcon.GetIcons(this)?.FirstOrDefault();
-        var trayMenu = trayIcon?.Menu;
+        _trayIcon = TrayIcon.GetIcons(this)?.FirstOrDefault();
+
+        var trayMenu = _trayIcon?.Menu;
 
         _startAgentMenuItem = trayMenu?.Items
             .OfType<NativeMenuItem>()
@@ -194,6 +261,19 @@ public partial class App : Application
         _stopAgentMenuItem = trayMenu?.Items
             .OfType<NativeMenuItem>()
             .FirstOrDefault(item => item.Header == "Stop Agent");
+
+        _agentOnIcon = LoadWindowIcon(
+            "avares://PCRemote.Desktop/Assets/Icons/App/tray-agent-on.png");
+
+        _agentOffIcon = LoadWindowIcon(
+            "avares://PCRemote.Desktop/Assets/Icons/App/tray-agent-off.png");
+    }
+
+    private static WindowIcon LoadWindowIcon(string uri)
+    {
+        using var stream = AssetLoader.Open(new Uri(uri));
+
+        return new WindowIcon(stream);
     }
 
     private async Task InitializeStartupAsync(
@@ -206,6 +286,7 @@ public partial class App : Application
             if (_startMinimized)
             {
                 setupWindow.Hide();
+                SetDockVisibility(false);
             }
 
             var telegramSetupService =
@@ -266,6 +347,7 @@ public partial class App : Application
         SetDockVisibility(true);
 
         mainWindow.Show();
+        SetDockIcon();
         mainWindow.WindowState = WindowState.Normal;
         mainWindow.Activate();
 
@@ -289,22 +371,28 @@ public partial class App : Application
 
     private MainWindow CreateMainWindow()
     {
+        var logReader = _host!.Services.GetRequiredService<ILogReader>();
+        var logWatcher = _host.Services.GetRequiredService<ILogWatcher>();
+
         var homePage = new HomePageViewModel(
             _agentRuntime!,
-            _agentStatus!);
+            _agentStatus!,
+            _host.Services.GetRequiredService<IAutoStartService>(),
+            logReader,
+            logWatcher);
 
         var settingsPage = new SettingsPageViewModel(
             _agentRuntime!,
-            _host!.Services.GetRequiredService<TelegramSetupService>(),
-            _host.Services.GetRequiredService<IAutoStartService>());
+            _agentStatus!,
+            _host!.Services.GetRequiredService<TelegramSetupService>());
 
         settingsPage.RestartRequested += RequestRestart;
 
         settingsPage.DisconnectCompleted += () => { Dispatcher.UIThread.Post(ShowSetupWindowAfterDisconnect); };
 
         var logsPage = new LogsPageViewModel(
-            _host!.Services.GetRequiredService<PCRemote.Core.Interfaces.Logging.ILogReader>(),
-            _host.Services.GetRequiredService<PCRemote.Core.Interfaces.Logging.ILogWatcher>());
+            logReader,
+            logWatcher);
 
         var aboutPage = new AboutPageViewModel();
 
@@ -320,6 +408,12 @@ public partial class App : Application
         };
 
         mainWindow.WindowHidden += () => { SetDockVisibility(false); };
+
+        mainWindow.Closed += (_, _) =>
+        {
+            homePage.Dispose();
+            logsPage.Dispose();
+        };
 
         return mainWindow;
     }
@@ -346,8 +440,13 @@ public partial class App : Application
         };
 
         desktop.MainWindow = setupWindow;
+
+        SetDockVisibility(true);
+
         setupWindow.Show();
         setupWindow.Activate();
+
+        SetDockIcon();
 
         if (desktop.MainWindow is not null)
         {
@@ -371,6 +470,8 @@ public partial class App : Application
             mainWindow.Show();
             mainWindow.WindowState = WindowState.Normal;
             mainWindow.Activate();
+
+            SetDockIcon();
         }
     }
 
@@ -441,6 +542,13 @@ public partial class App : Application
 
         if (_stopAgentMenuItem is not null)
             _stopAgentMenuItem.IsEnabled = isRunning;
+
+        if (_trayIcon is not null &&
+            _agentOnIcon is not null &&
+            _agentOffIcon is not null)
+        {
+            _trayIcon.Icon = isRunning ? _agentOnIcon : _agentOffIcon;
+        }
     }
 
     private async void RequestRestart()
@@ -488,6 +596,13 @@ public partial class App : Application
             throw new InvalidOperationException(
                 "Unable to determine application executable path.");
 
+        var arguments = Environment.GetCommandLineArgs();
+
+        var isDotnetHost = string.Equals(
+            Path.GetFileNameWithoutExtension(processPath),
+            "dotnet",
+            StringComparison.OrdinalIgnoreCase);
+
         if (OperatingSystem.IsMacOS())
         {
             var script = "while /bin/kill -0 \"$1\" 2>/dev/null; do /bin/sleep 0.2; done; shift; exec \"$@\"";
@@ -495,6 +610,7 @@ public partial class App : Application
             var startInfo = new ProcessStartInfo
             {
                 FileName = "/bin/bash",
+                WorkingDirectory = AppContext.BaseDirectory,
                 UseShellExecute = false
             };
 
@@ -504,9 +620,16 @@ public partial class App : Application
             startInfo.ArgumentList.Add(Environment.ProcessId.ToString());
             startInfo.ArgumentList.Add(processPath);
 
-            foreach (var argument in Environment.GetCommandLineArgs().Skip(1))
+            // When the app is started by the dotnet host, GetCommandLineArgs()[0]
+            // contains the application assembly, which the host must receive
+            // as its first argument. A native apphost already knows its
+            // assembly, so its arguments start at index 1.
+            if (isDotnetHost)
+                startInfo.ArgumentList.Add(arguments[0]);
+
+            for (var i = 1; i < arguments.Length; i++)
             {
-                startInfo.ArgumentList.Add(argument);
+                startInfo.ArgumentList.Add(arguments[i]);
             }
 
             var process = Process.Start(startInfo);
@@ -519,13 +642,6 @@ public partial class App : Application
 
             return;
         }
-
-        var arguments = Environment.GetCommandLineArgs();
-
-        var isDotnetHost = string.Equals(
-            Path.GetFileNameWithoutExtension(processPath),
-            "dotnet",
-            StringComparison.OrdinalIgnoreCase);
 
         var windowsStartInfo = new ProcessStartInfo
         {

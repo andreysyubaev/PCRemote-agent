@@ -14,6 +14,11 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     public partial object? CurrentPage { get; set; }
 
+    public bool IsHomeSelected => ReferenceEquals(CurrentPage, HomePage);
+    public bool IsSettingsSelected => ReferenceEquals(CurrentPage, SettingsPage);
+    public bool IsLogsSelected => ReferenceEquals(CurrentPage, LogsPage);
+    public bool IsAboutSelected => ReferenceEquals(CurrentPage, AboutPage);
+
     public MainViewModel(
         HomePageViewModel homePage,
         SettingsPageViewModel settingsPage,
@@ -26,6 +31,16 @@ public partial class MainViewModel : ViewModelBase
         AboutPage = aboutPage;
 
         CurrentPage = HomePage;
+
+        HomePage.OpenLogsRequested += (_, _) => CurrentPage = LogsPage;
+    }
+
+    partial void OnCurrentPageChanged(object? value)
+    {
+        OnPropertyChanged(nameof(IsHomeSelected));
+        OnPropertyChanged(nameof(IsSettingsSelected));
+        OnPropertyChanged(nameof(IsLogsSelected));
+        OnPropertyChanged(nameof(IsAboutSelected));
     }
 
     [RelayCommand]

@@ -21,10 +21,10 @@
     <value>Открыть PCRemote</value>
   </data>
     <data name="Tray_StartAgent" xml:space="preserve">
-    <value>Запустить агент</value>
+    <value>Запустить агента</value>
   </data>
     <data name="Tray_StopAgent" xml:space="preserve">
-    <value>Остановить агент</value>
+    <value>Остановить агента</value>
   </data>
     <data name="Tray_Exit" xml:space="preserve">
     <value>Выход</value>
@@ -71,6 +71,45 @@
     <data name="Home_StopAgent" xml:space="preserve">
     <value>Остановить агента</value>
 </data>
+    <data name="Home_Launch" xml:space="preserve">
+    <value>Запустить</value>
+</data>
+    <data name="Home_Stop" xml:space="preserve">
+    <value>Остановить</value>
+</data>
+    <data name="Home_AgentWorking" xml:space="preserve">
+    <value>Агент работает</value>
+</data>
+    <data name="Home_AgentStopped" xml:space="preserve">
+    <value>Агент остановлен</value>
+</data>
+    <data name="Home_TelegramBot" xml:space="preserve">
+    <value>Telegram-бот</value>
+</data>
+    <data name="Home_Account" xml:space="preserve">
+    <value>Аккаунт</value>
+</data>
+    <data name="Home_Connected" xml:space="preserve">
+    <value>Подключено</value>
+</data>
+    <data name="Home_NotConnected" xml:space="preserve">
+    <value>Не подключено</value>
+</data>
+    <data name="Home_Paired" xml:space="preserve">
+    <value>Привязано</value>
+</data>
+    <data name="Home_NotPaired" xml:space="preserve">
+    <value>Не привязано</value>
+</data>
+    <data name="Home_HowToPair" xml:space="preserve">
+    <value>как привязать?</value>
+</data>
+    <data name="Home_AccountHint" xml:space="preserve">
+    <value>Управление доступно только вашему аккаунту</value>
+</data>
+    <data name="Home_BotUsernameFallback" xml:space="preserve">
+    <value>@pcremoteagentbot</value>
+</data>
     <data name="Home_TelegramPairing" xml:space="preserve">
     <value>Привязка Telegram</value>
 </data>
@@ -100,7 +139,7 @@
     <value>Telegram подключён: {0}</value>
 </data>
     <data name="Home_AccountPaired" xml:space="preserve">
-    <value>Аккаунт привязан: {0}</value>
+    <value>Аккаунт привязан</value>
 </data>
     <data name="Home_StatusReady" xml:space="preserve">
     <value>PCRemote готов к работе.</value>
@@ -117,6 +156,21 @@
     <data name="Home_StatusStopped" xml:space="preserve">
     <value>Агент PCRemote остановлен.</value>
 </data>
+    <data name="Home_AutoStartEnabled" xml:space="preserve">
+  <value>Автозапуск включён.</value>
+</data>
+    <data name="Home_AutoStartDisabled" xml:space="preserve">
+  <value>Автозапуск отключён.</value>
+</data>
+    <data name="Home_AutoStartError" xml:space="preserve">
+  <value>Ошибка автозапуска: {0}</value>
+</data>
+    <data name="Home_LastEvent" xml:space="preserve">
+    <value>Последнее событие:</value>
+</data>
+    <data name="Home_NoEvents" xml:space="preserve">
+    <value>Событий пока нет</value>
+</data>
 
     <data name="Settings_Title" xml:space="preserve">
     <value>Настройки</value>
@@ -129,15 +183,6 @@
 </data>
     <data name="Settings_ThemeDescription" xml:space="preserve">
     <value>Выберите цветовую схему приложения.</value>
-</data>
-    <data name="Settings_Startup" xml:space="preserve">
-    <value>Запуск приложения</value>
-</data>
-    <data name="Settings_AutoStart" xml:space="preserve">
-    <value>Запускать вместе с системой</value>
-</data>
-    <data name="Settings_AutoStartDescription" xml:space="preserve">
-    <value>Автоматически запускать PCRemote при входе в систему.</value>
 </data>
     <data name="Settings_Telegram" xml:space="preserve">
     <value>Telegram</value>
@@ -169,15 +214,6 @@
 </data>
     <data name="Settings_ThemeSystem" xml:space="preserve">
     <value>Системная</value>
-</data>
-    <data name="Settings_AutoStartEnabled" xml:space="preserve">
-    <value>Автозапуск включён.</value>
-</data>
-    <data name="Settings_AutoStartDisabled" xml:space="preserve">
-    <value>Автозапуск отключён.</value>
-</data>
-    <data name="Settings_AutoStartError" xml:space="preserve">
-    <value>Ошибка автозапуска: {0}</value>
 </data>
     <data name="Settings_ThemeSaveError" xml:space="preserve">
     <value>Ошибка сохранения темы: {0}</value>
@@ -223,24 +259,48 @@
     <data name="Logs_LoadError" xml:space="preserve">
   <value>Не удалось загрузить записи журнала.</value>
 </data>
+    <data name="Logs_ClearSearch" xml:space="preserve">
+  <value>Очистить поиск</value>
+</data>
+    <data name="Logs_Footer" xml:space="preserve">
+  <value>Журнал очищается каждые 7 дней</value>
+</data>
+    <data name="Logs_ExportDialogTitle" xml:space="preserve">
+  <value>Экспорт журнала</value>
+</data>
+    <data name="Logs_ExportFileType" xml:space="preserve">
+  <value>Текстовые файлы</value>
+</data>
+    <data name="Logs_ExportError" xml:space="preserve">
+  <value>Не удалось экспортировать журнал.</value>
+</data>
 
-    <data name="About_Title" xml:space="preserve">
+    <data name="About_Tagline" xml:space="preserve">
+  <value>Удалённое управление компьютером через Telegram</value>
+</data>
+    <data name="About_Version" xml:space="preserve">
+  <value>Версия 1.0.0</value>
+</data>
+    <data name="About_Application" xml:space="preserve">
   <value>О приложении</value>
 </data>
-    <data name="About_Description" xml:space="preserve">
-  <value>Информация о PCRemote</value>
+    <data name="About_ApplicationDescription" xml:space="preserve">
+  <value>PCRemote — это приложение с открытым исходным кодом, которое позволяет безопасно отслеживать компьютер и управлять им удалённо через Telegram-бота.</value>
 </data>
-    <data name="About_ProjectDescription" xml:space="preserve">
-  <value>Удалённое управление компьютером через Telegram.</value>
-</data>
-    <data name="About_Project" xml:space="preserve">
-  <value>Проект</value>
+    <data name="About_Links" xml:space="preserve">
+  <value>Ссылки</value>
 </data>
     <data name="About_GitHub" xml:space="preserve">
   <value>Репозиторий GitHub</value>
 </data>
-    <data name="About_Contact" xml:space="preserve">
-  <value>Контакты</value>
+    <data name="About_Telegram" xml:space="preserve">
+  <value>Мой Telegram</value>
+</data>
+    <data name="About_CopyLink" xml:space="preserve">
+  <value>Скопировать ссылку</value>
+</data>
+    <data name="About_OpenLink" xml:space="preserve">
+  <value>Открыть ссылку</value>
 </data>
 
     <data name="Setup_InitialStatus" xml:space="preserve">
@@ -275,13 +335,22 @@
   <value>Ошибка сохранения настроек языка: {0}</value>
 </data>
 
-    <data name="Settings_LanguageRestartTitle" xml:space="preserve">
-  <value>Требуется перезапуск</value>
-</data>
-    <data name="Settings_LanguageRestartDescription" xml:space="preserve">
-  <value>Перезапустите PCRemote, чтобы применить выбранный язык.</value>
-</data>
     <data name="Settings_RestartApplication" xml:space="preserve">
   <value>Перезапустить PCRemote</value>
+</data>
+    <data name="Settings_PairTelegram" xml:space="preserve">
+  <value>Привязка Telegram</value>
+</data>
+    <data name="Settings_PairTelegramDescription" xml:space="preserve">
+  <value>Откройте своего Telegram-бота и отправьте команду /pair с кодом.</value>
+</data>
+    <data name="Settings_PairingCodeUnavailable" xml:space="preserve">
+  <value>Запустите агента, чтобы получить код привязки.</value>
+</data>
+    <data name="Settings_DisconnectShortDescription" xml:space="preserve">
+  <value>Отключить текущего Telegram-бота</value>
+</data>
+    <data name="Settings_ConfirmShortDescription" xml:space="preserve">
+  <value>Вам потребуется подключить бота заново</value>
 </data>
 </root>

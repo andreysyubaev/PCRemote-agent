@@ -6,6 +6,7 @@
         x:Class="PCRemote.Desktop.Views.SetupWindow"
         x:DataType="vm:SetupViewModel"
         Title="{loc:Loc Key=Setup_Title}"
+        Icon="/Assets/Icons/App/app-icon.ico"
         Width="520"
         Height="420"
         MinWidth="460"

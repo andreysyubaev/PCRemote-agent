@@ -14,25 +14,5 @@ public partial class HomePage : UserControl
         InitializeComponent();
     }
 
-    private async void OnCopyPairingCodeClick(
-        object? sender,
-        RoutedEventArgs e)
-    {
-        if (DataContext is not HomePageViewModel viewModel)
-            return;
-
-        var pairingCode = viewModel.AgentStatus.PairingCode;
-
-        if (string.IsNullOrWhiteSpace(pairingCode))
-            return;
-
-        var topLevel = TopLevel.GetTopLevel(this);
-
-        if (topLevel?.Clipboard is null)
-            return;
-
-        await topLevel.Clipboard.SetTextAsync(pairingCode);
-
-        viewModel.StatusMessage = "Pairing code copied to clipboard.";
-    }
+    
 }

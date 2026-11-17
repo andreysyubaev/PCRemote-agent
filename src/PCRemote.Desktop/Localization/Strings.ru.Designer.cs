@@ -153,6 +153,84 @@ namespace PCRemote.Desktop.Localization {
             }
         }
         
+        internal static string Home_Launch {
+            get {
+                return ResourceManager.GetString("Home_Launch", resourceCulture);
+            }
+        }
+        
+        internal static string Home_Stop {
+            get {
+                return ResourceManager.GetString("Home_Stop", resourceCulture);
+            }
+        }
+        
+        internal static string Home_AgentWorking {
+            get {
+                return ResourceManager.GetString("Home_AgentWorking", resourceCulture);
+            }
+        }
+        
+        internal static string Home_AgentStopped {
+            get {
+                return ResourceManager.GetString("Home_AgentStopped", resourceCulture);
+            }
+        }
+        
+        internal static string Home_TelegramBot {
+            get {
+                return ResourceManager.GetString("Home_TelegramBot", resourceCulture);
+            }
+        }
+        
+        internal static string Home_Account {
+            get {
+                return ResourceManager.GetString("Home_Account", resourceCulture);
+            }
+        }
+        
+        internal static string Home_Connected {
+            get {
+                return ResourceManager.GetString("Home_Connected", resourceCulture);
+            }
+        }
+        
+        internal static string Home_NotConnected {
+            get {
+                return ResourceManager.GetString("Home_NotConnected", resourceCulture);
+            }
+        }
+        
+        internal static string Home_Paired {
+            get {
+                return ResourceManager.GetString("Home_Paired", resourceCulture);
+            }
+        }
+        
+        internal static string Home_NotPaired {
+            get {
+                return ResourceManager.GetString("Home_NotPaired", resourceCulture);
+            }
+        }
+        
+        internal static string Home_HowToPair {
+            get {
+                return ResourceManager.GetString("Home_HowToPair", resourceCulture);
+            }
+        }
+        
+        internal static string Home_AccountHint {
+            get {
+                return ResourceManager.GetString("Home_AccountHint", resourceCulture);
+            }
+        }
+        
+        internal static string Home_BotUsernameFallback {
+            get {
+                return ResourceManager.GetString("Home_BotUsernameFallback", resourceCulture);
+            }
+        }
+        
         internal static string Home_TelegramPairing {
             get {
                 return ResourceManager.GetString("Home_TelegramPairing", resourceCulture);
@@ -243,6 +321,36 @@ namespace PCRemote.Desktop.Localization {
             }
         }
         
+        internal static string Home_AutoStartEnabled {
+            get {
+                return ResourceManager.GetString("Home_AutoStartEnabled", resourceCulture);
+            }
+        }
+        
+        internal static string Home_AutoStartDisabled {
+            get {
+                return ResourceManager.GetString("Home_AutoStartDisabled", resourceCulture);
+            }
+        }
+        
+        internal static string Home_AutoStartError {
+            get {
+                return ResourceManager.GetString("Home_AutoStartError", resourceCulture);
+            }
+        }
+        
+        internal static string Home_LastEvent {
+            get {
+                return ResourceManager.GetString("Home_LastEvent", resourceCulture);
+            }
+        }
+        
+        internal static string Home_NoEvents {
+            get {
+                return ResourceManager.GetString("Home_NoEvents", resourceCulture);
+            }
+        }
+        
         internal static string Settings_Title {
             get {
                 return ResourceManager.GetString("Settings_Title", resourceCulture);
@@ -264,24 +372,6 @@ namespace PCRemote.Desktop.Localization {
         internal static string Settings_ThemeDescription {
             get {
                 return ResourceManager.GetString("Settings_ThemeDescription", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_Startup {
-            get {
-                return ResourceManager.GetString("Settings_Startup", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_AutoStart {
-            get {
-                return ResourceManager.GetString("Settings_AutoStart", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_AutoStartDescription {
-            get {
-                return ResourceManager.GetString("Settings_AutoStartDescription", resourceCulture);
             }
         }
         
@@ -342,24 +432,6 @@ namespace PCRemote.Desktop.Localization {
         internal static string Settings_ThemeSystem {
             get {
                 return ResourceManager.GetString("Settings_ThemeSystem", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_AutoStartEnabled {
-            get {
-                return ResourceManager.GetString("Settings_AutoStartEnabled", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_AutoStartDisabled {
-            get {
-                return ResourceManager.GetString("Settings_AutoStartDisabled", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_AutoStartError {
-            get {
-                return ResourceManager.GetString("Settings_AutoStartError", resourceCulture);
             }
         }
         
@@ -447,27 +519,63 @@ namespace PCRemote.Desktop.Localization {
             }
         }
         
-        internal static string About_Title {
+        internal static string Logs_ClearSearch {
             get {
-                return ResourceManager.GetString("About_Title", resourceCulture);
+                return ResourceManager.GetString("Logs_ClearSearch", resourceCulture);
             }
         }
         
-        internal static string About_Description {
+        internal static string Logs_Footer {
             get {
-                return ResourceManager.GetString("About_Description", resourceCulture);
+                return ResourceManager.GetString("Logs_Footer", resourceCulture);
             }
         }
         
-        internal static string About_ProjectDescription {
+        internal static string Logs_ExportDialogTitle {
             get {
-                return ResourceManager.GetString("About_ProjectDescription", resourceCulture);
+                return ResourceManager.GetString("Logs_ExportDialogTitle", resourceCulture);
             }
         }
         
-        internal static string About_Project {
+        internal static string Logs_ExportFileType {
             get {
-                return ResourceManager.GetString("About_Project", resourceCulture);
+                return ResourceManager.GetString("Logs_ExportFileType", resourceCulture);
+            }
+        }
+        
+        internal static string Logs_ExportError {
+            get {
+                return ResourceManager.GetString("Logs_ExportError", resourceCulture);
+            }
+        }
+        
+        internal static string About_Tagline {
+            get {
+                return ResourceManager.GetString("About_Tagline", resourceCulture);
+            }
+        }
+        
+        internal static string About_Version {
+            get {
+                return ResourceManager.GetString("About_Version", resourceCulture);
+            }
+        }
+        
+        internal static string About_Application {
+            get {
+                return ResourceManager.GetString("About_Application", resourceCulture);
+            }
+        }
+        
+        internal static string About_ApplicationDescription {
+            get {
+                return ResourceManager.GetString("About_ApplicationDescription", resourceCulture);
+            }
+        }
+        
+        internal static string About_Links {
+            get {
+                return ResourceManager.GetString("About_Links", resourceCulture);
             }
         }
         
@@ -477,9 +585,21 @@ namespace PCRemote.Desktop.Localization {
             }
         }
         
-        internal static string About_Contact {
+        internal static string About_Telegram {
             get {
-                return ResourceManager.GetString("About_Contact", resourceCulture);
+                return ResourceManager.GetString("About_Telegram", resourceCulture);
+            }
+        }
+        
+        internal static string About_CopyLink {
+            get {
+                return ResourceManager.GetString("About_CopyLink", resourceCulture);
+            }
+        }
+        
+        internal static string About_OpenLink {
+            get {
+                return ResourceManager.GetString("About_OpenLink", resourceCulture);
             }
         }
         
@@ -543,21 +663,39 @@ namespace PCRemote.Desktop.Localization {
             }
         }
         
-        internal static string Settings_LanguageRestartTitle {
-            get {
-                return ResourceManager.GetString("Settings_LanguageRestartTitle", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_LanguageRestartDescription {
-            get {
-                return ResourceManager.GetString("Settings_LanguageRestartDescription", resourceCulture);
-            }
-        }
-        
         internal static string Settings_RestartApplication {
             get {
                 return ResourceManager.GetString("Settings_RestartApplication", resourceCulture);
+            }
+        }
+        
+        internal static string Settings_PairTelegram {
+            get {
+                return ResourceManager.GetString("Settings_PairTelegram", resourceCulture);
+            }
+        }
+        
+        internal static string Settings_PairTelegramDescription {
+            get {
+                return ResourceManager.GetString("Settings_PairTelegramDescription", resourceCulture);
+            }
+        }
+        
+        internal static string Settings_PairingCodeUnavailable {
+            get {
+                return ResourceManager.GetString("Settings_PairingCodeUnavailable", resourceCulture);
+            }
+        }
+        
+        internal static string Settings_DisconnectShortDescription {
+            get {
+                return ResourceManager.GetString("Settings_DisconnectShortDescription", resourceCulture);
+            }
+        }
+        
+        internal static string Settings_ConfirmShortDescription {
+            get {
+                return ResourceManager.GetString("Settings_ConfirmShortDescription", resourceCulture);
             }
         }
     }

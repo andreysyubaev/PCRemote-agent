@@ -29,7 +29,7 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
 
     public ObservableCollection<LogEntry> Entries { get; } = new();
 
-    public ObservableCollection<LogEntry> FilteredEntries { get; } = new();
+    public ObservableCollection<LogEntryViewModel> FilteredEntries { get; } = new();
 
     public ObservableCollection<string> Levels { get; } =
     [
@@ -62,6 +62,20 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     public partial string SelectedSource { get; set; } = AllSources;
 
+    public bool ShowLoading =>
+        IsLoading &&
+        FilteredEntries.Count == 0 &&
+        string.IsNullOrEmpty(ErrorMessage);
+
+    public bool ShowEmpty =>
+        !IsLoading &&
+        FilteredEntries.Count == 0 &&
+        string.IsNullOrEmpty(ErrorMessage);
+
+    public bool ShowError => !string.IsNullOrEmpty(ErrorMessage);
+
+    public bool HasSearchText => !string.IsNullOrEmpty(SearchText);
+
     public LogsPageViewModel(
         ILogReader logReader,
         ILogWatcher logWatcher)
@@ -74,6 +88,7 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
 
     partial void OnSearchTextChanged(string value)
     {
+        OnPropertyChanged(nameof(HasSearchText));
         ApplyFilters();
     }
 
@@ -85,6 +100,22 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
     partial void OnSelectedSourceChanged(string value)
     {
         ApplyFilters();
+    }
+
+    partial void OnIsLoadingChanged(bool value)
+    {
+        NotifyStateChanged();
+    }
+
+    partial void OnErrorMessageChanged(string? value)
+    {
+        NotifyStateChanged();
+    }
+
+    [RelayCommand]
+    private void ClearSearch()
+    {
+        SearchText = string.Empty;
     }
 
     private void OnLogsChanged(object? sender, EventArgs e)
@@ -228,8 +259,17 @@ public partial class LogsPageViewModel : ViewModelBase, IDisposable
                     continue;
             }
 
-            FilteredEntries.Add(entry);
+            FilteredEntries.Add(new LogEntryViewModel(entry));
         }
+
+        NotifyStateChanged();
+    }
+
+    private void NotifyStateChanged()
+    {
+        OnPropertyChanged(nameof(ShowLoading));
+        OnPropertyChanged(nameof(ShowEmpty));
+        OnPropertyChanged(nameof(ShowError));
     }
 
     [RelayCommand]

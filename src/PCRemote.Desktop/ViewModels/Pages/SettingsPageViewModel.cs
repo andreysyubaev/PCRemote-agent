@@ -1,14 +1,17 @@
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PCRemote.Agent.Configuration;
 using PCRemote.Agent.Runtime;
 using PCRemote.Core.Interfaces;
+using PCRemote.Core.Models;
 using PCRemote.Desktop.Localization;
 
 namespace PCRemote.Desktop.ViewModels.Pages;
@@ -17,11 +20,13 @@ public partial class SettingsPageViewModel : ViewModelBase
 {
     private readonly AgentRuntime _agentRuntime;
     private readonly TelegramSetupService _telegramSetupService;
-    private readonly IAutoStartService _autoStartService;
 
     private readonly string _activeLanguagePreference;
 
-    private bool _isInitializingAutoStart;
+    private readonly DispatcherTimer _pairingTimer = new()
+    {
+        Interval = TimeSpan.FromSeconds(1)
+    };
 
     private static string GetThemeSettingsPath()
     {
@@ -66,61 +71,15 @@ public partial class SettingsPageViewModel : ViewModelBase
         File.WriteAllText(path, theme);
     }
 
-    partial void OnSelectedThemeChanged(string value)
-    {
-        OnPropertyChanged(nameof(SelectedThemeIndex));
-
-        var app = Application.Current;
-
-        if (app is not null)
-        {
-            app.RequestedThemeVariant = value switch
-            {
-                "Light" => ThemeVariant.Light,
-                "Dark" => ThemeVariant.Dark,
-                _ => ThemeVariant.Default
-            };
-        }
-
-        try
-        {
-            SaveThemePreference(value);
-        }
-        catch (Exception exception)
-        {
-            StatusMessage = string.Format(
-                LocalizationManager.GetString("Settings_ThemeSaveError"),
-                exception.Message);
-        }
-    }
-
-    partial void OnSelectedLanguageChanged(string value)
-    {
-        OnPropertyChanged(nameof(SelectedLanguageIndex));
-
-        try
-        {
-            LocalizationManager.SaveLanguagePreference(value);
-
-            IsLanguageChangePending =
-                value != _activeLanguagePreference;
-        }
-        catch (Exception exception)
-        {
-            StatusMessage = string.Format(
-                LocalizationManager.GetString("Settings_LanguageSaveError"),
-                exception.Message);
-        }
-    }
-
     public SettingsPageViewModel(
         AgentRuntime agentRuntime,
-        TelegramSetupService telegramSetupService,
-        IAutoStartService autoStartService)
+        AgentStatus agentStatus,
+        TelegramSetupService telegramSetupService)
     {
         _agentRuntime = agentRuntime;
         _telegramSetupService = telegramSetupService;
-        _autoStartService = autoStartService;
+
+        AgentStatus = agentStatus;
 
         _activeLanguagePreference =
             LocalizationManager.GetLanguagePreference();
@@ -128,10 +87,52 @@ public partial class SettingsPageViewModel : ViewModelBase
         SelectedTheme = LoadThemePreference();
         SelectedLanguage = _activeLanguagePreference;
 
-        _isInitializingAutoStart = true;
-        IsAutoStartEnabled = _autoStartService.IsEnabled();
-        _isInitializingAutoStart = false;
+        ApplyThemeVariant(SelectedTheme);
+
+        AgentStatus.PropertyChanged += AgentStatus_PropertyChanged;
+        _pairingTimer.Tick += PairingTimer_Tick;
+
+        UpdatePairingTimer();
     }
+
+    public AgentStatus AgentStatus { get; }
+
+    public bool IsPairingBlockVisible => !AgentStatus.IsPaired;
+
+    public bool IsDisconnectBlockVisible => AgentStatus.IsPaired;
+
+    public bool HasPairingCode =>
+        !AgentStatus.IsPaired &&
+        !string.IsNullOrWhiteSpace(AgentStatus.PairingCode);
+
+    public string PairingCodeText
+    {
+        get
+        {
+            var code = AgentStatus.PairingCode?.Trim();
+
+            if (string.IsNullOrWhiteSpace(code))
+                return "— — —";
+
+            return code.Length == 6
+                ? $"{code[..3]} {code[3..]}"
+                : code;
+        }
+    }
+
+    public string PairingExpiryText => string.Format(
+        LocalizationManager.GetString("Home_PairingExpiresIn"),
+        RemainingPairingTime);
+
+    public string TelegramActionTitle => LocalizationManager.GetString(
+        IsDisconnectConfirmationVisible
+            ? "Settings_ConfirmTitle"
+            : "Settings_Telegram");
+
+    public string TelegramActionDescription => LocalizationManager.GetString(
+        IsDisconnectConfirmationVisible
+            ? "Settings_ConfirmShortDescription"
+            : "Settings_DisconnectShortDescription");
 
     public string[] ThemeOptions { get; } =
     [
@@ -195,9 +196,6 @@ public partial class SettingsPageViewModel : ViewModelBase
     public partial bool IsLanguageChangePending { get; set; }
 
     [ObservableProperty]
-    public partial bool IsAutoStartEnabled { get; set; }
-
-    [ObservableProperty]
     public partial bool IsDisconnectConfirmationVisible { get; set; }
 
     [ObservableProperty]
@@ -207,41 +205,79 @@ public partial class SettingsPageViewModel : ViewModelBase
     public partial string StatusMessage { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string AutoStartStatusMessage { get; set; } = string.Empty;
+    public partial string RemainingPairingTime { get; set; } = "05:00";
+
+    public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
 
     public event Action? DisconnectCompleted;
     public event Action? RestartRequested;
 
-    partial void OnIsAutoStartEnabledChanged(bool value)
+    partial void OnSelectedThemeChanged(string value)
     {
-        if (_isInitializingAutoStart)
-            return;
+        OnPropertyChanged(nameof(SelectedThemeIndex));
+
+        ApplyThemeVariant(value);
 
         try
         {
-            if (value)
-            {
-                _autoStartService.Enable();
-                AutoStartStatusMessage =
-                    LocalizationManager.GetString("Settings_AutoStartEnabled");
-            }
-            else
-            {
-                _autoStartService.Disable();
-                AutoStartStatusMessage =
-                    LocalizationManager.GetString("Settings_AutoStartDisabled");
-            }
+            SaveThemePreference(value);
         }
         catch (Exception exception)
         {
-            _isInitializingAutoStart = true;
-            IsAutoStartEnabled = !value;
-            _isInitializingAutoStart = false;
-
-            AutoStartStatusMessage = string.Format(
-                LocalizationManager.GetString("Settings_AutoStartError"),
+            StatusMessage = string.Format(
+                LocalizationManager.GetString("Settings_ThemeSaveError"),
                 exception.Message);
         }
+    }
+
+    private static void ApplyThemeVariant(string theme)
+    {
+        var app = Application.Current;
+
+        if (app is null)
+            return;
+
+        app.RequestedThemeVariant = theme switch
+        {
+            "Light" => ThemeVariant.Light,
+            "Dark" => ThemeVariant.Dark,
+            _ => ThemeVariant.Default
+        };
+    }
+
+    partial void OnSelectedLanguageChanged(string value)
+    {
+        OnPropertyChanged(nameof(SelectedLanguageIndex));
+
+        try
+        {
+            LocalizationManager.SaveLanguagePreference(value);
+
+            IsLanguageChangePending =
+                value != _activeLanguagePreference;
+        }
+        catch (Exception exception)
+        {
+            StatusMessage = string.Format(
+                LocalizationManager.GetString("Settings_LanguageSaveError"),
+                exception.Message);
+        }
+    }
+
+    partial void OnIsDisconnectConfirmationVisibleChanged(bool value)
+    {
+        OnPropertyChanged(nameof(TelegramActionTitle));
+        OnPropertyChanged(nameof(TelegramActionDescription));
+    }
+
+    partial void OnStatusMessageChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasStatusMessage));
+    }
+
+    partial void OnRemainingPairingTimeChanged(string value)
+    {
+        OnPropertyChanged(nameof(PairingExpiryText));
     }
 
     [RelayCommand]
@@ -271,6 +307,12 @@ public partial class SettingsPageViewModel : ViewModelBase
 
             await _telegramSetupService.RemoveConfigurationAsync();
 
+            AgentStatus.IsPaired = false;
+            AgentStatus.PairingCode = null;
+            AgentStatus.PairingCodeExpiresAt = null;
+            AgentStatus.BotUsername = null;
+            AgentStatus.IsTelegramConnected = false;
+
             StatusMessage =
                 LocalizationManager.GetString("Settings_Disconnected");
 
@@ -289,10 +331,72 @@ public partial class SettingsPageViewModel : ViewModelBase
             IsBusy = false;
         }
     }
-    
+
     [RelayCommand]
     private void RestartApplication()
     {
         RestartRequested?.Invoke();
+    }
+
+    private void AgentStatus_PropertyChanged(
+        object? sender,
+        PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AgentStatus.IsPaired))
+        {
+            OnPropertyChanged(nameof(IsPairingBlockVisible));
+            OnPropertyChanged(nameof(IsDisconnectBlockVisible));
+            OnPropertyChanged(nameof(HasPairingCode));
+            OnPropertyChanged(nameof(PairingCodeText));
+
+            if (!AgentStatus.IsPaired)
+                IsDisconnectConfirmationVisible = false;
+
+            Dispatcher.UIThread.Post(UpdatePairingTimer);
+        }
+
+        if (e.PropertyName == nameof(AgentStatus.PairingCode))
+        {
+            OnPropertyChanged(nameof(HasPairingCode));
+            OnPropertyChanged(nameof(PairingCodeText));
+            Dispatcher.UIThread.Post(UpdatePairingTimer);
+        }
+
+        if (e.PropertyName == nameof(AgentStatus.PairingCodeExpiresAt))
+        {
+            Dispatcher.UIThread.Post(UpdatePairingTimer);
+        }
+    }
+
+    private void PairingTimer_Tick(object? sender, EventArgs e)
+    {
+        UpdatePairingTimer();
+    }
+
+    private void UpdatePairingTimer()
+    {
+        if (AgentStatus.IsPaired ||
+            AgentStatus.PairingCodeExpiresAt is not DateTimeOffset expiresAt)
+        {
+            _pairingTimer.Stop();
+            RemainingPairingTime = "05:00";
+            return;
+        }
+
+        var remaining = expiresAt - DateTimeOffset.UtcNow;
+
+        if (remaining <= TimeSpan.Zero)
+        {
+            RemainingPairingTime = "00:00";
+            _pairingTimer.Stop();
+            return;
+        }
+
+        var totalSeconds = (int)Math.Ceiling(remaining.TotalSeconds);
+
+        RemainingPairingTime =
+            $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
+
+        _pairingTimer.Start();
     }
 }

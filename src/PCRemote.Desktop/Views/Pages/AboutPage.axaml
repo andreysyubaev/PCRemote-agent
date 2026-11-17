@@ -1,61 +1,175 @@
-
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
              xmlns:loc="using:PCRemote.Desktop.Localization"
              x:Class="PCRemote.Desktop.Views.Pages.AboutPage"
-             x:DataType="vm:AboutPageViewModel">
+             x:DataType="vm:AboutPageViewModel"
+             HorizontalContentAlignment="Stretch"
+             VerticalContentAlignment="Stretch">
 
-    <StackPanel Spacing="20">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel>
 
-        <StackPanel Spacing="4">
-            <TextBlock Text="{loc:Loc Key=About_Title}"
-                       FontSize="28"
-                       FontWeight="Bold"/>
+            <!-- Application logo -->
+            <Border Width="56"
+                    Height="56"
+                    Margin="0,10,0,0"
+                    CornerRadius="8"
+                    Background="{DynamicResource Accent}"
+                    HorizontalAlignment="Center">
+                <Svg Path="/Assets/Icons/desktop.svg"
+                     Classes="inverse"
+                     Width="24"
+                     Height="24"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"/>
+            </Border>
 
-            <TextBlock Text="{loc:Loc Key=About_Description}"
-                       Foreground="{DynamicResource SecondaryText}"/>
-        </StackPanel>
+            <TextBlock Classes="heading-section"
+                       Text="PCRemote"
+                       HorizontalAlignment="Center"
+                       Margin="0,16,0,0"/>
 
-        <StackPanel Spacing="8">
-            <TextBlock Text="PCRemote"
-                       FontSize="24"
-                       FontWeight="Bold"/>
+            <TextBlock Classes="body-small"
+                       Text="{loc:Loc Key=About_Tagline}"
+                       HorizontalAlignment="Center"
+                       Margin="0,10,0,0"/>
 
-            <TextBlock Text="{loc:Loc Key=About_ProjectDescription}"
-                       FontSize="14"
-                       Foreground="{DynamicResource SecondaryText}"/>
-        </StackPanel>
+            <TextBlock Classes="caption-xs"
+                       Text="{loc:Loc Key=About_Version}"
+                       LineHeight="16"
+                       Foreground="{DynamicResource Success}"
+                       HorizontalAlignment="Center"
+                       Margin="0,8,0,0"/>
 
-        <Border Background="{DynamicResource SurfaceBackground}"
-                BorderBrush="{DynamicResource Border}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="16">
+            <!-- About the application -->
+            <Border Classes="card"
+                    Margin="0,16,0,0">
+                <StackPanel Spacing="16">
+                    <TextBlock Classes="heading-section"
+                               Text="{loc:Loc Key=About_Application}"/>
 
-            <StackPanel Spacing="16">
+                    <TextBlock Classes="body-small"
+                               LineHeight="20"
+                               TextWrapping="Wrap"
+                               Text="{loc:Loc Key=About_ApplicationDescription}"/>
+                </StackPanel>
+            </Border>
 
-                <TextBlock Text="{loc:Loc Key=About_Project}"
-                           FontSize="16"
-                           FontWeight="SemiBold"/>
+            <!-- Links -->
+            <TextBlock Classes="heading-section"
+                       Text="{loc:Loc Key=About_Links}"
+                       Margin="0,32,0,0"/>
 
-                <Button Content="{loc:Loc Key=About_GitHub}"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Left"
-                        Click="OnGitHubClick"/>
+            <StackPanel Spacing="16"
+                        Margin="0,24,0,0">
 
-                <TextBlock Text="{loc:Loc Key=About_Contact}"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Margin="0,8,0,0"/>
+                <!-- GitHub -->
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      Height="44">
+                    <Svg Path="/Assets/Icons/github.svg"
+                         Width="20"
+                         Height="20"
+                         VerticalAlignment="Center"/>
 
-                <Button Content="Telegram"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Left"
-                        Click="OnTelegramClick"/>
+                    <StackPanel Grid.Column="1"
+                                Spacing="8"
+                                Margin="16,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Classes="label"
+                                   Text="{loc:Loc Key=About_GitHub}"/>
+                        <TextBlock Classes="body-small"
+                                   Text="{Binding RepositoryUrl}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="16"
+                                VerticalAlignment="Center">
+                        <Button Classes="icon"
+                                Width="36"
+                                Height="36"
+                                Click="OnCopyRepositoryClick"
+                                ToolTip.Tip="{loc:Loc Key=About_CopyLink}">
+                            <Panel>
+                                <Svg x:Name="RepositoryCopyIcon"
+                                     Path="/Assets/Icons/copy-outline.svg"
+                                     Width="20"
+                                     Height="20"/>
+                                <Svg x:Name="RepositoryCopySuccessIcon"
+                                     Path="/Assets/Icons/checkmark.svg"
+                                     Width="20"
+                                     Height="20"
+                                     IsVisible="False"/>
+                            </Panel>
+                        </Button>
+
+                        <Button Classes="icon"
+                                Width="36"
+                                Height="36"
+                                Click="OnGitHubClick"
+                                ToolTip.Tip="{loc:Loc Key=About_OpenLink}">
+                            <Svg Path="/Assets/Icons/external-link-outline.svg"
+                                 Width="20"
+                                 Height="20"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Telegram -->
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      Height="44">
+                    <Svg Path="/Assets/Icons/telegram.svg"
+                         Width="20"
+                         Height="20"
+                         VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                                Spacing="8"
+                                Margin="16,0,0,0"
+                                VerticalAlignment="Center">
+                        <TextBlock Classes="label"
+                                   Text="{loc:Loc Key=About_Telegram}"/>
+                        <TextBlock Classes="body-small"
+                                   Text="{Binding TelegramUrl}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="16"
+                                VerticalAlignment="Center">
+                        <Button Classes="icon"
+                                Width="36"
+                                Height="36"
+                                Click="OnCopyTelegramClick"
+                                ToolTip.Tip="{loc:Loc Key=About_CopyLink}">
+                            <Panel>
+                                <Svg x:Name="TelegramCopyIcon"
+                                     Path="/Assets/Icons/copy-outline.svg"
+                                     Width="20"
+                                     Height="20"/>
+                                <Svg x:Name="TelegramCopySuccessIcon"
+                                     Path="/Assets/Icons/checkmark.svg"
+                                     Width="20"
+                                     Height="20"
+                                     IsVisible="False"/>
+                            </Panel>
+                        </Button>
+
+                        <Button Classes="icon"
+                                Width="36"
+                                Height="36"
+                                Click="OnTelegramClick"
+                                ToolTip.Tip="{loc:Loc Key=About_OpenLink}">
+                            <Svg Path="/Assets/Icons/external-link-outline.svg"
+                                 Width="20"
+                                 Height="20"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
             </StackPanel>
-        </Border>
-
-    </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

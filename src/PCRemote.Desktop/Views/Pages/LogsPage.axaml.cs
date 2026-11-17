@@ -2,9 +2,12 @@ using Avalonia.Platform.Storage;
 using System;
 using System.ComponentModel;
 using Avalonia.Controls;
-using Avalonia.Threading;
-using PCRemote.Desktop.ViewModels.Pages;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using PCRemote.Desktop.Localization;
+using PCRemote.Desktop.ViewModels.Pages;
 
 namespace PCRemote.Desktop.Views.Pages;
 
@@ -15,6 +18,16 @@ public partial class LogsPage : UserControl
     public LogsPage()
     {
         InitializeComponent();
+
+        SearchBox.AddHandler(
+            InputElement.PointerPressedEvent,
+            OnSearchPointerPressed,
+            RoutingStrategies.Tunnel);
+        SearchBox.AddHandler(
+            InputElement.PointerReleasedEvent,
+            OnSearchPointerReleased,
+            RoutingStrategies.Tunnel);
+        SearchBox.PointerCaptureLost += OnSearchPointerCaptureLost;
 
         AttachedToVisualTree += (_, _) =>
         {
@@ -35,6 +48,27 @@ public partial class LogsPage : UserControl
                 _viewModel = null;
             }
         };
+    }
+
+    private void OnSearchPointerPressed(
+        object? sender,
+        PointerPressedEventArgs e)
+    {
+        SearchBox.Classes.Add("pressed");
+    }
+
+    private void OnSearchPointerReleased(
+        object? sender,
+        PointerReleasedEventArgs e)
+    {
+        SearchBox.Classes.Remove("pressed");
+    }
+
+    private void OnSearchPointerCaptureLost(
+        object? sender,
+        PointerCaptureLostEventArgs e)
+    {
+        SearchBox.Classes.Remove("pressed");
     }
 
     private void OnViewModelPropertyChanged(
@@ -76,12 +110,13 @@ public partial class LogsPage : UserControl
         var file = await topLevel.StorageProvider.SaveFilePickerAsync(
             new FilePickerSaveOptions
             {
-                Title = "Export logs",
+                Title = LocalizationManager.GetString("Logs_ExportDialogTitle"),
                 SuggestedFileName = $"PCRemote-Logs-{DateTime.Now:yyyy-MM-dd}.txt",
                 DefaultExtension = "txt",
                 FileTypeChoices =
                 [
-                    new FilePickerFileType("Text files")
+                    new FilePickerFileType(
+                        LocalizationManager.GetString("Logs_ExportFileType"))
                     {
                         Patterns = ["*.txt"]
                     }
@@ -99,7 +134,8 @@ public partial class LogsPage : UserControl
         }
         catch (Exception)
         {
-            viewModel.ErrorMessage = "Не удалось экспортировать журналы событий.";
+            viewModel.ErrorMessage =
+                LocalizationManager.GetString("Logs_ExportError");
         }
     }
 }

@@ -447,39 +447,9 @@ namespace PCRemote.Desktop.Localization {
             }
         }
         
-        internal static string About_Title {
-            get {
-                return ResourceManager.GetString("About_Title", resourceCulture);
-            }
-        }
-        
-        internal static string About_Description {
-            get {
-                return ResourceManager.GetString("About_Description", resourceCulture);
-            }
-        }
-        
-        internal static string About_ProjectDescription {
-            get {
-                return ResourceManager.GetString("About_ProjectDescription", resourceCulture);
-            }
-        }
-        
-        internal static string About_Project {
-            get {
-                return ResourceManager.GetString("About_Project", resourceCulture);
-            }
-        }
-        
         internal static string About_GitHub {
             get {
                 return ResourceManager.GetString("About_GitHub", resourceCulture);
-            }
-        }
-        
-        internal static string About_Contact {
-            get {
-                return ResourceManager.GetString("About_Contact", resourceCulture);
             }
         }
         
@@ -540,18 +510,6 @@ namespace PCRemote.Desktop.Localization {
         internal static string Settings_LanguageSaveError {
             get {
                 return ResourceManager.GetString("Settings_LanguageSaveError", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_LanguageRestartTitle {
-            get {
-                return ResourceManager.GetString("Settings_LanguageRestartTitle", resourceCulture);
-            }
-        }
-        
-        internal static string Settings_LanguageRestartDescription {
-            get {
-                return ResourceManager.GetString("Settings_LanguageRestartDescription", resourceCulture);
             }
         }
         

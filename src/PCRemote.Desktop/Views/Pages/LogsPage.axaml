@@ -1,124 +1,187 @@
-
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
              xmlns:loc="using:PCRemote.Desktop.Localization"
              x:Class="PCRemote.Desktop.Views.Pages.LogsPage"
-             x:DataType="vm:LogsPageViewModel">
+             x:DataType="vm:LogsPageViewModel"
+             HorizontalContentAlignment="Stretch"
+             VerticalContentAlignment="Stretch">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*"
+    <UserControl.Styles>
+        <!-- List box itself is transparent: rows are drawn by Border.log-item -->
+        <Style Selector="ListBox.logs">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style Selector="ListBox.logs ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style Selector="ListBox.logs ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="0"/>
+        </Style>
+
+        <Style Selector="ListBox.logs ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="ListBox.logs ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="ListBox.logs ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto"
           RowSpacing="16">
 
-        <!-- Заголовок -->
-        <StackPanel Grid.Row="0"
-                    Spacing="4">
-            <TextBlock Text="{loc:Loc Key=Logs_Title}"
-                       FontSize="28"
-                       FontWeight="Bold"/>
+        <!-- Search bar -->
+        <Grid Grid.Row="0"
+              Height="40">
+            <TextBox x:Name="SearchBox"
+                     Classes="search"
+                     Padding="16,12.5,48,7.5"
+                     PlaceholderText="{loc:Loc Key=Logs_SearchPlaceholder}"
+                     Text="{Binding SearchText, Mode=TwoWay}"/>
 
-            <TextBlock Text="{loc:Loc Key=Logs_Description}"
-                       Foreground="{DynamicResource SecondaryText}"/>
-        </StackPanel>
-
-        <!-- Панель поиска -->
-        <Grid Grid.Row="1"
-              ColumnDefinitions="*,Auto"
-              ColumnSpacing="12">
-
-            <TextBox PlaceholderText="{loc:Loc Key=Logs_SearchPlaceholder}"
-                     Text="{Binding SearchText, Mode=TwoWay}"
-                     VerticalContentAlignment="Center"/>
-
-            <Button Grid.Column="1"
-                    Content="{loc:Loc Key=Logs_Export}"
-                    Click="OnExportClick"
-                    VerticalAlignment="Center"/>
+            <Button Classes="link"
+                    Width="20"
+                    Height="20"
+                    Margin="0,0,16,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding HasSearchText}"
+                    Command="{Binding ClearSearchCommand}"
+                    ToolTip.Tip="{loc:Loc Key=Logs_ClearSearch}">
+                <Svg Path="/Assets/Icons/close-circle.svg"
+                     Classes="muted"
+                     Width="20"
+                     Height="20"/>
+            </Button>
         </Grid>
 
-        <!-- Фильтры -->
-        <Grid Grid.Row="2"
+        <!-- Level / source filters -->
+        <Grid Grid.Row="1"
               ColumnDefinitions="*,*,Auto"
-              ColumnSpacing="12">
+              ColumnSpacing="16">
 
             <ComboBox Grid.Column="0"
+                      Classes="filter"
                       ItemsSource="{Binding Levels}"
-                      SelectedItem="{Binding SelectedLevel, Mode=TwoWay}"
-                      HorizontalAlignment="Stretch"/>
+                      SelectedItem="{Binding SelectedLevel, Mode=TwoWay}"/>
 
             <ComboBox Grid.Column="1"
+                      Classes="filter"
                       ItemsSource="{Binding Sources}"
-                      SelectedItem="{Binding SelectedSource, Mode=TwoWay}"
-                      HorizontalAlignment="Stretch"/>
+                      SelectedItem="{Binding SelectedSource, Mode=TwoWay}"/>
 
             <Button Grid.Column="2"
-                    Content="{loc:Loc Key=Logs_ClearFilters}"
-                    Command="{Binding ResetFiltersCommand}"
-                    VerticalAlignment="Center"/>
+                    Classes="link"
+                    VerticalAlignment="Center"
+                    Command="{Binding ResetFiltersCommand}">
+                <TextBlock Classes="label-small"
+                           Text="{loc:Loc Key=Logs_ClearFilters}"
+                           Foreground="{DynamicResource Accent}"/>
+            </Button>
         </Grid>
 
-        <!-- Список логов -->
-        <Border Grid.Row="3"
-                Background="{DynamicResource SurfaceBackground}"
-                BorderBrush="{DynamicResource Border}"
-                BorderThickness="1"
+        <!-- Log entries -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource SurfaceElevatedBackground}"
                 CornerRadius="8"
-                Padding="16">
-
+                ClipToBounds="True"
+                Padding="0,18,0,0">
             <Grid>
-                <TextBlock Text="{loc:Loc Key=Logs_Loading}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding IsLoading}"/>
-
-                <TextBlock Text="{Binding ErrorMessage}"
-                           Foreground="#E05252"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding ErrorMessage}"/>
-
-                <TextBlock Text="{loc:Loc Key=Logs_Empty}"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding FilteredEntries.Count, Converter={x:Static ObjectConverters.IsNull}}"/>
-
                 <ListBox x:Name="LogsList"
+                         Classes="logs"
                          ItemsSource="{Binding FilteredEntries}"
-                         BorderThickness="0"
                          AutoScrollToSelectedItem="False">
-
                     <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid ColumnDefinitions="170,90,*"
-                                  ColumnSpacing="12"
-                                  Margin="4,8">
+                        <DataTemplate x:DataType="vm:LogEntryViewModel">
+                            <Border Classes="log-item"
+                                    Classes.selected="{Binding $parent[ListBoxItem].IsSelected}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Svg Path="{Binding IconPath}"
+                                         Width="20"
+                                         Height="20"
+                                         VerticalAlignment="Center"
+                                         Classes.danger="{Binding IsDanger}"
+                                         Classes.info="{Binding IsInfo}"
+                                         Classes.neutral="{Binding IsNeutral}"
+                                         Classes.debug="{Binding IsDebug}"
+                                         Classes.warning="{Binding IsWarning}"
+                                         Classes.fatal="{Binding IsFatal}"/>
 
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding Timestamp, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
-                                           Foreground="{DynamicResource SecondaryText}"
-                                           VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1"
+                                                Spacing="8"
+                                                Margin="32,0,16,0"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Classes="log-message"
+                                                   Text="{Binding Message}"/>
 
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Level}"
-                                           FontWeight="Bold"
-                                           VerticalAlignment="Center"/>
+                                        <TextBlock Classes="log-source"
+                                                   Text="{Binding Source}"/>
+                                    </StackPanel>
 
-                                <StackPanel Grid.Column="2"
-                                            Spacing="3">
-
-                                    <TextBlock Text="{Binding Message}"
-                                               TextWrapping="Wrap"/>
-
-                                    <TextBlock Text="{Binding Source}"
-                                               FontSize="11"
-                                               Foreground="{DynamicResource SecondaryText}"/>
-
-                                </StackPanel>
-                            </Grid>
+                                    <TextBlock Grid.Column="2"
+                                               Classes="body-small"
+                                               Text="{Binding TimestampText}"
+                                               Foreground="{DynamicResource PrimaryText}"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+
+                <TextBlock Classes="body-small"
+                           Text="{loc:Loc Key=Logs_Loading}"
+                           Foreground="{DynamicResource SecondaryText}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding ShowLoading}"/>
+
+                <TextBlock Classes="body-small"
+                           Text="{loc:Loc Key=Logs_Empty}"
+                           Foreground="{DynamicResource SecondaryText}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding ShowEmpty}"/>
+
+                <TextBlock Classes="body-small"
+                           Text="{Binding ErrorMessage}"
+                           Foreground="{DynamicResource Danger}"
+                           TextWrapping="Wrap"
+                           MaxWidth="400"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding ShowError}"/>
             </Grid>
         </Border>
 
+        <!-- Export -->
+        <Button Grid.Row="3"
+                Classes="primary"
+                Content="{loc:Loc Key=Logs_Export}"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                Click="OnExportClick"/>
+
+        <!-- Retention note -->
+        <TextBlock Grid.Row="4"
+                   Classes="body-small"
+                   Text="{loc:Loc Key=Logs_Footer}"/>
     </Grid>
 </UserControl>

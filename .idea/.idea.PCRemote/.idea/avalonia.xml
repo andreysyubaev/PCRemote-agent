@@ -6,6 +6,7 @@
         <entry key="src/PCRemote.Desktop/App.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
         <entry key="src/PCRemote.Desktop/Assets/Themes/Colors.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
         <entry key="src/PCRemote.Desktop/Styles/Styles.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
+        <entry key="src/PCRemote.Desktop/Themes/Colors.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
         <entry key="src/PCRemote.Desktop/ViewModels/Pages/LogsPageViewModel.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
         <entry key="src/PCRemote.Desktop/Views/MainWindow.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />
         <entry key="src/PCRemote.Desktop/Views/Pages/AboutPage.axaml" value="src/PCRemote.Desktop/PCRemote.Desktop.csproj" />

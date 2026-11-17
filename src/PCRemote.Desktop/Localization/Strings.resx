@@ -71,6 +71,45 @@
     <data name="Home_StopAgent" xml:space="preserve">
     <value>Stop Agent</value>
 </data>
+    <data name="Home_Launch" xml:space="preserve">
+    <value>Launch</value>
+</data>
+    <data name="Home_Stop" xml:space="preserve">
+    <value>Stop</value>
+</data>
+    <data name="Home_AgentWorking" xml:space="preserve">
+    <value>Agent is working</value>
+</data>
+    <data name="Home_AgentStopped" xml:space="preserve">
+    <value>Agent is stopped</value>
+</data>
+    <data name="Home_TelegramBot" xml:space="preserve">
+    <value>Telegram-bot</value>
+</data>
+    <data name="Home_Account" xml:space="preserve">
+    <value>Account</value>
+</data>
+    <data name="Home_Connected" xml:space="preserve">
+    <value>Connected</value>
+</data>
+    <data name="Home_NotConnected" xml:space="preserve">
+    <value>Not connected</value>
+</data>
+    <data name="Home_Paired" xml:space="preserve">
+    <value>Paired</value>
+</data>
+    <data name="Home_NotPaired" xml:space="preserve">
+    <value>Not paired</value>
+</data>
+    <data name="Home_HowToPair" xml:space="preserve">
+    <value>how to pair?</value>
+</data>
+    <data name="Home_AccountHint" xml:space="preserve">
+    <value>Management is available only to your account</value>
+</data>
+    <data name="Home_BotUsernameFallback" xml:space="preserve">
+    <value>@pcremoteagentbot</value>
+</data>
     <data name="Home_TelegramPairing" xml:space="preserve">
     <value>Telegram pairing</value>
 </data>
@@ -100,7 +139,7 @@
     <value>Telegram connected: {0}</value>
 </data>
     <data name="Home_AccountPaired" xml:space="preserve">
-    <value>Account paired: {0}</value>
+    <value>Account paired</value>
 </data>
     <data name="Home_StatusReady" xml:space="preserve">
     <value>PCRemote is ready.</value>
@@ -117,6 +156,21 @@
     <data name="Home_StatusStopped" xml:space="preserve">
     <value>PCRemote Agent stopped.</value>
 </data>
+    <data name="Home_AutoStartEnabled" xml:space="preserve">
+  <value>Autostart enabled.</value>
+</data>
+    <data name="Home_AutoStartDisabled" xml:space="preserve">
+  <value>Autostart disabled.</value>
+</data>
+    <data name="Home_AutoStartError" xml:space="preserve">
+  <value>Autostart error: {0}</value>
+</data>
+    <data name="Home_LastEvent" xml:space="preserve">
+    <value>Last event:</value>
+</data>
+    <data name="Home_NoEvents" xml:space="preserve">
+    <value>No events yet</value>
+</data>
 
     <data name="Settings_Title" xml:space="preserve">
     <value>Settings</value>
@@ -129,15 +183,6 @@
 </data>
     <data name="Settings_ThemeDescription" xml:space="preserve">
     <value>Choose the application color scheme.</value>
-</data>
-    <data name="Settings_Startup" xml:space="preserve">
-    <value>Application startup</value>
-</data>
-    <data name="Settings_AutoStart" xml:space="preserve">
-    <value>Launch at system startup</value>
-</data>
-    <data name="Settings_AutoStartDescription" xml:space="preserve">
-    <value>Automatically start PCRemote when you sign in to your computer.</value>
 </data>
     <data name="Settings_Telegram" xml:space="preserve">
     <value>Telegram</value>
@@ -169,15 +214,6 @@
 </data>
     <data name="Settings_ThemeSystem" xml:space="preserve">
     <value>System</value>
-</data>
-    <data name="Settings_AutoStartEnabled" xml:space="preserve">
-    <value>Autostart enabled.</value>
-</data>
-    <data name="Settings_AutoStartDisabled" xml:space="preserve">
-    <value>Autostart disabled.</value>
-</data>
-    <data name="Settings_AutoStartError" xml:space="preserve">
-    <value>Autostart error: {0}</value>
 </data>
     <data name="Settings_ThemeSaveError" xml:space="preserve">
     <value>Theme save error: {0}</value>
@@ -223,24 +259,48 @@
     <data name="Logs_LoadError" xml:space="preserve">
   <value>Failed to load log entries.</value>
 </data>
+    <data name="Logs_ClearSearch" xml:space="preserve">
+  <value>Clear search</value>
+</data>
+    <data name="Logs_Footer" xml:space="preserve">
+  <value>Logs are cleared every 7 days</value>
+</data>
+    <data name="Logs_ExportDialogTitle" xml:space="preserve">
+  <value>Export logs</value>
+</data>
+    <data name="Logs_ExportFileType" xml:space="preserve">
+  <value>Text files</value>
+</data>
+    <data name="Logs_ExportError" xml:space="preserve">
+  <value>Failed to export logs.</value>
+</data>
 
-    <data name="About_Title" xml:space="preserve">
-  <value>About</value>
+    <data name="About_Tagline" xml:space="preserve">
+  <value>Remote control for your PC through Telegram</value>
 </data>
-    <data name="About_Description" xml:space="preserve">
-  <value>Information about PCRemote</value>
+    <data name="About_Version" xml:space="preserve">
+  <value>Version 1.0.0</value>
 </data>
-    <data name="About_ProjectDescription" xml:space="preserve">
-  <value>Remote PC management through Telegram.</value>
+    <data name="About_Application" xml:space="preserve">
+  <value>About the application</value>
 </data>
-    <data name="About_Project" xml:space="preserve">
-  <value>Project</value>
+    <data name="About_ApplicationDescription" xml:space="preserve">
+  <value>PCRemote is an open-source desktop application that lets you securely monitor and control your computer remotely through a Telegram bot.</value>
+</data>
+    <data name="About_Links" xml:space="preserve">
+  <value>Links</value>
 </data>
     <data name="About_GitHub" xml:space="preserve">
   <value>GitHub Repository</value>
 </data>
-    <data name="About_Contact" xml:space="preserve">
-  <value>Contact</value>
+    <data name="About_Telegram" xml:space="preserve">
+  <value>My Telegram direct</value>
+</data>
+    <data name="About_CopyLink" xml:space="preserve">
+  <value>Copy link</value>
+</data>
+    <data name="About_OpenLink" xml:space="preserve">
+  <value>Open link</value>
 </data>
 
     <data name="Setup_InitialStatus" xml:space="preserve">
@@ -275,13 +335,22 @@
   <value>Language settings save error: {0}</value>
 </data>
 
-    <data name="Settings_LanguageRestartTitle" xml:space="preserve">
-  <value>Restart required</value>
-</data>
-    <data name="Settings_LanguageRestartDescription" xml:space="preserve">
-  <value>Restart PCRemote to apply the selected language.</value>
-</data>
     <data name="Settings_RestartApplication" xml:space="preserve">
   <value>Restart PCRemote</value>
+</data>
+    <data name="Settings_PairTelegram" xml:space="preserve">
+  <value>Pair Telegram</value>
+</data>
+    <data name="Settings_PairTelegramDescription" xml:space="preserve">
+  <value>Open your Telegram bot and send /pair followed by the code.</value>
+</data>
+    <data name="Settings_PairingCodeUnavailable" xml:space="preserve">
+  <value>Launch the agent to get a pairing code.</value>
+</data>
+    <data name="Settings_DisconnectShortDescription" xml:space="preserve">
+  <value>Disconnect the current Telegram bot</value>
+</data>
+    <data name="Settings_ConfirmShortDescription" xml:space="preserve">
+  <value>You will need to connect a bot again</value>
 </data>
 </root>

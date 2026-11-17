@@ -35,7 +35,7 @@
 
     <TrayIcon.Icons>
         <TrayIcons>
-            <TrayIcon Icon="/Assets/avalonia-logo.ico"
+            <TrayIcon Icon="/Assets/Icons/App/tray-agent-off.png"
                       ToolTipText="PCRemote">
 
                 <TrayIcon.Menu>

@@ -1,196 +1,1442 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Design.PreviewWith>
-        <ThemeVariantScope RequestedThemeVariant="Dark">
-        <Border Padding="24" CornerRadius="16" Width="670" Background="{DynamicResource AppBackground}">
-            <Grid ColumnDefinitions="Auto,*">
+    
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://PCRemote.Desktop/Themes/Colors.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
 
-                <Grid Column="0" RowDefinitions="*,Auto">
-                    <Grid Grid.Row="0" RowDefinitions="*,*" RowSpacing="16">
-                        <StackPanel Grid.Row="0"
-                                    Spacing="16">
-                            <Svg Path="/Assets/Icons/desktop-outline.svg"
-                                 Width="24"
-                                 Height="24"
-                            />
-                            
-                            <Svg Path="/Assets/Icons/home-outline.svg" Css="{DynamicResource SvgIconCss}"
-                                 Width="24"
-                                 Height="24"/>
-                            
-                            <Svg Path="/Assets/Icons/settings-outline.svg"
-                                 Width="24"
-                                 Height="24"
-                            />
-                            <Svg Path="/Assets/Icons/file-text-outline.svg"
-                                 Width="24"
-                                 Height="24"
-                            />
-                        </StackPanel>
-                    </Grid>
-                    <StackPanel Grid.Row="1">
-                        <Svg Path="/Assets/Icons/info-outline.svg"
-                             Width="24"
-                             Height="24"
-                        />
-                    </StackPanel>
-                </Grid>
+            <!-- Same chevron as Assets/Icons/arrow-ios-downward.svg -->
+            <StreamGeometry x:Key="ChevronDownGeometry">M11.9998,16 C11.7661,16.0005 11.5397,15.9191 11.3598,15.77 L5.35979,10.77 C5.15557,10.6003 5.02715,10.3564 5.00277,10.0919 C4.97839,9.8275 5.06005,9.56422 5.22979,9.36 C5.39953,9.15578 5.64344,9.02736 5.90786,9.00298 C6.17229,8.9786 6.43557,9.06026 6.63979,9.23 L11.9998,13.71 L17.3598,9.39 C17.4621,9.30694 17.5798,9.2449 17.7061,9.20747 C17.8324,9.17004 17.9649,9.15795 18.096,9.17189 C18.227,9.18582 18.354,9.22552 18.4696,9.2887 C18.5853,9.35187 18.6873,9.43727 18.7698,9.54 C18.8614,9.64282 18.9307,9.76345 18.9735,9.89432 C19.0163,10.0252 19.0316,10.1635 19.0185,10.3006 C19.0053,10.4376 18.964,10.5705 18.8971,10.6909 C18.8303,10.8112 18.7392,10.9165 18.6298,11 L12.6298,15.83 C12.4447,15.9555 12.2229,16.0154 11.9998,16 Z</StreamGeometry>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <Design.PreviewWith>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Horizontal" Spacing="32" Margin="24">
                 
-                <StackPanel Grid.Column="1" Margin="16" Spacing="16">
-                    <!-- Working -->
-                    <Border Classes="block">
-                        <StackPanel Classes="block">
-                            <StackPanel Spacing="8">
-                                <TextBlock Classes="heading-page">PC is available for management</TextBlock>
-                                <TextBlock Classes="body-small">Send commands to your Telegram bot</TextBlock>
+                <!-- ================= DARK THEME UI KIT ================= -->
+                <ThemeVariantScope RequestedThemeVariant="Dark">
+                    <Border CornerRadius="16" Width="670" Background="{DynamicResource AppBackground}" ClipToBounds="True">
+                        <Grid ColumnDefinitions="57,*">
+
+                            <!-- Sidebar -->
+                            <Border Grid.Column="0" Classes="sidebar">
+                                <Grid RowDefinitions="Auto,*,Auto">
+                                    <StackPanel Grid.Row="0" Spacing="16">
+                                        <!-- Logo -->
+                                        <Svg Path="{DynamicResource AppLogoIcon}"
+                                             Width="25" Height="25"
+                                             HorizontalAlignment="Center"
+                                             Margin="0,0,0,8"/>
+                                        
+                                        <!-- Nav buttons -->
+                                        <Button Classes="nav active">
+                                            <Svg Path="/Assets/Icons/home-outline.svg"
+                                                 Classes="accent"
+                                                 Width="20" Height="20"/>
+                                        </Button>
+                                        
+                                        <Button Classes="nav">
+                                            <Svg Path="/Assets/Icons/settings-outline.svg"
+                                                 Width="20" Height="20"/>
+                                        </Button>
+                                        
+                                        <Button Classes="nav">
+                                            <Svg Path="/Assets/Icons/file-text-outline.svg"
+                                                 Width="20" Height="20"/>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <!-- Bottom info button -->
+                                    <Button Grid.Row="2" Classes="nav">
+                                        <Svg Path="/Assets/Icons/info-outline.svg"
+                                             Width="20" Height="20"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <!-- Main Content (Home) -->
+                            <StackPanel Grid.Column="1" Margin="16" Spacing="16">
+
+                                <!-- Working / Agent Status Card -->
+                                <Border Classes="card">
+                                    <StackPanel Classes="card-content">
+                                        <StackPanel Spacing="8">
+                                          <TextBlock Classes="heading-page" Text="PC is available for management"/>
+                                          <TextBlock Classes="body-small" Text="Send commands to your Telegram bot"/>
+                                        </StackPanel>
+
+                                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                          <TextBlock Classes="body" Text="Agent is working" VerticalAlignment="Center"/>
+                                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                                            <Button Classes="primary" Content="Launch"/>
+                                            <Button Classes="secondary" Content="Stop"/>
+                                          </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Connections Card -->
+                                <Border Classes="card">
+                                    <StackPanel Classes="card-content">
+                                        <TextBlock Classes="heading-section" Text="Title"/>
+                                        <StackPanel Spacing="16">
+                                          <!-- Connection 1 -->
+                                          <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                            <Svg Path="/Assets/Icons/desktop.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                              <TextBlock Classes="label" Text="Telegram-bot"/>
+                                              <TextBlock Classes="body-small" Text="@peremoteagentbot"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                              <TextBlock Classes="status-text success" Text="Connected"/>
+                                              <Ellipse Classes="status-dot success" Width="4" Height="4"/>
+                                            </StackPanel>
+                                          </Grid>
+
+                                          <!-- Option 2 / Language -->
+                                          <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                            <Svg Path="/Assets/Icons/globe-outline.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                              <TextBlock Classes="label" Text="Language"/>
+                                              <TextBlock Classes="body-small" Text="Application interface language"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                                              <Button Classes="icon" Width="32" Height="32">
+                                                <Svg Path="/Assets/Icons/refresh.svg" Width="20" Height="20"/>
+                                              </Button>
+                                              <Button Classes="dropdown" Height="32">
+                                                <StackPanel Orientation="Horizontal" Spacing="16">
+                                                  <TextBlock Classes="body-small" Text="System" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                                  <Svg Path="/Assets/Icons/arrow-ios-downward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                              </Button>
+                                            </StackPanel>
+                                          </Grid>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Launch at system startup -->
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,8">
+                                    <StackPanel Spacing="8" VerticalAlignment="Center">
+                                        <TextBlock Classes="label" Text="Launch at system startup"/>
+                                        <TextBlock Classes="body-small" Text="Automatiacally start PCRemote when you sign in to your computer"/>
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1" Classes="tumbler" IsChecked="True" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- Separator -->
+                                <Rectangle Classes="separator"/>
+
+                                <!-- Footer -->
+                                <Grid ColumnDefinitions="*,Auto" Height="16" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Classes="body-small" Text="Last event:" Foreground="{DynamicResource PrimaryText}"/>
+                                        <TextBlock Classes="caption" Text="bot connected 19:08"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="link" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Classes="body-small" Text="Logs" Foreground="{DynamicResource PrimaryText}"/>
+                                            <Svg Path="/Assets/Icons/arrow-ios-forward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Pair Telegram Card -->
+                                <Border Classes="card-small">
+                                    <StackPanel Spacing="16">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Classes="heading-section" Text="Pair Telegram"/>
+                                            <TextBlock Classes="body-small" Text="Open your Telegram bot and send /pair followed by the code."/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                                            <TextBlock Classes="pairing-value" Text="118 088"/>
+                                            <Button Classes="icon" Width="36" Height="36">
+                                                <Svg Path="/Assets/Icons/copy-outline.svg" Width="20" Height="20"/>
+                                            </Button>
+                                        </StackPanel>
+                                        <TextBlock Classes="body-small" Text="The code is valid until 04:52"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Search Bar -->
+                                <Grid Height="40">
+                                    <TextBox Classes="search" Watermark="Search messages, sources, exceptions..."/>
+                                    <Button Classes="link" HorizontalAlignment="Right" Margin="0,0,16,0" VerticalAlignment="Center">
+                                        <Svg Path="/Assets/Icons/close-circle.svg" Classes="muted" Width="20" Height="20"/>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Filters -->
+                                <StackPanel Orientation="Horizontal" Spacing="16" Height="32" VerticalAlignment="Center">
+                                    <Button Classes="dropdown" Height="32">
+                                        <StackPanel Orientation="Horizontal" Spacing="16">
+                                            <TextBlock Classes="body-small" Text="All levels" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            <Svg Path="/Assets/Icons/arrow-ios-downward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="dropdown" Height="32">
+                                        <StackPanel Orientation="Horizontal" Spacing="16">
+                                            <TextBlock Classes="body-small" Text="All sources" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            <Svg Path="/Assets/Icons/arrow-ios-downward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="link" Background="Transparent" VerticalAlignment="Center">
+                                        <TextBlock Classes="label-small" Text="Clear filters"  Foreground="{DynamicResource Accent}"/>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- List (Logs List) -->
+                                <Border CornerRadius="8" ClipToBounds="True">
+                                    <StackPanel Spacing="1">
+                                        <!-- Item 1: Danger -->
+                                        <Border Classes="log-item">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/close-circle-outline.svg" Classes="danger" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot connected: @pcremoteagentbot" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Item 2: Info -->
+                                        <Border Classes="log-item">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/info-outline.svg" Classes="info" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot commands registered" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Item 3: Neutral -->
+                                        <Border Classes="log-item">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/eye-outline.svg" Classes="neutral" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot connected: @pcremoteagentbot" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Item 4: Debug (Selected/Active) -->
+                                        <Border Classes="log-item selected">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/debug-outline.svg" Classes="debug" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot connected: @pcremoteagentbot" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Button (Export) -->
+                                <Button Classes="primary" Content="Export" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+                                <!-- Links -->
+                                <Border Classes="card">
+                                    <StackPanel Classes="card-content">
+                                        <TextBlock Classes="heading-section" Text="Links"/>
+                                        <StackPanel Spacing="16">
+                                            <!-- Link 1 -->
+                                            <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                                <Svg Path="/Assets/Icons/github.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="label" Text="GitHub Repository"/>
+                                                    <TextBlock Classes="body-small" Text="https://github.com/andreysyubaev/PCRemote-agent"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/copy-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/external-link-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Link 2 -->
+                                            <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                                <Svg Path="/Assets/Icons/telegram.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="label" Text="My Telegram direct"/>
+                                                    <TextBlock Classes="body-small" Text="https://t.me/emmidm"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/copy-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/external-link-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
                             </StackPanel>
-                        </StackPanel>
+                        </Grid>
                     </Border>
-                </StackPanel>
-            </Grid>
-        </Border>
-        </ThemeVariantScope>
+                </ThemeVariantScope>
+
+                <!-- ================= LIGHT THEME UI KIT ================= -->
+                <ThemeVariantScope RequestedThemeVariant="Light">
+                    <Border CornerRadius="16" Width="670" Background="{DynamicResource AppBackground}" ClipToBounds="True">
+                        <Grid ColumnDefinitions="57,*">
+
+                            <!-- Sidebar -->
+                            <Border Grid.Column="0" Classes="sidebar">
+                                <Grid RowDefinitions="Auto,*,Auto">
+                                    <StackPanel Grid.Row="0" Spacing="16">
+                                        <!-- Logo -->
+                                        <Svg Path="{DynamicResource AppLogoIcon}"
+                                             Width="25" Height="25"
+                                             HorizontalAlignment="Center"
+                                             Margin="0,0,0,8"/>
+                                        
+                                        <!-- Nav buttons -->
+                                        <Button Classes="nav active">
+                                            <Svg Path="/Assets/Icons/home-outline.svg"
+                                                 Classes="accent"
+                                                 Width="20" Height="20"/>
+                                        </Button>
+                                        
+                                        <Button Classes="nav">
+                                            <Svg Path="/Assets/Icons/settings-outline.svg"
+                                                 Width="20" Height="20"/>
+                                        </Button>
+                                        
+                                        <Button Classes="nav">
+                                            <Svg Path="/Assets/Icons/file-text-outline.svg"
+                                                 Width="20" Height="20"/>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <!-- Bottom info button -->
+                                    <Button Grid.Row="2" Classes="nav">
+                                        <Svg Path="/Assets/Icons/info-outline.svg"
+                                             Width="20" Height="20"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <!-- Main Content (Home) -->
+                            <StackPanel Grid.Column="1" Margin="16" Spacing="16">
+
+                                <!-- Working / Agent Status Card -->
+                                <Border Classes="card">
+                                    <StackPanel Classes="card-content">
+                                        <StackPanel Spacing="8">
+                                          <TextBlock Classes="heading-page" Text="PC is available for management"/>
+                                          <TextBlock Classes="body-small" Text="Send commands to your Telegram bot"/>
+                                        </StackPanel>
+
+                                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                          <TextBlock Classes="body" Text="Agent is working" VerticalAlignment="Center"/>
+                                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                                            <Button Classes="primary" Content="Launch" Width="88"/>
+                                            <Button Classes="secondary" Content="Stop" Width="70"/>
+                                          </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Connections Card -->
+                                <Border Classes="card">
+                                    <StackPanel Classes="card-content">
+                                        <TextBlock Classes="heading-section" Text="Title"/>
+                                        <StackPanel Spacing="16">
+                                          <!-- Connection 1 -->
+                                          <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                            <Svg Path="/Assets/Icons/desktop.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                              <TextBlock Classes="label" Text="Telegram-bot"/>
+                                              <TextBlock Classes="body-small" Text="@peremoteagentbot"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                              <TextBlock Classes="status-text success" Text="Connected"/>
+                                              <Ellipse Classes="status-dot success" Width="4" Height="4"/>
+                                            </StackPanel>
+                                          </Grid>
+
+                                          <!-- Option 2 / Language -->
+                                          <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                            <Svg Path="/Assets/Icons/globe-outline.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                              <TextBlock Classes="label" Text="Language"/>
+                                              <TextBlock Classes="body-small" Text="Application interface language"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                                              <Button Classes="icon" Width="32" Height="32">
+                                                <Svg Path="/Assets/Icons/refresh.svg" Width="20" Height="20"/>
+                                              </Button>
+                                              <Button Classes="dropdown" Height="32">
+                                                <StackPanel Orientation="Horizontal" Spacing="16">
+                                                  <TextBlock Classes="body-small" Text="System" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                                  <Svg Path="/Assets/Icons/arrow-ios-downward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                              </Button>
+                                            </StackPanel>
+                                          </Grid>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Launch at system startup -->
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,8">
+                                    <StackPanel Spacing="8" VerticalAlignment="Center">
+                                        <TextBlock Classes="label" Text="Launch at system startup"/>
+                                        <TextBlock Classes="body-small" Text="Automatiacally start PCRemote when you sign in to your computer"/>
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1" Classes="tumbler" IsChecked="True" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- Separator -->
+                                <Rectangle Classes="separator"/>
+
+                                <!-- Footer -->
+                                <Grid ColumnDefinitions="*,Auto" Height="16" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                        <TextBlock Classes="body-small" Text="Last event:" Foreground="{DynamicResource PrimaryText}"/>
+                                        <TextBlock Classes="caption" Text="bot connected 19:08"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Classes="link" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Classes="body-small" Text="Logs" Foreground="{DynamicResource PrimaryText}"/>
+                                            <Svg Path="/Assets/Icons/arrow-ios-forward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Pair Telegram Card -->
+                                <Border Classes="card-small">
+                                    <StackPanel Spacing="16">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Classes="heading-section" Text="Pair Telegram"/>
+                                            <TextBlock Classes="body-small" Text="Open your Telegram bot and send /pair followed by the code."/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                                            <TextBlock Classes="pairing-value" Text="118 088"/>
+                                            <Button Classes="icon" Width="36" Height="36">
+                                                <Svg Path="/Assets/Icons/copy-outline.svg" Width="20" Height="20"/>
+                                            </Button>
+                                        </StackPanel>
+                                        <TextBlock Classes="body-small" Text="The code is valid until 04:52"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Search Bar -->
+                                <Grid Height="40">
+                                    <TextBox Classes="search" Watermark="Search messages, sources, exceptions..."/>
+                                    <Button Classes="link" HorizontalAlignment="Right" Margin="0,0,16,0" VerticalAlignment="Center">
+                                        <Svg Path="/Assets/Icons/close-circle.svg" Classes="muted" Width="20" Height="20"/>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Filters -->
+                                <StackPanel Orientation="Horizontal" Spacing="16" Height="32" VerticalAlignment="Center">
+                                    <Button Classes="dropdown" Height="32">
+                                        <StackPanel Orientation="Horizontal" Spacing="16">
+                                            <TextBlock Classes="body-small" Text="All levels" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            <Svg Path="/Assets/Icons/arrow-ios-downward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="dropdown" Height="32">
+                                        <StackPanel Orientation="Horizontal" Spacing="16">
+                                            <TextBlock Classes="body-small" Text="All sources" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            <Svg Path="/Assets/Icons/arrow-ios-downward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="link accent" VerticalAlignment="Center">
+                                        <TextBlock Classes="label-small" Text="Clear filters" Foreground="{DynamicResource Accent}"/>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- List (Logs List) -->
+                                <Border CornerRadius="8" ClipToBounds="True">
+                                    <StackPanel Spacing="1">
+                                        <!-- Item 1: Danger -->
+                                        <Border Classes="log-item">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/close-circle-outline.svg" Classes="danger" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot connected: @pcremoteagentbot" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Item 2: Info -->
+                                        <Border Classes="log-item">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/info-outline.svg" Classes="info" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot commands registered" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Item 3: Neutral -->
+                                        <Border Classes="log-item">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/eye-outline.svg" Classes="neutral" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot connected: @pcremoteagentbot" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Item 4: Debug (Selected/Active) -->
+                                        <Border Classes="log-item selected">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                                <Svg Path="/Assets/Icons/debug-outline.svg" Classes="debug" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="body-small" Text="Telegram bot connected: @pcremoteagentbot" Foreground="{DynamicResource PrimaryText}"/>
+                                                    <TextBlock Classes="caption-xs" Text="PCRemote.Agent.Telegram.TelegramBotService"/>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2" Classes="body-small" Text="2026-11-12 19:08:08" Foreground="{DynamicResource PrimaryText}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Button (Export) -->
+                                <Button Classes="primary" Content="Export" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+
+                                <!-- Links -->
+                                <Border Classes="card">
+                                    <StackPanel Classes="card-content">
+                                        <TextBlock Classes="heading-section" Text="Links"/>
+                                        <StackPanel Spacing="16">
+                                            <!-- Link 1 -->
+                                            <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                                <Svg Path="/Assets/Icons/github.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="label" Text="GitHub Repository"/>
+                                                    <TextBlock Classes="body-small" Text="https://github.com/andreysyubaev/PCRemote-agent"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/copy-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/external-link-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Link 2 -->
+                                            <Grid ColumnDefinitions="Auto,*,Auto" Height="44">
+                                                <Svg Path="/Assets/Icons/telegram.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Classes="label" Text="My Telegram direct"/>
+                                                    <TextBlock Classes="body-small" Text="https://t.me/emmidm"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/copy-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                    <Button Classes="icon" Width="36" Height="36">
+                                                        <Svg Path="/Assets/Icons/external-link-outline.svg" Width="20" Height="20"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ThemeVariantScope>
+
+            </StackPanel>
+        </ScrollViewer>
     </Design.PreviewWith>
 
-    <!-- Text -->
+    <!-- ================= TYPOGRAPHY STYLES ================= -->
     <!-- Headings -->
     <Style Selector="TextBlock.heading-page">
-        <Setter Property="FontSize" Value="25"></Setter>
-        <Setter Property="LineHeight" Value="31"></Setter>
-        <Setter Property="FontWeight" Value="Bold"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"></Setter>
+        <Setter Property="FontSize" Value="25"/>
+        <Setter Property="LineHeight" Value="31"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
     </Style>
     
     <Style Selector="TextBlock.heading-section">
-        <Setter Property="FontSize" Value="20"></Setter>
-        <Setter Property="LineHeight" Value="25"></Setter>
-        <Setter Property="FontWeight" Value="Bold"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="LineHeight" Value="25"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
     </Style>
 
-    <!-- Body text -->
+    <!-- Body & Labels -->
     <Style Selector="TextBlock.body">
-        <Setter Property="FontSize" Value="16"></Setter>
-        <Setter Property="LineHeight" Value="20"></Setter>
-        <Setter Property="FontWeight" Value="Regular"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="LineHeight" Value="20"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
     </Style>
 
     <Style Selector="TextBlock.label">
-        <Setter Property="FontSize" Value="16"></Setter>
-        <Setter Property="LineHeight" Value="20"></Setter>
-        <Setter Property="FontWeight" Value="Medium"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="LineHeight" Value="20"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
     </Style>
 
     <Style Selector="TextBlock.body-small">
-        <Setter Property="FontSize" Value="13"></Setter>
-        <Setter Property="LineHeight" Value="16"></Setter>
-        <Setter Property="FontWeight" Value="Regular"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource SecondaryText}"></Setter>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineHeight" Value="16"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource SecondaryText}"/>
     </Style>
 
     <Style Selector="TextBlock.label-small">
-        <Setter Property="FontSize" Value="16"></Setter>
-        <Setter Property="LineHeight" Value="20"></Setter>
-        <Setter Property="FontWeight" Value="Regular"></Setter>
-        <Setter Property="TextAlignment" Value="Center"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineHeight" Value="16"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
     </Style>
 
     <Style Selector="TextBlock.caption">
-        <Setter Property="FontSize" Value="13"></Setter>
-        <Setter Property="LineHeight" Value="16"></Setter>
-        <Setter Property="FontWeight" Value="Regular"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineHeight" Value="16"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource MutedText}"/>
     </Style>
 
     <Style Selector="TextBlock.caption-xs">
-        <Setter Property="FontSize" Value="10"></Setter>
-        <Setter Property="LineHeight" Value="13"></Setter>
-        <Setter Property="FontWeight" Value="Regular"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="LineHeight" Value="13"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource SecondaryText}"/>
     </Style>
 
     <Style Selector="TextBlock.pairing-value">
-        <Setter Property="FontSize" Value="31"></Setter>
-        <Setter Property="LineHeight" Value="39"></Setter>
-        <Setter Property="FontWeight" Value="SemiBold"></Setter>
-        <Setter Property="TextAlignment" Value="Left"></Setter>
-        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-    </Style>
-    
-    <!-- Border -->
-    <Style Selector="Border.block">
-        <Setter Property="CornerRadius" Value="16"></Setter>
-        <Setter Property="BorderThickness" Value="1"></Setter>
-        <Setter Property="BorderBrush" Value="{DynamicResource Border}"></Setter>
-        <Setter Property="Padding" Value="16"></Setter>
-    </Style>
-    
-    <!-- Block -->
-    <Style Selector="StackPanel.block">
-        <Setter Property="Spacing" Value="24"></Setter>
-        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"></Setter>
-    </Style>
-    
-    <!-- Icons -->
-    <Style Selector="Svg">
-        <Setter Property="(Svg.CurrentCss)"
-                Value="{DynamicResource SvgIconCss}"/>
+        <Setter Property="FontSize" Value="31"/>
+        <Setter Property="LineHeight" Value="39"/>
+        <Setter Property="LetterSpacing" Value="4"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="TextAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
     </Style>
 
-    <!-- Buttons -->
+    <Style Selector="TextBlock.status-text">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineHeight" Value="16"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource Neutral}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineHeight" Value="16"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource Neutral}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status-text.success">
+        <Setter Property="Foreground" Value="{DynamicResource Success}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status-text.error">
+        <Setter Property="Foreground" Value="{DynamicResource Danger}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status-text.warning">
+        <Setter Property="Foreground" Value="{DynamicResource Warning}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status-text.info">
+        <Setter Property="Foreground" Value="{DynamicResource Info}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status-text.muted">
+        <Setter Property="Foreground" Value="{DynamicResource MutedText}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status-text.neutral">
+        <Setter Property="Foreground" Value="{DynamicResource Neutral}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status.success">
+        <Setter Property="Foreground" Value="{DynamicResource Success}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status.error">
+        <Setter Property="Foreground" Value="{DynamicResource Danger}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status.warning">
+        <Setter Property="Foreground" Value="{DynamicResource Warning}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status.info">
+        <Setter Property="Foreground" Value="{DynamicResource Info}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status.muted">
+        <Setter Property="Foreground" Value="{DynamicResource MutedText}"/>
+    </Style>
+
+    <Style Selector="TextBlock.status.neutral">
+        <Setter Property="Foreground" Value="{DynamicResource Neutral}"/>
+    </Style>
+
+    <!-- ================= CONTAINERS & CARDS ================= -->
+    <Style Selector="Border.card">
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style Selector="Border.card-small">
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style Selector="Border.block">
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+        <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <Style Selector="StackPanel.card-content">
+        <Setter Property="Spacing" Value="24"/>
+    </Style>
+
+    <Style Selector="StackPanel.block">
+        <Setter Property="Spacing" Value="24"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+    </Style>
+
+    <Style Selector="Border.sidebar">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0,24,0,16"/>
+    </Style>
+
+    <Style Selector="Rectangle.separator">
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Fill" Value="{DynamicResource Border}"/>
+        <Setter Property="Margin" Value="0,8"/>
+    </Style>
+
+    <Style Selector="Ellipse.status-dot">
+        <Setter Property="Fill" Value="{DynamicResource Neutral}"/>
+        <Setter Property="Width" Value="4"/>
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Ellipse.status-dot.success">
+        <Setter Property="Fill" Value="{DynamicResource Success}"/>
+    </Style>
+
+    <Style Selector="Ellipse.status-dot.error">
+        <Setter Property="Fill" Value="{DynamicResource Danger}"/>
+    </Style>
+
+    <Style Selector="Ellipse.status-dot.warning">
+        <Setter Property="Fill" Value="{DynamicResource Warning}"/>
+    </Style>
+
+    <Style Selector="Ellipse.status-dot.info">
+        <Setter Property="Fill" Value="{DynamicResource Info}"/>
+    </Style>
+
+    <Style Selector="Ellipse.status-dot.muted">
+        <Setter Property="Fill" Value="{DynamicResource MutedText}"/>
+    </Style>
+
+    <!-- ================= ICONS (SVG) ================= -->
+    <Style Selector="Svg">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgIconCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgIconCss}"/>
+    </Style>
+
+    <Style Selector="Svg.accent">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgAccentCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgAccentCss}"/>
+    </Style>
+
+    <Style Selector="Svg.muted">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgMutedCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgMutedCss}"/>
+    </Style>
+
+    <Style Selector="Svg.success">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgSuccessCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgSuccessCss}"/>
+    </Style>
+
+    <Style Selector="Svg.danger">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgDangerCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgDangerCss}"/>
+    </Style>
+
+    <Style Selector="Svg.info">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgInfoCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgInfoCss}"/>
+    </Style>
+
+    <Style Selector="Svg.neutral">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgNeutralCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgNeutralCss}"/>
+    </Style>
+
+    <Style Selector="Svg.debug">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgDebugCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgDebugCss}"/>
+    </Style>
+
+    <Style Selector="Svg.warning">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgWarningCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgWarningCss}"/>
+    </Style>
+
+    <Style Selector="Svg.fatal">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgFatalCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgFatalCss}"/>
+    </Style>
+
+    <Style Selector="Svg.inverse">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgInverseCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgInverseCss}"/>
+    </Style>
+
+    <!-- ================= BUTTONS ================= -->
+    <!-- Base Button -->
     <Style Selector="Button">
         <Setter Property="Height" Value="40"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="FontSize" Value="16"></Setter>
-        <Setter Property="FontWeight" Value="Medium"></Setter>
-        <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
-        <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
-        <Setter Property="Padding" Value="16 0"></Setter>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="16,0"/>
         <Setter Property="Background" Value="{DynamicResource Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- Override Fluent template colors for the default button -->
+    <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+        <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentHover}"/>
         <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
     </Style>
 
-    <!-- Hover -->
-    <Style Selector="Button.pointerover">
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentPressed}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+    </Style>
+
+    <!-- Primary Button -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.primary /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AccentHover}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+        
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentHover}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
         
     </Style>
 
-    <!-- Pressed -->
-    <Style Selector="Button.pressed">
-        
+    <Style Selector="Button.primary:pressed">
+        <Setter Property="Background" Value="{DynamicResource AccentPressed}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+    </Style>
+    <Style Selector="Button.primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentPressed}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
+    </Style>
+    <Style Selector="Button.primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentDisabled}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ButtonTextDisabled}"/>
     </Style>
 
-    <!-- Disabled -->
-    <Style Selector="Button.disabled">
+    <!-- Secondary / Outlined Button -->
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+    <Style Selector="Button.secondary /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+    <Style Selector="Button.secondary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+    </Style>
+    <Style Selector="Button.secondary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="Button.secondary:pressed">
+        <Setter Property="Opacity" Value="0.8"/>
+    </Style>
+    <Style Selector="Button.secondary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+    <Style Selector="Button.secondary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+
+    <!-- Active Button -->
+    <Style Selector="Button.active">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+    </Style>
+    <Style Selector="Button.active /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+
+    <!-- Disabled Button -->
+    <Style Selector="Button:disabled">
         <Setter Property="Opacity" Value="0.64"/>
     </Style>
     
-    <!-- Active -->
-    <Style Selector="Button.active">
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"></Setter>
-        <Setter Property="Background" Value="Transparent"></Setter>
-        <Setter Property="BorderThickness" Value="1"></Setter>
-        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"></Setter>
-    </Style>
-
-    <!-- Inputs -->
-    <Style Selector="TextBox">
-        <Setter Property="Padding" Value="12"/>
+    <!-- Icon Buttons (36x36 and 32x32) -->
+    <Style Selector="Button.icon">
+        <Setter Property="Padding" Value="8"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.icon /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+    </Style>
+    <Style Selector="Button.icon:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+    </Style>
+    <Style Selector="Button.icon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+    </Style>
+    <Style Selector="Button.icon:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+    </Style>
+    <Style Selector="Button.icon:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
     </Style>
     
+    <!-- Icon Confirm buttons Primary/Secondary -->
+    <Style Selector="Button.confirm.primary">
+        <Setter Property="Width" Value="42"/>
+        <Setter Property="Height" Value="42"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{DynamicResource Accent}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryInverseText}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    
+    <Style Selector="Button.confirm.secondary">
+        <Setter Property="Width" Value="42"/>
+        <Setter Property="Height" Value="42"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Button.confirm.secondary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ItemHoverBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+
+    <Style Selector="Button.confirm.secondary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ItemHoverBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+
+    <!-- Dropdown / Combobox-like Button -->
+    <Style Selector="Button.dropdown">
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+    </Style>
+    <Style Selector="Button.dropdown /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+    <Style Selector="Button.dropdown:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+    </Style>
+    <Style Selector="Button.dropdown:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+    </Style>
+    <Style Selector="Button.dropdown:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+    </Style>
+    <Style Selector="Button.dropdown:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+    </Style>
+
+    <!-- Plain Link / Action Button -->
+    <Style Selector="Button.link">
+        <Setter Property="Height" Value="NaN"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+    <Style Selector="Button.link /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+    <Style Selector="Button.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.link:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    
+    <Style Selector="Button.link.active">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="Button.link.accent">
+        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <!-- Sidebar Navigation Button -->
+    <Style Selector="Button.nav">
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Button.nav /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="16"/>
+    </Style>
+
+    <Style Selector="Button.nav:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+    </Style>
+    <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+    </Style>
+    <Style Selector="Button.nav:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+    </Style>
+
+    <Style Selector="Button.nav.active">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+    </Style>
+    <Style Selector="Button.nav.active /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+    </Style>
+    <Style Selector="Button.nav.active Svg">
+        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgAccentCss}"/>
+        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgAccentCss}"/>
+    </Style>
+
+    <!-- ================= INPUTS (TEXTBOX) ================= -->
+    <Style Selector="TextBox">
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="SelectionBrush" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <Style Selector="TextBox.search">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource MutedText}"/>
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <Style Selector="TextBox.search /template/ TextBlock#PART_Placeholder">
+        <Setter Property="Opacity" Value="1"/>
+    </Style>
+
+    <Style Selector="TextBox.search:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource InputHoverBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="TextBox.search.pressed /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource InputPressedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <Style Selector="TextBox.search:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <Style Selector="TextBox.search:focus:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource InputHoverBackground}"/>
+    </Style>
+
+    <Style Selector="TextBox.search.pressed:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource InputPressedBackground}"/>
+    </Style>
+
+    <!-- ================= COMBOBOX (DROPDOWN) ================= -->
+    <Style Selector="ComboBox.settings">
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="MinWidth" Value="140"/>
+        <Setter Property="Padding" Value="12,0"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings /template/ Border#HighlightBackground">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings:pointerover /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings:pressed /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings:focus /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings /template/ ContentControl#ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings /template/ PathIcon#DropDownGlyph">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="Width" Value="12"/>
+        <Setter Property="Height" Value="12"/>
+        <Setter Property="Margin" Value="0,0,12,0"/>
+    </Style>
+
+    <Style Selector="ComboBox.settings /template/ Border#PopupBorder">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="4"/>
+    </Style>
+
+    <!-- Log filter dropdown (Logs page) -->
+    <Style Selector="ComboBox.filter">
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <Style Selector="ComboBox.filter /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+
+    <Style Selector="ComboBox.filter /template/ Border#HighlightBackground">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+
+    <Style Selector="ComboBox.filter:pointerover /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ComboBox.filter:pressed /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ComboBox.filter:focus /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ComboBox.filter /template/ ContentControl#ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="ComboBox.filter /template/ PathIcon#DropDownGlyph">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="Data" Value="{StaticResource ChevronDownGeometry}"/>
+        <Setter Property="Width" Value="9"/>
+        <Setter Property="Height" Value="9"/>
+        <Setter Property="Margin" Value="0,0,20,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- ================= COMBOBOX ITEM ================= -->
+    <Style Selector="ComboBoxItem">
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="CornerRadius" Value="6"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ItemHoverBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <Style Selector="ComboBoxItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <!-- ================= LOG LIST ITEMS ================= -->
+    <Style Selector="Border.log-item">
+        <Setter Property="Height" Value="72"/>
+        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Background" Value="{DynamicResource SurfaceElevatedBackground}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Border.log-item:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ItemHoverBackground}"/>
+    </Style>
+    <Style Selector="Border.log-item.selected">
+        <Setter Property="Background" Value="{DynamicResource ItemHoverBackground}"/>
+    </Style>
+
+    <Style Selector="TextBlock.log-message">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineHeight" Value="16"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+
+    <Style Selector="TextBlock.log-source">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="LineHeight" Value="13"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource SecondaryText}"/>
+    </Style>
+
+    <!-- ================= TOGGLE SWITCH (TUMBLER) ================= -->
+    <!-- Track: 48x28, knob: 24x24 with 2px inset on every side. -->
+    <Style Selector="ToggleSwitch.tumbler">
+        <Setter Property="OnContent" Value="{x:Null}"/>
+        <Setter Property="OffContent" Value="{x:Null}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler /template/ Border#OuterBorder">
+        <Setter Property="Width" Value="48"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="CornerRadius" Value="14"/>
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler:pointerover /template/ Border#OuterBorder">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler:pressed /template/ Border#OuterBorder">
+        <Setter Property="Background" Value="{DynamicResource Border}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler /template/ Border#SwitchKnobBounds">
+        <Setter Property="Width" Value="48"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="CornerRadius" Value="14"/>
+        <Setter Property="Background" Value="{DynamicResource Accent}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler:pointerover /template/ Border#SwitchKnobBounds">
+        <Setter Property="Background" Value="{DynamicResource AccentHover}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler:pressed /template/ Border#SwitchKnobBounds">
+        <Setter Property="Background" Value="{DynamicResource AccentPressed}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!-- Canvas width is the knob travel distance: 48 - 2 * 2 - 24 = 20. -->
+    <Style Selector="ToggleSwitch.tumbler /template/ Canvas#PART_SwitchKnob">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler /template/ Grid#PART_MovingKnobs">
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="28"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler /template/ Ellipse#SwitchKnobOn">
+        <Setter Property="Width" Value="24"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Fill" Value="{DynamicResource ButtonText}"/>
+    </Style>
+
+    <Style Selector="ToggleSwitch.tumbler /template/ Ellipse#SwitchKnobOff">
+        <Setter Property="Width" Value="24"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Fill" Value="{DynamicResource ButtonText}"/>
+    </Style>
+
 </Styles>

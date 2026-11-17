@@ -1,58 +1,95 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PCRemote.Agent.Runtime;
+using PCRemote.Core.Interfaces;
+using PCRemote.Core.Interfaces.Logging;
 using PCRemote.Core.Models;
 using PCRemote.Desktop.Localization;
 
 namespace PCRemote.Desktop.ViewModels.Pages;
 
-public partial class HomePageViewModel : ViewModelBase
+public partial class HomePageViewModel : ViewModelBase, IDisposable
 {
-    private readonly AgentRuntime _agentRuntime;
+    private const string PairingHelpUrl =
+        "https://github.com/andreysyubaev/PCRemote-agent";
 
-    private readonly DispatcherTimer _pairingTimer = new()
-    {
-        Interval = TimeSpan.FromSeconds(1)
-    };
+    private readonly AgentRuntime _agentRuntime;
+    private readonly IAutoStartService _autoStartService;
+    private readonly ILogReader _logReader;
+    private readonly ILogWatcher _logWatcher;
+
+    private bool _isInitializingAutoStart;
+
+    private bool _isRefreshingLastEvent;
+    private bool _lastEventRefreshRequested;
 
     public HomePageViewModel(
         AgentRuntime agentRuntime,
-        AgentStatus agentStatus)
+        AgentStatus agentStatus,
+        IAutoStartService autoStartService,
+        ILogReader logReader,
+        ILogWatcher logWatcher)
     {
         _agentRuntime = agentRuntime;
+        _autoStartService = autoStartService;
+        _logReader = logReader;
+        _logWatcher = logWatcher;
         AgentStatus = agentStatus;
 
+        _isInitializingAutoStart = true;
+        IsAutoStartEnabled = _autoStartService.IsEnabled();
+        _isInitializingAutoStart = false;
+
         AgentStatus.PropertyChanged += AgentStatus_PropertyChanged;
+        _logWatcher.LogsChanged += OnLogsChanged;
 
-        _pairingTimer.Tick += PairingTimer_Tick;
-
-        UpdatePairingTimer();
+        _ = RefreshLastEventAsync();
     }
 
     public AgentStatus AgentStatus { get; }
 
-    public bool IsPairingRequired => !AgentStatus.IsPaired;
+    public event EventHandler? OpenLogsRequested;
+
+    [ObservableProperty]
+    public partial string LastEventText { get; set; } =
+        LocalizationManager.GetString("Home_NoEvents");
 
     public bool CanStartAgent => !AgentStatus.IsRunning && !IsBusy;
 
     public bool CanStopAgent => AgentStatus.IsRunning && !IsBusy;
 
-    public string RunningStatusText => FormatStatus(
-        "Home_Running",
-        AgentStatus.IsRunning);
+    public string AgentStateText => LocalizationManager.GetString(
+        AgentStatus.IsRunning ? "Home_AgentWorking" : "Home_AgentStopped");
 
-    public string TelegramConnectedText => FormatStatus(
-        "Home_TelegramConnected",
-        AgentStatus.IsTelegramConnected);
+    public string TelegramStatusText => LocalizationManager.GetString(
+        AgentStatus.IsTelegramConnected
+            ? "Home_Connected"
+            : "Home_NotConnected");
 
-    public string AccountPairedText => FormatStatus(
-        "Home_AccountPaired",
-        AgentStatus.IsPaired);
+    public string AccountStatusText => LocalizationManager.GetString(
+        AgentStatus.IsPaired ? "Home_Paired" : "Home_NotPaired");
+
+    public string AccountTitleText => LocalizationManager.GetString(
+        AgentStatus.IsPaired ? "Home_AccountPaired" : "Home_Account");
+
+    public string BotUsernameText
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(AgentStatus.BotUsername))
+                return LocalizationManager.GetString("Home_BotUsernameFallback");
+
+            return AgentStatus.BotUsername.StartsWith('@')
+                ? AgentStatus.BotUsername
+                : $"@{AgentStatus.BotUsername}";
+        }
+    }
 
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
@@ -62,21 +99,72 @@ public partial class HomePageViewModel : ViewModelBase
         LocalizationManager.GetString("Home_StatusReady");
 
     [ObservableProperty]
-    public partial string RemainingPairingTime { get; set; } = "05:00";
+    public partial bool IsAutoStartEnabled { get; set; }
 
-    private static string FormatStatus(string key, bool value)
+    [ObservableProperty]
+    public partial string AutoStartStatusMessage { get; set; } = string.Empty;
+
+    public bool HasAutoStartStatusMessage =>
+        !string.IsNullOrWhiteSpace(AutoStartStatusMessage);
+
+    partial void OnAutoStartStatusMessageChanged(string value)
     {
-        var format = LocalizationManager.GetString(key);
-        var status = LocalizationManager.GetString(
-            value ? "Common_Yes" : "Common_No");
+        OnPropertyChanged(nameof(HasAutoStartStatusMessage));
+    }
 
-        return string.Format(format, status);
+    partial void OnIsAutoStartEnabledChanged(bool value)
+    {
+        if (_isInitializingAutoStart)
+            return;
+
+        try
+        {
+            if (value)
+            {
+                _autoStartService.Enable();
+                AutoStartStatusMessage =
+                    LocalizationManager.GetString("Home_AutoStartEnabled");
+            }
+            else
+            {
+                _autoStartService.Disable();
+                AutoStartStatusMessage =
+                    LocalizationManager.GetString("Home_AutoStartDisabled");
+            }
+        }
+        catch (Exception exception)
+        {
+            _isInitializingAutoStart = true;
+            IsAutoStartEnabled = !value;
+            _isInitializingAutoStart = false;
+
+            AutoStartStatusMessage = string.Format(
+                LocalizationManager.GetString("Home_AutoStartError"),
+                exception.Message);
+        }
     }
 
     partial void OnIsBusyChanged(bool value)
     {
         OnPropertyChanged(nameof(CanStartAgent));
         OnPropertyChanged(nameof(CanStopAgent));
+    }
+
+    [RelayCommand]
+    private void OpenPairingHelp()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(PairingHelpUrl)
+            {
+                UseShellExecute = true
+            });
+        }
+        catch (Exception exception)
+        {
+            StatusMessage =
+                $"{LocalizationManager.GetString("Common_Error")}: {exception.Message}";
+        }
     }
 
     [RelayCommand]
@@ -127,6 +215,51 @@ public partial class HomePageViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
+    private void OpenLogs()
+    {
+        OpenLogsRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void OnLogsChanged(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(() => _ = RefreshLastEventAsync());
+    }
+
+    private async Task RefreshLastEventAsync()
+    {
+        if (_isRefreshingLastEvent)
+        {
+            _lastEventRefreshRequested = true;
+            return;
+        }
+
+        _isRefreshingLastEvent = true;
+
+        try
+        {
+            do
+            {
+                _lastEventRefreshRequested = false;
+
+                var entries = await _logReader.ReadAllAsync();
+
+                LastEventText = entries.Count == 0
+                    ? LocalizationManager.GetString("Home_NoEvents")
+                    : $"{entries[^1].Message} {entries[^1].Timestamp:HH:mm}";
+            }
+            while (_lastEventRefreshRequested);
+        }
+        catch (Exception)
+        {
+            LastEventText = LocalizationManager.GetString("Home_NoEvents");
+        }
+        finally
+        {
+            _isRefreshingLastEvent = false;
+        }
+    }
+
     private void AgentStatus_PropertyChanged(
         object? sender,
         PropertyChangedEventArgs e)
@@ -135,56 +268,29 @@ public partial class HomePageViewModel : ViewModelBase
         {
             OnPropertyChanged(nameof(CanStartAgent));
             OnPropertyChanged(nameof(CanStopAgent));
-            OnPropertyChanged(nameof(RunningStatusText));
+            OnPropertyChanged(nameof(AgentStateText));
         }
 
         if (e.PropertyName == nameof(AgentStatus.IsTelegramConnected))
         {
-            OnPropertyChanged(nameof(TelegramConnectedText));
+            OnPropertyChanged(nameof(TelegramStatusText));
+        }
+
+        if (e.PropertyName == nameof(AgentStatus.BotUsername))
+        {
+            OnPropertyChanged(nameof(BotUsernameText));
         }
 
         if (e.PropertyName == nameof(AgentStatus.IsPaired))
         {
-            OnPropertyChanged(nameof(IsPairingRequired));
-            OnPropertyChanged(nameof(AccountPairedText));
-        }
-
-        if (e.PropertyName == nameof(AgentStatus.PairingCodeExpiresAt) ||
-            e.PropertyName == nameof(AgentStatus.IsPaired))
-        {
-            Dispatcher.UIThread.Post(UpdatePairingTimer);
+            OnPropertyChanged(nameof(AccountStatusText));
+            OnPropertyChanged(nameof(AccountTitleText));
         }
     }
 
-    private void PairingTimer_Tick(object? sender, EventArgs e)
+    public void Dispose()
     {
-        UpdatePairingTimer();
-    }
-
-    private void UpdatePairingTimer()
-    {
-        if (AgentStatus.IsPaired ||
-            AgentStatus.PairingCodeExpiresAt is not DateTimeOffset expiresAt)
-        {
-            _pairingTimer.Stop();
-            RemainingPairingTime = "05:00";
-            return;
-        }
-
-        var remaining = expiresAt - DateTimeOffset.UtcNow;
-
-        if (remaining <= TimeSpan.Zero)
-        {
-            RemainingPairingTime = "00:00";
-        }
-        else
-        {
-            var totalSeconds = (int)Math.Ceiling(remaining.TotalSeconds);
-
-            RemainingPairingTime =
-                $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
-        }
-
-        _pairingTimer.Start();
+        AgentStatus.PropertyChanged -= AgentStatus_PropertyChanged;
+        _logWatcher.LogsChanged -= OnLogsChanged;
     }
 }

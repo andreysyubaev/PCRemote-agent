@@ -1,94 +1,149 @@
-
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:PCRemote.Desktop.ViewModels.Pages"
              xmlns:loc="using:PCRemote.Desktop.Localization"
              x:Class="PCRemote.Desktop.Views.Pages.HomePage"
-             x:DataType="vm:HomePageViewModel">
+             x:DataType="vm:HomePageViewModel"
+             HorizontalContentAlignment="Stretch"
+             VerticalContentAlignment="Stretch">
 
-    <ScrollViewer>
-        <StackPanel Spacing="20">
+    <Grid RowDefinitions="*,Auto">
+        <ScrollViewer Grid.Row="0"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="16">
+                <Border Classes="card">
+                    <StackPanel Classes="card-content">
+                        <StackPanel Spacing="8">
+                            <TextBlock Classes="heading-page" Text="PC is available for management" />
+                            <TextBlock Classes="body-small" Text="Send commands to your Telegram bot" />
+                        </StackPanel>
 
-            <TextBlock Text="{loc:Loc Key=Home_Title}"
-                       FontSize="28"
-                       FontWeight="Bold"/>
-
-            <Border Background="{DynamicResource SurfaceBackground}"
-                    BorderBrush="{DynamicResource Border}"
-                    BorderThickness="1"
-                    CornerRadius="12"
-                    Padding="20">
-
-                <StackPanel Spacing="12">
-
-                    <TextBlock Text="{loc:Loc Key=Home_AgentStatus}"
-                               FontSize="18"
-                               FontWeight="SemiBold"/>
-
-                    <TextBlock Text="{Binding RunningStatusText}"/>
-
-                    <TextBlock Text="{Binding TelegramConnectedText}"/>
-
-                    <TextBlock Text="{Binding AccountPairedText}"/>
-
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-
-                        <Button Content="{loc:Loc Key=Home_StartAgent}"
-                                Command="{Binding StartAgentCommand}"
-                                IsEnabled="{Binding CanStartAgent}"/>
-
-                        <Button Content="{loc:Loc Key=Home_StopAgent}"
-                                Command="{Binding StopAgentCommand}"
-                                IsEnabled="{Binding CanStopAgent}"/>
-
+                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                            <TextBlock Classes="body"
+                                       Text="{Binding AgentStateText}"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                                <Button Classes="primary"
+                                        Content="{loc:Loc Key=Home_Launch}"
+                                        Command="{Binding StartAgentCommand}"
+                                        IsEnabled="{Binding CanStartAgent}"
+                                        IsVisible="{Binding !AgentStatus.IsRunning}" />
+                                <Button Classes="secondary"
+                                        Content="{loc:Loc Key=Home_Stop}"
+                                        Command="{Binding StopAgentCommand}"
+                                        IsEnabled="{Binding CanStopAgent}"
+                                        IsVisible="{Binding AgentStatus.IsRunning}" />
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
+                </Border>
 
-                </StackPanel>
-            </Border>
+                <Border Classes="card">
+                    <StackPanel Classes="card-content">
+                        <TextBlock Classes="heading-section" Text="Title" />
+                        <StackPanel Spacing="16">
+                            <!-- Telegram bot connection -->
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Svg Path="/Assets/Icons/telegram.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Classes="label" Text="{loc:Loc Key=Home_TelegramBot}" />
+                                    <TextBlock Classes="body-small" Text="{Binding BotUsernameText}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Classes="status-text"
+                                               Classes.success="{Binding AgentStatus.IsTelegramConnected}"
+                                               Classes.error="{Binding !AgentStatus.IsTelegramConnected}"
+                                               Text="{Binding TelegramStatusText}" />
+                                    <Ellipse Classes="status-dot"
+                                             Classes.success="{Binding AgentStatus.IsTelegramConnected}"
+                                             Classes.error="{Binding !AgentStatus.IsTelegramConnected}"
+                                             Width="4" Height="4" />
+                                </StackPanel>
+                            </Grid>
 
-            <Border Background="{DynamicResource SurfaceBackground}"
-                    BorderBrush="{DynamicResource Border}"
-                    BorderThickness="1"
-                    CornerRadius="12"
-                    Padding="20"
-                    IsVisible="{Binding IsPairingRequired}">
-
-                <StackPanel Spacing="12">
-
-                    <TextBlock Text="{loc:Loc Key=Home_TelegramPairing}"
-                               FontSize="18"
-                               FontWeight="SemiBold"/>
-
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                Spacing="12">
-
-                        <TextBlock Text="{Binding AgentStatus.PairingCode}"
-                                   FontSize="28"
-                                   FontWeight="Bold"
-                                   VerticalAlignment="Center"/>
-
-                        <Button Content="{loc:Loc Key=Common_Copy}"
-                                VerticalAlignment="Center"
-                                Click="OnCopyPairingCodeClick"/>
-
+                            <!-- Account pairing -->
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Svg Path="/Assets/Icons/activity.svg" Width="20" Height="20" VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" Spacing="8" Margin="16,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Classes="label" Text="{Binding AccountTitleText}" />
+                                    <TextBlock Classes="body-small"
+                                               Text="{loc:Loc Key=Home_AccountHint}"
+                                               IsVisible="{Binding AgentStatus.IsPaired}" />
+                                    <Button Classes="link"
+                                            Command="{Binding OpenPairingHelpCommand}"
+                                            IsVisible="{Binding !AgentStatus.IsPaired}"
+                                            HorizontalAlignment="Left">
+                                        <TextBlock Classes="label-small"
+                                                   Text="{loc:Loc Key=Home_HowToPair}"
+                                                   Foreground="{DynamicResource Accent}" />
+                                    </Button>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <TextBlock Classes="status-text"
+                                               Classes.success="{Binding AgentStatus.IsPaired}"
+                                               Classes.error="{Binding !AgentStatus.IsPaired}"
+                                               Text="{Binding AccountStatusText}" />
+                                    <Ellipse Classes="status-dot"
+                                             Classes.success="{Binding AgentStatus.IsPaired}"
+                                             Classes.error="{Binding !AgentStatus.IsPaired}"
+                                             Width="4" Height="4" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
+                </Border>
 
-                    <TextBlock Text="{Binding RemainingPairingTime,
-                                               StringFormat={loc:Loc Key=Home_PairingExpiresIn}}"
-                               HorizontalAlignment="Center"/>
+                <!-- Launch at system startup -->
+                <StackPanel Spacing="8" Margin="0,16">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Classes="label" Text="Launch at system startup"/>
+                            <TextBlock Classes="body-small" Text="Automatically start PCRemote when you sign in to your computer"/>
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1"
+                                      Classes="tumbler"
+                                      IsChecked="{Binding IsAutoStartEnabled, Mode=TwoWay}"
+                                      VerticalAlignment="Center"/>
+                    </Grid>
 
-                    <TextBlock Text="{loc:Loc Key=Home_PairingInstructions}"
-                               TextWrapping="Wrap"/>
-
+                    <TextBlock Classes="body-small"
+                               Text="{Binding AutoStartStatusMessage}"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding HasAutoStartStatusMessage}"/>
                 </StackPanel>
-            </Border>
+            </StackPanel>
+        </ScrollViewer>
 
-            <TextBlock Text="{Binding StatusMessage}"
-                       TextWrapping="Wrap"
-                       Foreground="{DynamicResource SecondaryText}"/>
+        <!-- Footer is pinned to the bottom and keeps the footer height from Figma. -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,Auto"
+              Height="16"
+              Margin="0,16,0,0"
+              VerticalAlignment="Bottom">
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="4"
+                  VerticalAlignment="Center">
+                <TextBlock Classes="body-small"
+                           Text="{loc:Loc Key=Home_LastEvent}"
+                           Foreground="{DynamicResource PrimaryText}"/>
+                <TextBlock Grid.Column="1"
+                           Classes="caption"
+                           Text="{Binding LastEventText}"
+                           TextTrimming="CharacterEllipsis"/>
+            </Grid>
+            <Button Grid.Column="1"
+                    Classes="link"
+                    VerticalAlignment="Center"
+                    Command="{Binding OpenLogsCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Classes="body-small"
+                               Text="{loc:Loc Key=Navigation_Logs}"
+                               Foreground="{DynamicResource PrimaryText}"/>
+                    <Svg Path="/Assets/Icons/arrow-ios-forward.svg" Width="16" Height="16" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </Grid>
 
-        </StackPanel>
-    </ScrollViewer>
-
+    </Grid>
 </UserControl>
