@@ -92,16 +92,18 @@
                                 Height="36"
                                 Click="OnCopyRepositoryClick"
                                 ToolTip.Tip="{loc:Loc Key=About_CopyLink}">
-                            <Panel>
-                                <Svg x:Name="RepositoryCopyIcon"
+                            <Panel x:Name="RepositoryCopyFeedback"
+                                   Classes="copy-feedback"
+                                   Width="20"
+                                   Height="20">
+                                <Svg Classes="copy-idle"
                                      Path="/Assets/Icons/copy-outline.svg"
                                      Width="20"
                                      Height="20"/>
-                                <Svg x:Name="RepositoryCopySuccessIcon"
+                                <Svg Classes="copy-success"
                                      Path="/Assets/Icons/checkmark.svg"
                                      Width="20"
-                                     Height="20"
-                                     IsVisible="False"/>
+                                     Height="20"/>
                             </Panel>
                         </Button>
 
@@ -144,16 +146,18 @@
                                 Height="36"
                                 Click="OnCopyTelegramClick"
                                 ToolTip.Tip="{loc:Loc Key=About_CopyLink}">
-                            <Panel>
-                                <Svg x:Name="TelegramCopyIcon"
+                            <Panel x:Name="TelegramCopyFeedback"
+                                   Classes="copy-feedback"
+                                   Width="20"
+                                   Height="20">
+                                <Svg Classes="copy-idle"
                                      Path="/Assets/Icons/copy-outline.svg"
                                      Width="20"
                                      Height="20"/>
-                                <Svg x:Name="TelegramCopySuccessIcon"
+                                <Svg Classes="copy-success"
                                      Path="/Assets/Icons/checkmark.svg"
                                      Width="20"
-                                     Height="20"
-                                     IsVisible="False"/>
+                                     Height="20"/>
                             </Panel>
                         </Button>
 

@@ -31,10 +31,13 @@
   </data>
 
     <data name="Setup_Title" xml:space="preserve">
-    <value>Настройка PCRemote</value>
+    <value>PCRemote</value>
 </data>
     <data name="Setup_Description" xml:space="preserve">
     <value>Подключите своего Telegram-бота</value>
+</data>
+    <data name="Setup_WhereGet" xml:space="preserve">
+    <value>где его взять?</value>
 </data>
     <data name="Setup_TokenPlaceholder" xml:space="preserve">
     <value>Введите токен Telegram-бота</value>
@@ -44,6 +47,52 @@
 </data>
     <data name="Common_ToggleTheme" xml:space="preserve">
     <value>Переключить тему</value>
+</data>
+    <data name="Common_Close" xml:space="preserve">
+    <value>Закрыть</value>
+</data>
+
+    <data name="Guide_Title" xml:space="preserve">
+    <value>Где взять токен бота?</value>
+</data>
+    <data name="Guide_Subtitle" xml:space="preserve">
+    <value>Выполните эти шаги, чтобы создать собственного Telegram-бота</value>
+</data>
+    <data name="Guide_Step1Title" xml:space="preserve">
+    <value>1. Откройте @BotFather</value>
+</data>
+    <data name="Guide_Step1Description" xml:space="preserve">
+    <value>Откройте официального Telegram-бота, который создаёт и управляет ботами</value>
+</data>
+    <data name="Guide_OpenBotFather" xml:space="preserve">
+    <value>Открыть BotFather</value>
+</data>
+    <data name="Guide_Step2Title" xml:space="preserve">
+    <value>2. Создайте нового бота</value>
+</data>
+    <data name="Guide_Step2Description" xml:space="preserve">
+    <value>Отправьте /newbot, выберите отображаемое имя и уникальное имя пользователя для бота</value>
+</data>
+    <data name="Guide_Step3Title" xml:space="preserve">
+    <value>3. Скопируйте токен бота</value>
+</data>
+    <data name="Guide_Step3Description" xml:space="preserve">
+    <value>BotFather пришлёт вам API-токен. Скопируйте его и вернитесь в PCRemote</value>
+</data>
+    <data name="Guide_Step4Title" xml:space="preserve">
+    <value>4. Вставьте токен</value>
+</data>
+    <data name="Guide_Step4Description" xml:space="preserve">
+    <value>Введите его в поле токена бота и нажмите «Подключить»</value>
+</data>
+    <data name="Guide_PrivateTitle" xml:space="preserve">
+    <value>Не раскрывайте токен</value>
+</data>
+    <data name="Guide_PrivateDescription" xml:space="preserve">
+    <value>Любой, у кого есть токен вашего бота, сможет управлять им. Никому его не сообщайте и не публикуйте в сети</value>
+</data>
+    <data name="Guide_GotIt" xml:space="preserve">
+    <value>Понятно</value>
 </data>
 
     <data name="Navigation_Home" xml:space="preserve">
@@ -304,7 +353,7 @@
 </data>
 
     <data name="Setup_InitialStatus" xml:space="preserve">
-  <value>Введите токен Telegram-бота.</value>
+  <value></value>
 </data>
     <data name="Setup_EmptyToken" xml:space="preserve">
   <value>Пожалуйста, введите токен бота.</value>

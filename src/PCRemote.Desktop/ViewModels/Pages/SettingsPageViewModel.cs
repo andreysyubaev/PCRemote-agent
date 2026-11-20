@@ -28,6 +28,11 @@ public partial class SettingsPageViewModel : ViewModelBase
         Interval = TimeSpan.FromSeconds(1)
     };
 
+    private readonly DispatcherTimer _pairingHighlightDelayTimer = new()
+    {
+        Interval = TimeSpan.FromMilliseconds(500)
+    };
+
     private static string GetThemeSettingsPath()
     {
         var appDataPath = OperatingSystem.IsMacOS()
@@ -91,6 +96,7 @@ public partial class SettingsPageViewModel : ViewModelBase
 
         AgentStatus.PropertyChanged += AgentStatus_PropertyChanged;
         _pairingTimer.Tick += PairingTimer_Tick;
+        _pairingHighlightDelayTimer.Tick += PairingHighlightDelayTimer_Tick;
 
         UpdatePairingTimer();
     }
@@ -211,6 +217,7 @@ public partial class SettingsPageViewModel : ViewModelBase
 
     public event Action? DisconnectCompleted;
     public event Action? RestartRequested;
+    public event Action? PairingCodeHighlightRequested;
 
     partial void OnSelectedThemeChanged(string value)
     {
@@ -278,6 +285,12 @@ public partial class SettingsPageViewModel : ViewModelBase
     partial void OnRemainingPairingTimeChanged(string value)
     {
         OnPropertyChanged(nameof(PairingExpiryText));
+    }
+
+    public void HighlightPairingCode()
+    {
+        _pairingHighlightDelayTimer.Stop();
+        _pairingHighlightDelayTimer.Start();
     }
 
     [RelayCommand]
@@ -371,6 +384,12 @@ public partial class SettingsPageViewModel : ViewModelBase
     private void PairingTimer_Tick(object? sender, EventArgs e)
     {
         UpdatePairingTimer();
+    }
+
+    private void PairingHighlightDelayTimer_Tick(object? sender, EventArgs e)
+    {
+        _pairingHighlightDelayTimer.Stop();
+        PairingCodeHighlightRequested?.Invoke();
     }
 
     private void UpdatePairingTimer()

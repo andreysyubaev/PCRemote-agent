@@ -1,7 +1,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,9 +15,6 @@ namespace PCRemote.Desktop.ViewModels.Pages;
 
 public partial class HomePageViewModel : ViewModelBase, IDisposable
 {
-    private const string PairingHelpUrl =
-        "https://github.com/andreysyubaev/PCRemote-agent";
-
     private readonly AgentRuntime _agentRuntime;
     private readonly IAutoStartService _autoStartService;
     private readonly ILogReader _logReader;
@@ -55,6 +51,7 @@ public partial class HomePageViewModel : ViewModelBase, IDisposable
     public AgentStatus AgentStatus { get; }
 
     public event EventHandler? OpenLogsRequested;
+    public event EventHandler? OpenPairingHelpRequested;
 
     [ObservableProperty]
     public partial string LastEventText { get; set; } =
@@ -153,18 +150,7 @@ public partial class HomePageViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private void OpenPairingHelp()
     {
-        try
-        {
-            Process.Start(new ProcessStartInfo(PairingHelpUrl)
-            {
-                UseShellExecute = true
-            });
-        }
-        catch (Exception exception)
-        {
-            StatusMessage =
-                $"{LocalizationManager.GetString("Common_Error")}: {exception.Message}";
-        }
+        OpenPairingHelpRequested?.Invoke(this, EventArgs.Empty);
     }
 
     [RelayCommand]

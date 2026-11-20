@@ -15,8 +15,8 @@
             <SolidColorBrush x:Key="ButtonText" Color="#F5F5F5"/>
             <SolidColorBrush x:Key="ButtonTextDisabled" Color="#64F5F5F5"/>
             <SolidColorBrush x:Key="Accent" Color="#FF4401"/>
-            <SolidColorBrush x:Key="AccentHover" Color="#FF6A35"/>
-            <SolidColorBrush x:Key="AccentPressed" Color="#D93600"/>
+            <SolidColorBrush x:Key="AccentHover" Color="#A92D00"/>
+            <SolidColorBrush x:Key="AccentPressed" Color="#862400"/>
             <SolidColorBrush x:Key="AccentSubtle" Color="#14FF4401"/>
             <SolidColorBrush x:Key="AccentDisabled" Color="#32FF4401"/>
             <SolidColorBrush x:Key="Success" Color="#16803C"/>
@@ -56,8 +56,8 @@
             <SolidColorBrush x:Key="ButtonText" Color="#F5F5F5"/>
             <SolidColorBrush x:Key="ButtonTextDisabled" Color="#64F5F5F5"/>
             <SolidColorBrush x:Key="Accent" Color="#FF4401"/>
-            <SolidColorBrush x:Key="AccentHover" Color="#A92D00"/>
-            <SolidColorBrush x:Key="AccentPressed" Color="#862400"/>
+            <SolidColorBrush x:Key="AccentHover" Color="#FF6A35"/>
+            <SolidColorBrush x:Key="AccentPressed" Color="#D93600"/>
             <SolidColorBrush x:Key="AccentSubtle" Color="#14FF4401"/>
             <SolidColorBrush x:Key="AccentDisabled" Color="#32FF4401"/>
             <SolidColorBrush x:Key="Success" Color="#42DE80"/>

@@ -31,10 +31,13 @@
   </data>
 
     <data name="Setup_Title" xml:space="preserve">
-    <value>PCRemote Setup</value>
+    <value>PCRemote</value>
 </data>
     <data name="Setup_Description" xml:space="preserve">
     <value>Connect your Telegram bot</value>
+</data>
+    <data name="Setup_WhereGet" xml:space="preserve">
+    <value>where can I get it?</value>
 </data>
     <data name="Setup_TokenPlaceholder" xml:space="preserve">
     <value>Enter Telegram bot token</value>
@@ -44,6 +47,52 @@
 </data>
     <data name="Common_ToggleTheme" xml:space="preserve">
     <value>Toggle theme</value>
+</data>
+    <data name="Common_Close" xml:space="preserve">
+    <value>Close</value>
+</data>
+
+    <data name="Guide_Title" xml:space="preserve">
+    <value>Where can I get a bot token?</value>
+</data>
+    <data name="Guide_Subtitle" xml:space="preserve">
+    <value>Follow these steps to create your own Telegram bot</value>
+</data>
+    <data name="Guide_Step1Title" xml:space="preserve">
+    <value>1. Open @BotFather</value>
+</data>
+    <data name="Guide_Step1Description" xml:space="preserve">
+    <value>Open the official Telegram bot that creates and manages bots</value>
+</data>
+    <data name="Guide_OpenBotFather" xml:space="preserve">
+    <value>Open BotFather</value>
+</data>
+    <data name="Guide_Step2Title" xml:space="preserve">
+    <value>2. Create a new bot</value>
+</data>
+    <data name="Guide_Step2Description" xml:space="preserve">
+    <value>Send /newbot, choose a display name and a unique username for your bot</value>
+</data>
+    <data name="Guide_Step3Title" xml:space="preserve">
+    <value>3. Copy your bot token</value>
+</data>
+    <data name="Guide_Step3Description" xml:space="preserve">
+    <value>BotFather will send you an API token. Copy it and return to PCRemote</value>
+</data>
+    <data name="Guide_Step4Title" xml:space="preserve">
+    <value>4. Paste the token</value>
+</data>
+    <data name="Guide_Step4Description" xml:space="preserve">
+    <value>Enter it in the Bot token field and click Connect bot</value>
+</data>
+    <data name="Guide_PrivateTitle" xml:space="preserve">
+    <value>Keep your token private</value>
+</data>
+    <data name="Guide_PrivateDescription" xml:space="preserve">
+    <value>Anyone with your bot token can control your bot. Never share it with anyone or publish it online</value>
+</data>
+    <data name="Guide_GotIt" xml:space="preserve">
+    <value>Got it</value>
 </data>
 
     <data name="Navigation_Home" xml:space="preserve">
@@ -304,7 +353,7 @@
 </data>
 
     <data name="Setup_InitialStatus" xml:space="preserve">
-  <value>Enter your Telegram bot token.</value>
+  <value></value>
 </data>
     <data name="Setup_EmptyToken" xml:space="preserve">
   <value>Please enter your bot token.</value>

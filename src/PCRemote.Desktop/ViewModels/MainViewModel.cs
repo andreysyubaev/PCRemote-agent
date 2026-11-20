@@ -33,6 +33,11 @@ public partial class MainViewModel : ViewModelBase
         CurrentPage = HomePage;
 
         HomePage.OpenLogsRequested += (_, _) => CurrentPage = LogsPage;
+        HomePage.OpenPairingHelpRequested += (_, _) =>
+        {
+            CurrentPage = SettingsPage;
+            SettingsPage.HighlightPairingCode();
+        };
     }
 
     partial void OnCurrentPageChanged(object? value)

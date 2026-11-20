@@ -32,8 +32,7 @@ public partial class AboutPage : UserControl
 
         await CopyAsync(
             viewModel.RepositoryUrl,
-            RepositoryCopyIcon,
-            RepositoryCopySuccessIcon);
+            RepositoryCopyFeedback);
     }
 
     private async void OnCopyTelegramClick(
@@ -45,14 +44,10 @@ public partial class AboutPage : UserControl
 
         await CopyAsync(
             viewModel.TelegramUrl,
-            TelegramCopyIcon,
-            TelegramCopySuccessIcon);
+            TelegramCopyFeedback);
     }
 
-    private async Task CopyAsync(
-        string text,
-        Control icon,
-        Control successIcon)
+    private async Task CopyAsync(string text, Panel feedback)
     {
         var topLevel = TopLevel.GetTopLevel(this);
 
@@ -61,17 +56,14 @@ public partial class AboutPage : UserControl
 
         await topLevel.Clipboard.SetTextAsync(text);
 
-        ShowCopyFeedback(icon, successIcon);
+        ShowCopyFeedback(feedback);
     }
 
-    private void ShowCopyFeedback(
-        Control icon,
-        Control successIcon)
+    private void ShowCopyFeedback(Panel feedback)
     {
         ResetCopyFeedback();
 
-        icon.IsVisible = false;
-        successIcon.IsVisible = true;
+        feedback.Classes.Add("copied");
 
         _copyFeedbackTimer.Start();
     }
@@ -87,11 +79,8 @@ public partial class AboutPage : UserControl
     {
         _copyFeedbackTimer.Stop();
 
-        RepositoryCopyIcon.IsVisible = true;
-        RepositoryCopySuccessIcon.IsVisible = false;
-
-        TelegramCopyIcon.IsVisible = true;
-        TelegramCopySuccessIcon.IsVisible = false;
+        RepositoryCopyFeedback.Classes.Remove("copied");
+        TelegramCopyFeedback.Classes.Remove("copied");
     }
 
     private async void OnGitHubClick(

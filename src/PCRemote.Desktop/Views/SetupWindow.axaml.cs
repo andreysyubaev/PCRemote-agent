@@ -10,6 +10,7 @@ public partial class SetupWindow : Window
     public SetupWindow()
     {
         InitializeComponent();
+        UpdateThemeIcon();
     }
 
     private void ToggleTheme_Click(object? sender, RoutedEventArgs e)
@@ -19,9 +20,32 @@ public partial class SetupWindow : Window
         if (app is null)
             return;
 
+        var isDarkTheme = app.ActualThemeVariant == ThemeVariant.Dark;
+
         app.RequestedThemeVariant =
-            app.RequestedThemeVariant == ThemeVariant.Dark
-                ? ThemeVariant.Light
-                : ThemeVariant.Dark;
+            isDarkTheme ? ThemeVariant.Light : ThemeVariant.Dark;
+
+        UpdateThemeIcon(!isDarkTheme);
+    }
+
+    private void UpdateThemeIcon(bool? isDarkTheme = null)
+    {
+        var isDark = isDarkTheme
+            ?? Application.Current?.ActualThemeVariant == ThemeVariant.Dark;
+
+        ThemeOutlineIcon.IsVisible = !isDark;
+        ThemeFilledIcon.IsVisible = isDark;
+    }
+
+    private void WhereGet_Click(object? sender, RoutedEventArgs e)
+    {
+        SetupContent.IsVisible = false;
+        TokenGuidePage.IsVisible = true;
+    }
+
+    private void TokenGuidePage_CloseRequested()
+    {
+        TokenGuidePage.IsVisible = false;
+        SetupContent.IsVisible = true;
     }
 }

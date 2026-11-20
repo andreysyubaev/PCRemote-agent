@@ -1,5 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
@@ -15,6 +18,9 @@ public partial class SettingsPage : UserControl
     {
         Interval = TimeSpan.FromSeconds(3)
     };
+
+    private SettingsPageViewModel? _highlightSource;
+    private int _pairingFlashVersion;
 
     public SettingsPage()
     {
@@ -47,8 +53,7 @@ public partial class SettingsPage : UserControl
 
     private void ShowCopyFeedback()
     {
-        CopyIcon.IsVisible = false;
-        CopySuccessIcon.IsVisible = true;
+        CopyFeedbackPanel.Classes.Add("copied");
 
         _copyFeedbackTimer.Stop();
         _copyFeedbackTimer.Start();
@@ -63,8 +68,67 @@ public partial class SettingsPage : UserControl
     {
         _copyFeedbackTimer.Stop();
 
-        CopyIcon.IsVisible = true;
-        CopySuccessIcon.IsVisible = false;
+        CopyFeedbackPanel.Classes.Remove("copied");
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+
+        if (_highlightSource is not null)
+            _highlightSource.PairingCodeHighlightRequested -=
+                OnPairingCodeHighlightRequested;
+
+        _highlightSource = DataContext as SettingsPageViewModel;
+
+        if (_highlightSource is not null)
+            _highlightSource.PairingCodeHighlightRequested +=
+                OnPairingCodeHighlightRequested;
+    }
+
+    private void OnPairingCodeHighlightRequested()
+    {
+        FlashPairingCode();
+    }
+
+    private async void FlashPairingCode()
+    {
+        var card = TelegramCard;
+        var version = ++_pairingFlashVersion;
+
+        // Резко включаем акцентную рамку всей карточки, без анимации.
+        card.Transitions = null;
+        card.Classes.Add("flash");
+
+        await Task.Delay(120);
+
+        if (version != _pairingFlashVersion)
+            return;
+
+        // Плавно возвращаем обычные цвета рамки и фона.
+        card.Transitions = new Transitions
+        {
+            new BrushTransition
+            {
+                Property = Border.BorderBrushProperty,
+                Duration = TimeSpan.FromSeconds(0.9),
+                Easing = new CubicEaseOut()
+            },
+            new BrushTransition
+            {
+                Property = Border.BackgroundProperty,
+                Duration = TimeSpan.FromSeconds(0.9),
+                Easing = new CubicEaseOut()
+            }
+        };
+        card.Classes.Remove("flash");
+
+        await Task.Delay(900);
+
+        if (version != _pairingFlashVersion)
+            return;
+
+        card.ClearValue(Animatable.TransitionsProperty);
     }
 
     protected override void OnDetachedFromVisualTree(

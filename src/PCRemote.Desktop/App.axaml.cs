@@ -46,7 +46,7 @@ public partial class App : Application
     private bool _restartRequested;
     private bool _shutdownPrepared;
 
-    private Mutex? _instanceMutex;
+    private FileStream? _instanceLock;
 
     public override void Initialize()
     {
@@ -56,6 +56,13 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        // Дизайнерские превью Avalonia не должны поднимать агента и бота.
+        if (Design.IsDesignMode)
+        {
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // приложение может работать без открытых окон
@@ -65,18 +72,27 @@ public partial class App : Application
                 "--minimized",
                 StringComparer.OrdinalIgnoreCase);
 
-            bool createdNew;
+            // Именованный Mutex на macOS зависит от TMPDIR, поэтому превью
+            // и обычный запуск могли получить разные мьютексы. Блокировка
+            // файла в каталоге данных приложения работает для всех процессов одинаково.
+            var instanceLockDirectory = Path.Combine(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData),
+                "PCRemote");
 
-            _instanceMutex = new Mutex(
-                initiallyOwned: false,
-                name: "PCRemote.Desktop.SingleInstance",
-                createdNew: out createdNew);
+            Directory.CreateDirectory(instanceLockDirectory);
 
-            if (!createdNew)
+            try
             {
-                _instanceMutex.Dispose();
-                _instanceMutex = null;
-
+                _instanceLock = new FileStream(
+                    Path.Combine(instanceLockDirectory, ".single-instance.lock"),
+                    FileMode.OpenOrCreate,
+                    FileAccess.ReadWrite,
+                    FileShare.None);
+            }
+            catch (Exception exception)
+                when (exception is IOException or UnauthorizedAccessException)
+            {
                 desktop.Shutdown();
 
                 base.OnFrameworkInitializationCompleted();
@@ -525,8 +541,8 @@ public partial class App : Application
             _host?.Dispose();
             _host = null;
 
-            _instanceMutex?.Dispose();
-            _instanceMutex = null;
+            _instanceLock?.Dispose();
+            _instanceLock = null;
         }
     }
 

@@ -50,24 +50,21 @@
                             Classes.active="{Binding IsHomeSelected}"
                             Command="{Binding NavigateHomeCommand}"
                             ToolTip.Tip="{loc:Loc Key=Navigation_Home}">
-                        <Svg Path="/Assets/Icons/home-outline.svg"
-                             Width="20" Height="20" />
+                        <PathIcon Classes="nav-icon home"/>
                     </Button>
 
                     <Button Classes="nav"
                             Classes.active="{Binding IsSettingsSelected}"
                             Command="{Binding NavigateSettingsCommand}"
                             ToolTip.Tip="{loc:Loc Key=Navigation_Settings}">
-                        <Svg Path="/Assets/Icons/settings-outline.svg"
-                             Width="20" Height="20" />
+                        <PathIcon Classes="nav-icon settings"/>
                     </Button>
 
                     <Button Classes="nav"
                             Classes.active="{Binding IsLogsSelected}"
                             Command="{Binding NavigateLogsCommand}"
                             ToolTip.Tip="{loc:Loc Key=Navigation_Logs}">
-                        <Svg Path="/Assets/Icons/file-text-outline.svg"
-                             Width="20" Height="20" />
+                        <PathIcon Classes="nav-icon logs"/>
                     </Button>
                 </StackPanel>
 
@@ -77,8 +74,7 @@
                         Classes.active="{Binding IsAboutSelected}"
                         Command="{Binding NavigateAboutCommand}"
                         ToolTip.Tip="{loc:Loc Key=Navigation_About}">
-                    <Svg Path="/Assets/Icons/info-outline.svg"
-                         Width="20" Height="20" />
+                    <PathIcon Classes="nav-icon about"/>
                 </Button>
             </Grid>
         </Border>

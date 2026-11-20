@@ -5,12 +5,102 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://PCRemote.Desktop/Themes/Colors.axaml"/>
+                <ResourceInclude Source="avares://PCRemote.Desktop/Styles/NavIconGeometries.axaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Same chevron as Assets/Icons/arrow-ios-downward.svg -->
             <StreamGeometry x:Key="ChevronDownGeometry">M11.9998,16 C11.7661,16.0005 11.5397,15.9191 11.3598,15.77 L5.35979,10.77 C5.15557,10.6003 5.02715,10.3564 5.00277,10.0919 C4.97839,9.8275 5.06005,9.56422 5.22979,9.36 C5.39953,9.15578 5.64344,9.02736 5.90786,9.00298 C6.17229,8.9786 6.43557,9.06026 6.63979,9.23 L11.9998,13.71 L17.3598,9.39 C17.4621,9.30694 17.5798,9.2449 17.7061,9.20747 C17.8324,9.17004 17.9649,9.15795 18.096,9.17189 C18.227,9.18582 18.354,9.22552 18.4696,9.2887 C18.5853,9.35187 18.6873,9.43727 18.7698,9.54 C18.8614,9.64282 18.9307,9.76345 18.9735,9.89432 C19.0163,10.0252 19.0316,10.1635 19.0185,10.3006 C19.0053,10.4376 18.964,10.5705 18.8971,10.6909 C18.8303,10.8112 18.7392,10.9165 18.6298,11 L12.6298,15.83 C12.4447,15.9555 12.2229,16.0154 11.9998,16 Z</StreamGeometry>
         </ResourceDictionary>
     </Styles.Resources>
+
+    <!--
+      Плавная смена цветов при переключении темы. Transition нужно объявлять
+      на конкретных типах: базовый Control не содержит этих свойств.
+    -->
+    <Style Selector="Border">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector=":is(Panel)">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="Foreground" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="TextBlock">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="Foreground" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="TextBox">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="Foreground" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="SelectionBrush" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="PlaceholderForeground" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector=":is(Shape)">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Fill" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+                <BrushTransition Property="Stroke" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="PathIcon">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Foreground" Duration="0:0:0.24" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- Строки логов не анимируем: hover/select и обновление списка мгновенные. -->
+    <Style Selector="Border.log-item">
+        <Setter Property="Transitions">
+            <Transitions/>
+        </Setter>
+    </Style>
+
+    <Style Selector="Border.log-item :is(Control)">
+        <Setter Property="Transitions">
+            <Transitions/>
+        </Setter>
+    </Style>
+
+    <!-- Части скроллбара тоже не анимируем: после перетаскивания сбрасывалось оформление. -->
+    <Style Selector="ScrollBar :is(Control)">
+        <Setter Property="Transitions">
+            <Transitions/>
+        </Setter>
+    </Style>
 
     <Design.PreviewWith>
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -33,26 +123,21 @@
                                         
                                         <!-- Nav buttons -->
                                         <Button Classes="nav active">
-                                            <Svg Path="/Assets/Icons/home-outline.svg"
-                                                 Classes="accent"
-                                                 Width="20" Height="20"/>
+                                            <PathIcon Classes="nav-icon home"/>
                                         </Button>
                                         
                                         <Button Classes="nav">
-                                            <Svg Path="/Assets/Icons/settings-outline.svg"
-                                                 Width="20" Height="20"/>
+                                            <PathIcon Classes="nav-icon settings"/>
                                         </Button>
                                         
                                         <Button Classes="nav">
-                                            <Svg Path="/Assets/Icons/file-text-outline.svg"
-                                                 Width="20" Height="20"/>
+                                            <PathIcon Classes="nav-icon logs"/>
                                         </Button>
                                     </StackPanel>
 
                                     <!-- Bottom info button -->
                                     <Button Grid.Row="2" Classes="nav">
-                                        <Svg Path="/Assets/Icons/info-outline.svg"
-                                             Width="20" Height="20"/>
+                                        <PathIcon Classes="nav-icon about"/>
                                     </Button>
                                 </Grid>
                             </Border>
@@ -309,26 +394,21 @@
                                         
                                         <!-- Nav buttons -->
                                         <Button Classes="nav active">
-                                            <Svg Path="/Assets/Icons/home-outline.svg"
-                                                 Classes="accent"
-                                                 Width="20" Height="20"/>
+                                            <PathIcon Classes="nav-icon home"/>
                                         </Button>
                                         
                                         <Button Classes="nav">
-                                            <Svg Path="/Assets/Icons/settings-outline.svg"
-                                                 Width="20" Height="20"/>
+                                            <PathIcon Classes="nav-icon settings"/>
                                         </Button>
                                         
                                         <Button Classes="nav">
-                                            <Svg Path="/Assets/Icons/file-text-outline.svg"
-                                                 Width="20" Height="20"/>
+                                            <PathIcon Classes="nav-icon logs"/>
                                         </Button>
                                     </StackPanel>
 
                                     <!-- Bottom info button -->
                                     <Button Grid.Row="2" Classes="nav">
-                                        <Svg Path="/Assets/Icons/info-outline.svg"
-                                             Width="20" Height="20"/>
+                                        <PathIcon Classes="nav-icon about"/>
                                     </Button>
                                 </Grid>
                             </Border>
@@ -657,6 +737,7 @@
         <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
     </Style>
 
+
     <Style Selector="TextBlock.status-text">
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="LineHeight" Value="16"/>
@@ -730,6 +811,12 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Border}"/>
         <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
         <Setter Property="Padding" Value="16"/>
+    </Style>
+
+    <!-- Акцентная рамка и 8% акцентный фон карточки на время «мигания». -->
+    <Style Selector="Border.card.flash">
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
+        <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
     </Style>
 
     <Style Selector="Border.card-small">
@@ -852,6 +939,24 @@
         <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgInverseCss}"/>
     </Style>
 
+    <!-- Переход иконки успеха (копирование) без мгновенного IsVisible. -->
+    <Style Selector="Panel.copy-feedback Svg">
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Panel.copy-feedback Svg.copy-success">
+        <Setter Property="Opacity" Value="0"/>
+    </Style>
+    <Style Selector="Panel.copy-feedback.copied Svg.copy-idle">
+        <Setter Property="Opacity" Value="0"/>
+    </Style>
+    <Style Selector="Panel.copy-feedback.copied Svg.copy-success">
+        <Setter Property="Opacity" Value="1"/>
+    </Style>
+
     <!-- ================= BUTTONS ================= -->
     <!-- Base Button -->
     <Style Selector="Button">
@@ -866,6 +971,13 @@
         <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
+        <!-- Плавное появление/disabled вместо мгновенной смены состояния. -->
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+                <ThicknessTransition Property="BorderThickness" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
     </Style>
 
     <!-- Override Fluent template colors for the default button -->
@@ -873,6 +985,14 @@
         <Setter Property="Background" Value="{DynamicResource Accent}"/>
         <Setter Property="Foreground" Value="{DynamicResource ButtonText}"/>
         <Setter Property="CornerRadius" Value="8"/>
+        <!-- Фон/текст/обводка меняются через переход, а не скачком. -->
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+                <BrushTransition Property="Foreground" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
     </Style>
 
     <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -1117,9 +1237,60 @@
     <Style Selector="Button.nav.active /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource AccentSubtle}"/>
     </Style>
-    <Style Selector="Button.nav.active Svg">
-        <Setter Property="(Svg.Css)" Value="{DynamicResource SvgAccentCss}"/>
-        <Setter Property="(Svg.CurrentCss)" Value="{DynamicResource SvgAccentCss}"/>
+
+    <!--
+      Форма иконки сайдбара меняется мгновенно (outline -> fill). Анимируются
+      только фон кнопки, цвет иконки и лёгкое уменьшение иконки при нажатии.
+    -->
+    <Style Selector="Button.nav PathIcon.nav-icon">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Foreground" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.nav:pointerover PathIcon.nav-icon">
+        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <Style Selector="Button.nav.active PathIcon.nav-icon">
+        <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+    </Style>
+
+    <Style Selector="Button.nav:pressed PathIcon.nav-icon">
+        <Setter Property="RenderTransform" Value="scale(0.92)"/>
+    </Style>
+
+    <Style Selector="Button.nav PathIcon.home">
+        <Setter Property="Data" Value="{DynamicResource NavHomeOutlineGeometry}"/>
+    </Style>
+    <Style Selector="Button.nav PathIcon.settings">
+        <Setter Property="Data" Value="{DynamicResource NavSettingsOutlineGeometry}"/>
+    </Style>
+    <Style Selector="Button.nav PathIcon.logs">
+        <Setter Property="Data" Value="{DynamicResource NavLogsOutlineGeometry}"/>
+    </Style>
+    <Style Selector="Button.nav PathIcon.about">
+        <Setter Property="Data" Value="{DynamicResource NavAboutOutlineGeometry}"/>
+    </Style>
+
+    <Style Selector="Button.nav.active PathIcon.home">
+        <Setter Property="Data" Value="{DynamicResource NavHomeFillGeometry}"/>
+    </Style>
+    <Style Selector="Button.nav.active PathIcon.settings">
+        <Setter Property="Data" Value="{DynamicResource NavSettingsFillGeometry}"/>
+    </Style>
+    <Style Selector="Button.nav.active PathIcon.logs">
+        <Setter Property="Data" Value="{DynamicResource NavLogsFillGeometry}"/>
+    </Style>
+    <Style Selector="Button.nav.active PathIcon.about">
+        <Setter Property="Data" Value="{DynamicResource NavAboutFillGeometry}"/>
     </Style>
 
     <!-- ================= INPUTS (TEXTBOX) ================= -->

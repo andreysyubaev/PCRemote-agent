@@ -1,0 +1,187 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:loc="using:PCRemote.Desktop.Localization"
+             mc:Ignorable="d" d:DesignWidth="670" d:DesignHeight="530"
+             Width="670"
+             Height="530"
+             Background="{DynamicResource AppBackground}"
+             x:Class="PCRemote.Desktop.Views.Pages.GetYourBotTokenPage">
+
+    <UserControl.Styles>
+        <!-- Явно пробрасываем акцентный цвет в контент ссылки. -->
+        <Style Selector="Button.link.accent /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+        </Style>
+    </UserControl.Styles>
+
+    <!-- Координаты рядов и кегли сняты из Figma: frame 670×530, поле 16 px. -->
+    <Grid Margin="16"
+          RowDefinitions="32,32,32,32,33,30,34,30,33,32,49,29,60,40">
+
+        <Button Grid.Row="0"
+                Classes="link"
+                Width="24"
+                Height="24"
+                Padding="0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                ToolTip.Tip="{loc:Loc Key=Common_Close}"
+                Click="Close_Click">
+            <Svg Path="/Assets/Icons/close.svg" Width="14" Height="14"/>
+        </Button>
+
+        <TextBlock Grid.Row="0"
+                   Text="{loc:Loc Key=Guide_Title}"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   LineHeight="20"
+                   Height="20"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource PrimaryText}"/>
+
+        <TextBlock Grid.Row="1"
+                   Text="{loc:Loc Key=Guide_Subtitle}"
+                   FontSize="13"
+                   LineHeight="16"
+                   Height="16"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource MutedText}"/>
+
+        <TextBlock Grid.Row="2"
+                   Text="{loc:Loc Key=Guide_Step1Title}"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   LineHeight="16"
+                   Height="16"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource PrimaryText}"/>
+
+        <TextBlock Grid.Row="3"
+                   Text="{loc:Loc Key=Guide_Step1Description}"
+                   FontSize="13"
+                   LineHeight="16"
+                   Height="16"
+                   Margin="16,0,0,0"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource MutedText}"/>
+
+        <Button Grid.Row="4"
+                Classes="link accent"
+                Height="20"
+                Margin="16,-2,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Click="OpenBotFather_Click">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="4"
+                        VerticalAlignment="Center">
+                <TextBlock Text="{loc:Loc Key=Guide_OpenBotFather}"
+                           FontSize="16"
+                           FontWeight="Regular"
+                           LineHeight="20"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource Accent}"/>
+                <Svg Path="/Assets/Icons/diagonal-arrow-right-up.svg"
+                     Classes="accent"
+                     Width="12"
+                     Height="12"
+                     VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+
+        <TextBlock Grid.Row="5"
+                   Text="{loc:Loc Key=Guide_Step2Title}"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   LineHeight="16"
+                   Height="16"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource PrimaryText}"/>
+
+        <TextBlock Grid.Row="6"
+                   Text="{loc:Loc Key=Guide_Step2Description}"
+                   FontSize="13"
+                   LineHeight="16"
+                   Height="16"
+                   Margin="16,0,0,0"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource MutedText}"/>
+
+        <TextBlock Grid.Row="7"
+                   Text="{loc:Loc Key=Guide_Step3Title}"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   LineHeight="16"
+                   Height="16"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource PrimaryText}"/>
+
+        <TextBlock Grid.Row="8"
+                   Text="{loc:Loc Key=Guide_Step3Description}"
+                   FontSize="13"
+                   LineHeight="16"
+                   Height="16"
+                   Margin="16,0,0,0"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource MutedText}"/>
+
+        <TextBlock Grid.Row="9"
+                   Text="{loc:Loc Key=Guide_Step4Title}"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   LineHeight="16"
+                   Height="16"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource PrimaryText}"/>
+
+        <TextBlock Grid.Row="10"
+                   Text="{loc:Loc Key=Guide_Step4Description}"
+                   FontSize="13"
+                   LineHeight="16"
+                   Height="16"
+                   Margin="16,0,0,0"
+                   VerticalAlignment="Top"
+                   Foreground="{DynamicResource MutedText}"/>
+
+        <!-- Щит 20×20, между ним и заголовком 8 px: текст начинается на x=44. -->
+        <Grid Grid.Row="11" ColumnDefinitions="28,*" VerticalAlignment="Top">
+            <Svg Grid.Column="0"
+                 Path="/Assets/Icons/shield-outline.svg"
+                 Classes="success"
+                 Width="20"
+                 Height="20"
+                 Margin="0,-1,0,0"
+                 VerticalAlignment="Top"/>
+            <TextBlock Grid.Column="1"
+                       Text="{loc:Loc Key=Guide_PrivateTitle}"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       LineHeight="20"
+                       Height="20"
+                       VerticalAlignment="Top"
+                       Foreground="{DynamicResource PrimaryText}"/>
+        </Grid>
+
+        <!-- В RU текст длиннее и занимает две строки; ряд имеет запас 60 px. -->
+        <TextBlock Grid.Row="12"
+                   Text="{loc:Loc Key=Guide_PrivateDescription}"
+                   FontSize="13"
+                   LineHeight="16"
+                   MaxHeight="60"
+                   VerticalAlignment="Top"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource MutedText}"/>
+
+        <Button Grid.Row="13"
+                Classes="primary"
+                Content="{loc:Loc Key=Guide_GotIt}"
+                FontSize="16"
+                FontWeight="Regular"
+                Height="40"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Click="GotIt_Click"/>
+    </Grid>
+</UserControl>

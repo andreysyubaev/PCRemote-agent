@@ -85,7 +85,7 @@
             </Border>
 
             <!-- Telegram -->
-            <Border Classes="card">
+            <Border x:Name="TelegramCard" Classes="card">
                 <StackPanel Classes="card-content">
                     <TextBlock Classes="heading-section"
                                Text="{loc:Loc Key=Settings_Telegram}"/>
@@ -112,15 +112,16 @@
                                     Click="OnCopyPairingCodeClick"
                                     IsEnabled="{Binding HasPairingCode}"
                                     ToolTip.Tip="{loc:Loc Key=Common_Copy}">
-                                <Panel Width="20" Height="20">
-                                    <Svg x:Name="CopyIcon"
+                                <Panel x:Name="CopyFeedbackPanel"
+                                       Classes="copy-feedback"
+                                       Width="20" Height="20">
+                                    <Svg Classes="copy-idle"
                                          Path="/Assets/Icons/copy-outline.svg"
                                          Width="20" Height="20"/>
 
-                                    <Svg x:Name="CopySuccessIcon"
+                                    <Svg Classes="copy-success"
                                          Path="/Assets/Icons/checkmark.svg"
-                                         Width="20" Height="20"
-                                         IsVisible="False"/>
+                                         Width="20" Height="20"/>
                                 </Panel>
                             </Button>
                         </StackPanel>

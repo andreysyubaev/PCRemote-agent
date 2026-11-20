@@ -1,61 +1,116 @@
-
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PCRemote.Desktop.ViewModels"
+        xmlns:pages="using:PCRemote.Desktop.Views.Pages"
         xmlns:loc="using:PCRemote.Desktop.Localization"
         x:Class="PCRemote.Desktop.Views.SetupWindow"
         x:DataType="vm:SetupViewModel"
         Title="{loc:Loc Key=Setup_Title}"
         Icon="/Assets/Icons/App/app-icon.ico"
-        Width="520"
-        Height="420"
-        MinWidth="460"
-        MinHeight="380"
+        Width="670"
+        Height="530"
+        MinWidth="670"
+        MinHeight="530"
         CanResize="False"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource AppBackground}">
 
-    <Grid Background="{DynamicResource AppBackground}">
-        <Border Background="{DynamicResource SurfaceBackground}"
-                Padding="28"
-                CornerRadius="12"
-                Width="416"
+    <Window.Styles>
+        <!-- Button.link.accent задаёт Foreground только на кнопке, явно пробрасываем его в контент. -->
+        <Style Selector="Button.link.accent /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource Accent}"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+    <!-- Контентная колонка 426 px по центру окна: строка иконок + surface. -->
+    <StackPanel x:Name="SetupContent"
+                Width="426"
+                Spacing="16"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
 
-            <StackPanel Spacing="14">
+        <Button Classes="link"
+                Width="24"
+                Height="24"
+                Padding="0"
+                HorizontalAlignment="Right"
+                ToolTip.Tip="{loc:Loc Key=Common_ToggleTheme}"
+                Click="ToggleTheme_Click">
+            <Panel Width="20" Height="20">
+                <Svg x:Name="ThemeOutlineIcon"
+                     Path="/Assets/Icons/moon-outline.svg"
+                     Width="20" Height="20"
+                     IsVisible="True"/>
+                <Svg x:Name="ThemeFilledIcon"
+                     Path="/Assets/Icons/moon.svg"
+                     Width="20" Height="20"
+                     IsVisible="False"/>
+            </Panel>
+        </Button>
 
-                <TextBlock Text="PCRemote"
-                           FontSize="30"
+        <Border Background="{DynamicResource SurfaceBackground}"
+                CornerRadius="12"
+                Height="299"
+                Padding="32,34,32,8">
+
+            <StackPanel>
+
+                <TextBlock Text="{loc:Loc Key=Setup_Title}"
+                           FontSize="40"
                            FontWeight="Bold"
+                           Height="46"
+                           TextAlignment="Center"
                            HorizontalAlignment="Center"/>
 
                 <TextBlock Text="{loc:Loc Key=Setup_Description}"
                            FontSize="16"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,12"/>
+                           Height="19"
+                           Margin="0,9,0,0"
+                           Foreground="{DynamicResource MutedText}"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"/>
 
                 <TextBox Text="{Binding BotToken}"
                          PlaceholderText="{loc:Loc Key=Setup_TokenPlaceholder}"
-                         PasswordChar="●"/>
+                         PasswordChar="●"
+                         FontSize="16"
+                         Height="44"
+                         Margin="0,32,0,0"
+                         VerticalContentAlignment="Center"/>
 
-                <Button Content="{loc:Loc Key=Common_Connect}"
+                <Button Classes="link accent"
+                        Content="{loc:Loc Key=Setup_WhereGet}"
+                        FontSize="13"
+                        Height="18"
+                        Margin="0,5,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Click="WhereGet_Click"/>
+
+                <Button Classes="primary"
+                        Content="{loc:Loc Key=Common_Connect}"
                         Command="{Binding ConnectTelegramCommand}"
                         IsEnabled="{Binding !IsBusy}"
+                        Height="45"
+                        Margin="0,15,0,0"
                         HorizontalAlignment="Stretch"/>
 
                 <TextBlock Text="{Binding StatusMessage}"
+                           FontSize="13"
+                           Height="20"
+                           Margin="0,4,0,0"
+                           Foreground="{DynamicResource MutedText}"
                            TextWrapping="Wrap"
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,0"/>
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"/>
 
             </StackPanel>
         </Border>
+    </StackPanel>
 
-        <Button Content="{loc:Loc Key=Common_ToggleTheme}"
-                Click="ToggleTheme_Click"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="16"/>
+    <pages:GetYourBotTokenPage x:Name="TokenGuidePage"
+                               IsVisible="False"
+                               CloseRequested="TokenGuidePage_CloseRequested"/>
     </Grid>
 </Window>
