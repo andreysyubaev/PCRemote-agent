@@ -103,6 +103,10 @@ for rid in ${WINDOWS_RIDS}; do
         -r "${rid}" \
         --self-contained true \
         -p:Version="${VERSION}" \
+        -p:PublishSingleFile=true \
+        -p:IncludeNativeLibrariesForSelfExtract=true \
+        -p:IncludeAllContentForSelfExtract=true \
+        -p:DebugType=none \
         --nologo \
         -o "${publish_dir}"
 
@@ -110,6 +114,11 @@ for rid in ${WINDOWS_RIDS}; do
         echo "Expected Windows executable was not published: ${publish_dir}/PCRemote.Desktop.exe" >&2
         exit 1
     fi
+
+    # Single-file publish leaves optional content and package PDBs next to the exe.
+    # The user-facing archive should contain only the executable.
+    find "${publish_dir}" -mindepth 1 -maxdepth 1 \
+        ! -name 'PCRemote.Desktop.exe' -exec rm -rf {} +
 
     if ! file "${publish_dir}/PCRemote.Desktop.exe" | grep -q "PE32"; then
         echo "Unexpected Windows executable format: ${publish_dir}/PCRemote.Desktop.exe" >&2
@@ -142,7 +151,7 @@ cat > "${RELEASE_DIR}/RELEASE_NOTES.md" <<EOF
 
 - \`PCRemote-${VERSION}-macos-osx-arm64.zip\` — macOS, Apple Silicon, self-contained \`.app\`
 - \`PCRemote-${VERSION}-macos-osx-x64.zip\` — macOS, Intel, self-contained \`.app\`
-- \`PCRemote-${VERSION}-windows-win-x64.zip\` — Windows x64, self-contained
+- \`PCRemote-${VERSION}-windows-win-x64.zip\` — Windows x64, self-contained single-file \`PCRemote.Desktop.exe\`
 
 The macOS bundles are ad-hoc signed unless \`MAC_SIGN_IDENTITY\` was provided during the build.
 On macOS, right-click the app and choose **Open** on first launch if Gatekeeper warns.

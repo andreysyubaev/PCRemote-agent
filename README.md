@@ -89,7 +89,7 @@ To build a release on macOS you also need `zip`, `ditto`, `shasum` and `file`; `
 1. Download an archive from the [v1.0.0](https://github.com/andreysyubaev/PCRemote-agent/releases/tag/v1.0.0) page:
    - `PCRemote-1.0.0-macos-osx-arm64.zip` — macOS, Apple Silicon;
    - `PCRemote-1.0.0-macos-osx-x64.zip` — macOS, Intel;
-   - `PCRemote-1.0.0-windows-win-x64.zip` — Windows x64.
+   - `PCRemote-1.0.0-windows-win-x64.zip` — Windows x64, self-contained single-file `PCRemote.Desktop.exe`.
 2. Extract the archive and run `PCRemote.Desktop` / `PCRemote.Desktop.exe`.
 3. Verify the checksums if you downloaded `SHA256SUMS.txt`:
 

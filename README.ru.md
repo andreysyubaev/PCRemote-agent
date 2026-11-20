@@ -89,7 +89,7 @@
 1. Скачайте архив со страницы [v1.0.0](https://github.com/andreysyubaev/PCRemote-agent/releases/tag/v1.0.0):
    - `PCRemote-1.0.0-macos-osx-arm64.zip` — macOS, Apple Silicon;
    - `PCRemote-1.0.0-macos-osx-x64.zip` — macOS, Intel;
-   - `PCRemote-1.0.0-windows-win-x64.zip` — Windows x64.
+   - `PCRemote-1.0.0-windows-win-x64.zip` — Windows x64, один self-contained `PCRemote.Desktop.exe`.
 2. Распакуйте архив и запустите `PCRemote.Desktop` / `PCRemote.Desktop.exe`.
 3. Проверьте контрольные суммы, если скачали `SHA256SUMS.txt`:
 
